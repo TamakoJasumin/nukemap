@@ -1,0 +1,4628 @@
+[
+  {
+    "name": "北京",
+    "display": "北京 Beijing",
+    "lat": 39.9042,
+    "lng": 116.4074,
+    "pop": 2189,
+    "radius": 45,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "天津",
+    "display": "天津 Tianjin",
+    "lat": 39.3434,
+    "lng": 117.3616,
+    "pop": 1380,
+    "radius": 40,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "石家庄",
+    "display": null,
+    "lat": 38.0455,
+    "lng": 114.502,
+    "pop": 560,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "唐山",
+    "display": null,
+    "lat": 39.6309,
+    "lng": 118.1802,
+    "pop": 490,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "秦皇岛",
+    "display": null,
+    "lat": 39.9253,
+    "lng": 119.5996,
+    "pop": 190,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "邯郸",
+    "display": null,
+    "lat": 36.6093,
+    "lng": 114.4904,
+    "pop": 540,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "保定",
+    "display": null,
+    "lat": 38.8677,
+    "lng": 115.501,
+    "pop": 590,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "张家口",
+    "display": null,
+    "lat": 40.7676,
+    "lng": 114.8863,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "承德",
+    "display": null,
+    "lat": 40.9525,
+    "lng": 117.9634,
+    "pop": 170,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "沧州",
+    "display": null,
+    "lat": 38.3039,
+    "lng": 116.8575,
+    "pop": 370,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "廊坊",
+    "display": null,
+    "lat": 39.5378,
+    "lng": 116.6837,
+    "pop": 300,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "衡水",
+    "display": null,
+    "lat": 37.7392,
+    "lng": 115.6862,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "太原",
+    "display": null,
+    "lat": 37.8706,
+    "lng": 112.5489,
+    "pop": 500,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "大同",
+    "display": null,
+    "lat": 40.0768,
+    "lng": 113.3001,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "阳泉",
+    "display": null,
+    "lat": 37.857,
+    "lng": 113.58,
+    "pop": 88,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "长治",
+    "display": null,
+    "lat": 36.1954,
+    "lng": 113.1163,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "晋城",
+    "display": null,
+    "lat": 35.4907,
+    "lng": 112.8527,
+    "pop": 130,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "朔州",
+    "display": null,
+    "lat": 39.3316,
+    "lng": 112.4328,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "晋中",
+    "display": null,
+    "lat": 37.687,
+    "lng": 112.7527,
+    "pop": 190,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "运城",
+    "display": null,
+    "lat": 35.0265,
+    "lng": 111.007,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "忻州",
+    "display": null,
+    "lat": 38.4167,
+    "lng": 112.7342,
+    "pop": 175,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "临汾",
+    "display": null,
+    "lat": 36.088,
+    "lng": 111.518,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "吕梁",
+    "display": null,
+    "lat": 37.518,
+    "lng": 111.1416,
+    "pop": 195,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "呼和浩特",
+    "display": null,
+    "lat": 40.8422,
+    "lng": 111.7489,
+    "pop": 350,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "包头",
+    "display": null,
+    "lat": 40.6574,
+    "lng": 109.8403,
+    "pop": 290,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "乌海",
+    "display": null,
+    "lat": 39.6538,
+    "lng": 106.7956,
+    "pop": 56,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "赤峰",
+    "display": null,
+    "lat": 42.2569,
+    "lng": 118.955,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "通辽",
+    "display": null,
+    "lat": 43.6523,
+    "lng": 122.2437,
+    "pop": 180,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鄂尔多斯",
+    "display": null,
+    "lat": 39.6085,
+    "lng": 109.7812,
+    "pop": 130,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "呼伦贝尔",
+    "display": null,
+    "lat": 49.2117,
+    "lng": 119.769,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "巴彦淖尔",
+    "display": null,
+    "lat": 40.743,
+    "lng": 107.3877,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "乌兰察布",
+    "display": null,
+    "lat": 40.9945,
+    "lng": 113.1324,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "沈阳",
+    "display": "沈阳 Shenyang",
+    "lat": 41.8057,
+    "lng": 123.4315,
+    "pop": 860,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "大连",
+    "display": "大连 Dalian",
+    "lat": 38.914,
+    "lng": 121.6147,
+    "pop": 650,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鞍山",
+    "display": null,
+    "lat": 41.1086,
+    "lng": 122.9944,
+    "pop": 210,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "抚顺",
+    "display": null,
+    "lat": 41.8812,
+    "lng": 123.9572,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "本溪",
+    "display": null,
+    "lat": 41.2945,
+    "lng": 123.7651,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "丹东",
+    "display": null,
+    "lat": 40.0004,
+    "lng": 124.356,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "锦州",
+    "display": null,
+    "lat": 41.0952,
+    "lng": 121.1299,
+    "pop": 170,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "营口",
+    "display": null,
+    "lat": 40.6667,
+    "lng": 122.2333,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "阜新",
+    "display": null,
+    "lat": 42.0212,
+    "lng": 121.6709,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "辽阳",
+    "display": null,
+    "lat": 41.2706,
+    "lng": 123.18,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "盘锦",
+    "display": null,
+    "lat": 41.1209,
+    "lng": 122.0707,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "铁岭",
+    "display": null,
+    "lat": 42.2863,
+    "lng": 123.8425,
+    "pop": 130,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "朝阳",
+    "display": null,
+    "lat": 41.5737,
+    "lng": 120.4495,
+    "pop": 160,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "葫芦岛",
+    "display": null,
+    "lat": 40.7117,
+    "lng": 120.8384,
+    "pop": 160,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "长春",
+    "display": "长春 Changchun",
+    "lat": 43.8969,
+    "lng": 125.3227,
+    "pop": 750,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "吉林市",
+    "display": null,
+    "lat": 43.8371,
+    "lng": 126.5486,
+    "pop": 220,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "四平",
+    "display": null,
+    "lat": 43.1707,
+    "lng": 124.3508,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "辽源",
+    "display": null,
+    "lat": 42.8879,
+    "lng": 125.1454,
+    "pop": 70,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "通化",
+    "display": null,
+    "lat": 41.7295,
+    "lng": 125.9426,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "白山",
+    "display": null,
+    "lat": 41.9391,
+    "lng": 126.4249,
+    "pop": 80,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "松原",
+    "display": null,
+    "lat": 45.1412,
+    "lng": 124.825,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "白城",
+    "display": null,
+    "lat": 45.6196,
+    "lng": 122.8386,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "哈尔滨",
+    "display": "哈尔滨 Harbin",
+    "lat": 45.8038,
+    "lng": 126.535,
+    "pop": 1000,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "齐齐哈尔",
+    "display": null,
+    "lat": 47.3543,
+    "lng": 123.9182,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鸡西",
+    "display": null,
+    "lat": 45.2951,
+    "lng": 130.9732,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鹤岗",
+    "display": null,
+    "lat": 47.3499,
+    "lng": 130.2781,
+    "pop": 60,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "双鸭山",
+    "display": null,
+    "lat": 46.6465,
+    "lng": 131.1589,
+    "pop": 80,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "大庆",
+    "display": null,
+    "lat": 46.5886,
+    "lng": 125.1036,
+    "pop": 200,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "伊春",
+    "display": null,
+    "lat": 47.7282,
+    "lng": 128.8357,
+    "pop": 60,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "佳木斯",
+    "display": null,
+    "lat": 46.7999,
+    "lng": 130.319,
+    "pop": 150,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "七台河",
+    "display": null,
+    "lat": 45.7706,
+    "lng": 131.003,
+    "pop": 50,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "牡丹江",
+    "display": null,
+    "lat": 44.5528,
+    "lng": 129.6329,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "黑河",
+    "display": null,
+    "lat": 50.2454,
+    "lng": 127.5318,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "绥化",
+    "display": null,
+    "lat": 46.6384,
+    "lng": 126.987,
+    "pop": 220,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "上海",
+    "display": "上海 Shanghai",
+    "lat": 31.2304,
+    "lng": 121.4737,
+    "pop": 2487,
+    "radius": 40,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南京",
+    "display": "南京 Nanjing",
+    "lat": 32.0603,
+    "lng": 118.7969,
+    "pop": 970,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "无锡",
+    "display": null,
+    "lat": 31.491,
+    "lng": 120.3119,
+    "pop": 500,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "徐州",
+    "display": null,
+    "lat": 34.2611,
+    "lng": 117.1866,
+    "pop": 430,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "常州",
+    "display": null,
+    "lat": 31.7713,
+    "lng": 119.9741,
+    "pop": 370,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "苏州",
+    "display": "苏州 Suzhou",
+    "lat": 31.8206,
+    "lng": 119.9704,
+    "pop": 650,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南通",
+    "display": null,
+    "lat": 31.9811,
+    "lng": 120.8948,
+    "pop": 460,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "连云港",
+    "display": null,
+    "lat": 34.5968,
+    "lng": 119.2215,
+    "pop": 300,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "淮安",
+    "display": null,
+    "lat": 33.6066,
+    "lng": 119.0133,
+    "pop": 350,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "盐城",
+    "display": null,
+    "lat": 33.3477,
+    "lng": 120.1636,
+    "pop": 380,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "扬州",
+    "display": null,
+    "lat": 32.3938,
+    "lng": 119.4139,
+    "pop": 330,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "镇江",
+    "display": null,
+    "lat": 32.1932,
+    "lng": 119.425,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "泰州",
+    "display": null,
+    "lat": 32.4555,
+    "lng": 119.923,
+    "pop": 300,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宿迁",
+    "display": null,
+    "lat": 33.9619,
+    "lng": 118.2756,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "杭州",
+    "display": "杭州 Hangzhou",
+    "lat": 30.2741,
+    "lng": 120.1551,
+    "pop": 1040,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宁波",
+    "display": "宁波 Ningbo",
+    "lat": 29.8683,
+    "lng": 121.544,
+    "pop": 850,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "温州",
+    "display": null,
+    "lat": 28.0017,
+    "lng": 120.6989,
+    "pop": 650,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "嘉兴",
+    "display": null,
+    "lat": 30.773,
+    "lng": 120.7569,
+    "pop": 330,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "湖州",
+    "display": null,
+    "lat": 30.8929,
+    "lng": 120.0903,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "绍兴",
+    "display": null,
+    "lat": 30.0301,
+    "lng": 120.5812,
+    "pop": 370,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "金华",
+    "display": null,
+    "lat": 29.0789,
+    "lng": 119.6476,
+    "pop": 350,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "衢州",
+    "display": null,
+    "lat": 28.9372,
+    "lng": 118.8747,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "舟山",
+    "display": null,
+    "lat": 29.9864,
+    "lng": 122.1031,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "台州",
+    "display": null,
+    "lat": 28.6564,
+    "lng": 121.4208,
+    "pop": 400,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "丽水",
+    "display": null,
+    "lat": 28.4672,
+    "lng": 119.9226,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "合肥",
+    "display": "合肥 Hefei",
+    "lat": 31.8204,
+    "lng": 117.2272,
+    "pop": 850,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "芜湖",
+    "display": null,
+    "lat": 31.353,
+    "lng": 118.4324,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "蚌埠",
+    "display": null,
+    "lat": 32.9165,
+    "lng": 117.3892,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "淮南",
+    "display": null,
+    "lat": 32.644,
+    "lng": 117.0037,
+    "pop": 180,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "马鞍山",
+    "display": null,
+    "lat": 31.6719,
+    "lng": 118.5062,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "淮北",
+    "display": null,
+    "lat": 33.9556,
+    "lng": 116.7981,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "铜陵",
+    "display": null,
+    "lat": 30.9452,
+    "lng": 117.8121,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "安庆",
+    "display": null,
+    "lat": 30.5285,
+    "lng": 117.05,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "黄山",
+    "display": null,
+    "lat": 29.715,
+    "lng": 118.337,
+    "pop": 90,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "滁州",
+    "display": null,
+    "lat": 32.306,
+    "lng": 118.3169,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "阜阳",
+    "display": null,
+    "lat": 32.8911,
+    "lng": 115.82,
+    "pop": 500,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宿州",
+    "display": null,
+    "lat": 33.6468,
+    "lng": 116.9644,
+    "pop": 340,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "六安",
+    "display": null,
+    "lat": 31.7363,
+    "lng": 116.5221,
+    "pop": 330,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "亳州",
+    "display": null,
+    "lat": 33.8625,
+    "lng": 115.7797,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "池州",
+    "display": null,
+    "lat": 30.665,
+    "lng": 117.4919,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宣城",
+    "display": null,
+    "lat": 30.9454,
+    "lng": 118.7587,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "福州",
+    "display": "福州 Fuzhou",
+    "lat": 26.0745,
+    "lng": 119.2965,
+    "pop": 750,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "厦门",
+    "display": "厦门 Xiamen",
+    "lat": 24.4798,
+    "lng": 118.0894,
+    "pop": 450,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "莆田",
+    "display": null,
+    "lat": 25.454,
+    "lng": 119.0077,
+    "pop": 220,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "三明",
+    "display": null,
+    "lat": 26.2631,
+    "lng": 117.6393,
+    "pop": 130,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "泉州",
+    "display": null,
+    "lat": 24.8741,
+    "lng": 118.6757,
+    "pop": 550,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "漳州",
+    "display": null,
+    "lat": 24.5131,
+    "lng": 117.6479,
+    "pop": 320,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南平",
+    "display": null,
+    "lat": 26.6423,
+    "lng": 118.1789,
+    "pop": 150,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "龙岩",
+    "display": null,
+    "lat": 25.0753,
+    "lng": 117.0174,
+    "pop": 170,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宁德",
+    "display": null,
+    "lat": 26.6666,
+    "lng": 119.5484,
+    "pop": 200,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南昌",
+    "display": "南昌 Nanchang",
+    "lat": 28.6829,
+    "lng": 115.8582,
+    "pop": 550,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "景德镇",
+    "display": null,
+    "lat": 29.2679,
+    "lng": 117.179,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "萍乡",
+    "display": null,
+    "lat": 27.6224,
+    "lng": 113.8554,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "九江",
+    "display": null,
+    "lat": 29.7053,
+    "lng": 115.9924,
+    "pop": 320,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "新余",
+    "display": null,
+    "lat": 27.8178,
+    "lng": 114.9171,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鹰潭",
+    "display": null,
+    "lat": 28.2606,
+    "lng": 117.034,
+    "pop": 70,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "赣州",
+    "display": null,
+    "lat": 25.8352,
+    "lng": 114.9348,
+    "pop": 450,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "吉安",
+    "display": null,
+    "lat": 27.1138,
+    "lng": 114.9933,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宜春",
+    "display": null,
+    "lat": 27.8042,
+    "lng": 114.3827,
+    "pop": 300,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "抚州",
+    "display": null,
+    "lat": 27.9492,
+    "lng": 116.3586,
+    "pop": 220,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "上饶",
+    "display": null,
+    "lat": 28.4546,
+    "lng": 117.9437,
+    "pop": 380,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "济南",
+    "display": "济南 Jinan",
+    "lat": 36.6512,
+    "lng": 116.9972,
+    "pop": 700,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "青岛",
+    "display": "青岛 Qingdao",
+    "lat": 36.0671,
+    "lng": 120.3826,
+    "pop": 650,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "淄博",
+    "display": null,
+    "lat": 36.8133,
+    "lng": 118.0551,
+    "pop": 340,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "枣庄",
+    "display": null,
+    "lat": 34.8107,
+    "lng": 117.3239,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "东营",
+    "display": null,
+    "lat": 37.434,
+    "lng": 118.6747,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "烟台",
+    "display": null,
+    "lat": 37.4644,
+    "lng": 121.4479,
+    "pop": 490,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "潍坊",
+    "display": null,
+    "lat": 36.7068,
+    "lng": 119.1618,
+    "pop": 490,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "济宁",
+    "display": null,
+    "lat": 35.4149,
+    "lng": 116.5872,
+    "pop": 480,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "泰安",
+    "display": null,
+    "lat": 36.2012,
+    "lng": 117.0878,
+    "pop": 290,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "威海",
+    "display": null,
+    "lat": 37.5131,
+    "lng": 122.1209,
+    "pop": 220,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "日照",
+    "display": null,
+    "lat": 35.415,
+    "lng": 119.5275,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "临沂",
+    "display": null,
+    "lat": 35.0531,
+    "lng": 118.3529,
+    "pop": 700,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "德州",
+    "display": null,
+    "lat": 37.4356,
+    "lng": 116.3594,
+    "pop": 340,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "聊城",
+    "display": null,
+    "lat": 36.4563,
+    "lng": 115.9855,
+    "pop": 330,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "滨州",
+    "display": null,
+    "lat": 37.3822,
+    "lng": 117.9738,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "菏泽",
+    "display": null,
+    "lat": 35.2336,
+    "lng": 115.47,
+    "pop": 480,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "郑州",
+    "display": "郑州 Zhengzhou",
+    "lat": 34.7466,
+    "lng": 113.6253,
+    "pop": 1200,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "开封",
+    "display": null,
+    "lat": 34.7971,
+    "lng": 114.3074,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "洛阳",
+    "display": null,
+    "lat": 34.618,
+    "lng": 112.454,
+    "pop": 410,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "平顶山",
+    "display": null,
+    "lat": 33.7359,
+    "lng": 113.1923,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "安阳",
+    "display": null,
+    "lat": 36.0986,
+    "lng": 114.3932,
+    "pop": 270,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鹤壁",
+    "display": null,
+    "lat": 35.7486,
+    "lng": 114.2981,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "新乡",
+    "display": null,
+    "lat": 35.2998,
+    "lng": 113.9277,
+    "pop": 350,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "焦作",
+    "display": null,
+    "lat": 35.2156,
+    "lng": 113.2418,
+    "pop": 190,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "濮阳",
+    "display": null,
+    "lat": 35.7615,
+    "lng": 115.03,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "许昌",
+    "display": null,
+    "lat": 34.0367,
+    "lng": 113.8528,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "漯河",
+    "display": null,
+    "lat": 33.5758,
+    "lng": 114.0143,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "三门峡",
+    "display": null,
+    "lat": 34.7723,
+    "lng": 111.1948,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南阳",
+    "display": null,
+    "lat": 32.9907,
+    "lng": 112.5288,
+    "pop": 550,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "商丘",
+    "display": null,
+    "lat": 34.4181,
+    "lng": 115.6414,
+    "pop": 420,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "信阳",
+    "display": null,
+    "lat": 32.1462,
+    "lng": 114.0927,
+    "pop": 380,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "周口",
+    "display": null,
+    "lat": 33.6205,
+    "lng": 114.6484,
+    "pop": 460,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "驻马店",
+    "display": null,
+    "lat": 33.013,
+    "lng": 114.0224,
+    "pop": 380,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "武汉",
+    "display": "武汉 Wuhan",
+    "lat": 30.5928,
+    "lng": 114.3055,
+    "pop": 1200,
+    "radius": 40,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "黄石",
+    "display": null,
+    "lat": 30.2014,
+    "lng": 115.077,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "十堰",
+    "display": null,
+    "lat": 32.6291,
+    "lng": 110.7983,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宜昌",
+    "display": null,
+    "lat": 30.6922,
+    "lng": 111.2857,
+    "pop": 250,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "襄阳",
+    "display": null,
+    "lat": 32.0103,
+    "lng": 112.1232,
+    "pop": 360,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "鄂州",
+    "display": null,
+    "lat": 30.3913,
+    "lng": 114.8956,
+    "pop": 70,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "荆门",
+    "display": null,
+    "lat": 31.0356,
+    "lng": 112.2,
+    "pop": 200,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "孝感",
+    "display": null,
+    "lat": 30.9282,
+    "lng": 113.9165,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "荆州",
+    "display": null,
+    "lat": 30.3358,
+    "lng": 112.24,
+    "pop": 320,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "黄冈",
+    "display": null,
+    "lat": 30.453,
+    "lng": 114.8726,
+    "pop": 370,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "咸宁",
+    "display": null,
+    "lat": 29.8328,
+    "lng": 114.3288,
+    "pop": 170,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "随州",
+    "display": null,
+    "lat": 31.69,
+    "lng": 113.382,
+    "pop": 150,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "长沙",
+    "display": "长沙 Changsha",
+    "lat": 28.2282,
+    "lng": 112.9388,
+    "pop": 750,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "株洲",
+    "display": null,
+    "lat": 27.8275,
+    "lng": 113.1351,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "湘潭",
+    "display": null,
+    "lat": 27.8294,
+    "lng": 112.9443,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "衡阳",
+    "display": null,
+    "lat": 26.8986,
+    "lng": 112.5716,
+    "pop": 350,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "邵阳",
+    "display": null,
+    "lat": 27.239,
+    "lng": 111.469,
+    "pop": 350,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "岳阳",
+    "display": null,
+    "lat": 29.357,
+    "lng": 113.129,
+    "pop": 310,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "常德",
+    "display": null,
+    "lat": 29.0317,
+    "lng": 111.6991,
+    "pop": 330,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "张家界",
+    "display": null,
+    "lat": 29.117,
+    "lng": 110.4799,
+    "pop": 90,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "益阳",
+    "display": null,
+    "lat": 28.5549,
+    "lng": 112.3547,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "郴州",
+    "display": null,
+    "lat": 25.7821,
+    "lng": 113.0168,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "永州",
+    "display": null,
+    "lat": 26.424,
+    "lng": 111.613,
+    "pop": 310,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "怀化",
+    "display": null,
+    "lat": 27.5698,
+    "lng": 110.0015,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "娄底",
+    "display": null,
+    "lat": 27.698,
+    "lng": 111.995,
+    "pop": 220,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "广州",
+    "display": "广州 Guangzhou",
+    "lat": 23.1292,
+    "lng": 113.2644,
+    "pop": 1800,
+    "radius": 45,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "深圳",
+    "display": "深圳 Shenzhen",
+    "lat": 22.5431,
+    "lng": 114.0579,
+    "pop": 1750,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "珠海",
+    "display": null,
+    "lat": 22.2711,
+    "lng": 113.5767,
+    "pop": 240,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "汕头",
+    "display": null,
+    "lat": 23.3541,
+    "lng": 116.6822,
+    "pop": 360,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "佛山",
+    "display": null,
+    "lat": 23.0215,
+    "lng": 113.1217,
+    "pop": 700,
+    "radius": 28,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "韶关",
+    "display": null,
+    "lat": 24.81,
+    "lng": 113.5931,
+    "pop": 190,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "湛江",
+    "display": null,
+    "lat": 21.2712,
+    "lng": 110.359,
+    "pop": 400,
+    "radius": 22,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "肇庆",
+    "display": null,
+    "lat": 23.0492,
+    "lng": 112.465,
+    "pop": 270,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "江门",
+    "display": null,
+    "lat": 22.579,
+    "lng": 113.0821,
+    "pop": 280,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "茂名",
+    "display": null,
+    "lat": 21.6633,
+    "lng": 110.9251,
+    "pop": 420,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "惠州",
+    "display": null,
+    "lat": 23.1134,
+    "lng": 114.4167,
+    "pop": 380,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "梅州",
+    "display": null,
+    "lat": 24.2883,
+    "lng": 116.1226,
+    "pop": 240,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "汕尾",
+    "display": null,
+    "lat": 22.7862,
+    "lng": 115.3737,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "河源",
+    "display": null,
+    "lat": 23.744,
+    "lng": 114.7002,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "阳江",
+    "display": null,
+    "lat": 21.8581,
+    "lng": 111.9828,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "清远",
+    "display": null,
+    "lat": 23.6812,
+    "lng": 113.0624,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "东莞",
+    "display": null,
+    "lat": 23.0208,
+    "lng": 113.7521,
+    "pop": 700,
+    "radius": 28,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "中山",
+    "display": null,
+    "lat": 22.5203,
+    "lng": 113.3927,
+    "pop": 280,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "潮州",
+    "display": null,
+    "lat": 23.658,
+    "lng": 116.6187,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "揭阳",
+    "display": null,
+    "lat": 23.5499,
+    "lng": 116.3727,
+    "pop": 290,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "云浮",
+    "display": null,
+    "lat": 22.915,
+    "lng": 112.0447,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南宁",
+    "display": "南宁 Nanning",
+    "lat": 22.8181,
+    "lng": 108.3665,
+    "pop": 700,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "柳州",
+    "display": null,
+    "lat": 24.3263,
+    "lng": 109.415,
+    "pop": 250,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "桂林",
+    "display": null,
+    "lat": 25.2742,
+    "lng": 110.2951,
+    "pop": 260,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "梧州",
+    "display": null,
+    "lat": 23.4773,
+    "lng": 111.2787,
+    "pop": 200,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "北海",
+    "display": null,
+    "lat": 21.4819,
+    "lng": 109.1207,
+    "pop": 100,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "防城港",
+    "display": null,
+    "lat": 21.6868,
+    "lng": 108.3544,
+    "pop": 60,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "钦州",
+    "display": null,
+    "lat": 21.9818,
+    "lng": 108.6545,
+    "pop": 180,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "贵港",
+    "display": null,
+    "lat": 23.1119,
+    "lng": 109.599,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "玉林",
+    "display": null,
+    "lat": 22.6323,
+    "lng": 110.1561,
+    "pop": 320,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "百色",
+    "display": null,
+    "lat": 23.9026,
+    "lng": 106.619,
+    "pop": 210,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "贺州",
+    "display": null,
+    "lat": 24.4041,
+    "lng": 111.5671,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "河池",
+    "display": null,
+    "lat": 24.5456,
+    "lng": 108.0586,
+    "pop": 220,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "来宾",
+    "display": null,
+    "lat": 23.75,
+    "lng": 109.2319,
+    "pop": 130,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "崇左",
+    "display": null,
+    "lat": 22.3796,
+    "lng": 107.3653,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "海口",
+    "display": "海口 Haikou",
+    "lat": 20.044,
+    "lng": 110.3499,
+    "pop": 250,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "三亚",
+    "display": null,
+    "lat": 18.2528,
+    "lng": 109.512,
+    "pop": 100,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "三沙",
+    "display": null,
+    "lat": 16.8317,
+    "lng": 112.3431,
+    "pop": 2,
+    "radius": 5,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "儋州",
+    "display": null,
+    "lat": 19.5209,
+    "lng": 109.5808,
+    "pop": 60,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "重庆",
+    "display": "重庆 Chongqing",
+    "lat": 29.4316,
+    "lng": 106.9123,
+    "pop": 3000,
+    "radius": 50,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "成都",
+    "display": "成都 Chengdu",
+    "lat": 30.5728,
+    "lng": 104.0668,
+    "pop": 2000,
+    "radius": 45,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "自贡",
+    "display": null,
+    "lat": 29.3388,
+    "lng": 104.7784,
+    "pop": 200,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "攀枝花",
+    "display": null,
+    "lat": 26.5824,
+    "lng": 101.7188,
+    "pop": 110,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "泸州",
+    "display": null,
+    "lat": 28.8719,
+    "lng": 105.443,
+    "pop": 280,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "德阳",
+    "display": null,
+    "lat": 31.1276,
+    "lng": 104.3986,
+    "pop": 230,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "绵阳",
+    "display": null,
+    "lat": 31.468,
+    "lng": 104.68,
+    "pop": 320,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "广元",
+    "display": null,
+    "lat": 32.4337,
+    "lng": 105.8434,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "遂宁",
+    "display": null,
+    "lat": 30.509,
+    "lng": 105.5737,
+    "pop": 200,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "内江",
+    "display": null,
+    "lat": 29.5808,
+    "lng": 105.0585,
+    "pop": 190,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "乐山",
+    "display": null,
+    "lat": 29.5824,
+    "lng": 103.7614,
+    "pop": 210,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "南充",
+    "display": null,
+    "lat": 30.7815,
+    "lng": 106.11,
+    "pop": 320,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "眉山",
+    "display": null,
+    "lat": 30.0773,
+    "lng": 103.85,
+    "pop": 170,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宜宾",
+    "display": null,
+    "lat": 28.7696,
+    "lng": 104.628,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "广安",
+    "display": null,
+    "lat": 30.4566,
+    "lng": 106.6349,
+    "pop": 180,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "达州",
+    "display": null,
+    "lat": 31.2155,
+    "lng": 107.5024,
+    "pop": 270,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "雅安",
+    "display": null,
+    "lat": 29.9846,
+    "lng": 103.0146,
+    "pop": 90,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "巴中",
+    "display": null,
+    "lat": 31.8674,
+    "lng": 106.7444,
+    "pop": 130,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "资阳",
+    "display": null,
+    "lat": 30.128,
+    "lng": 104.64,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "贵阳",
+    "display": "贵阳 Guiyang",
+    "lat": 26.6474,
+    "lng": 106.6302,
+    "pop": 500,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "六盘水",
+    "display": null,
+    "lat": 26.5919,
+    "lng": 104.8256,
+    "pop": 160,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "遵义",
+    "display": null,
+    "lat": 27.7254,
+    "lng": 106.9271,
+    "pop": 310,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "安顺",
+    "display": null,
+    "lat": 26.253,
+    "lng": 105.9475,
+    "pop": 120,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "毕节",
+    "display": null,
+    "lat": 27.3,
+    "lng": 105.3,
+    "pop": 350,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "铜仁",
+    "display": null,
+    "lat": 27.721,
+    "lng": 109.1916,
+    "pop": 170,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "昆明",
+    "display": "昆明 Kunming",
+    "lat": 25.0389,
+    "lng": 102.7183,
+    "pop": 800,
+    "radius": 30,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "曲靖",
+    "display": null,
+    "lat": 25.4897,
+    "lng": 103.7954,
+    "pop": 300,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "玉溪",
+    "display": null,
+    "lat": 24.3515,
+    "lng": 102.5468,
+    "pop": 120,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "保山",
+    "display": null,
+    "lat": 25.1133,
+    "lng": 99.161,
+    "pop": 150,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "昭通",
+    "display": null,
+    "lat": 27.3382,
+    "lng": 103.7175,
+    "pop": 260,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "丽江",
+    "display": null,
+    "lat": 26.8711,
+    "lng": 100.2299,
+    "pop": 70,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "普洱",
+    "display": null,
+    "lat": 22.826,
+    "lng": 100.978,
+    "pop": 130,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "临沧",
+    "display": null,
+    "lat": 23.8869,
+    "lng": 100.08,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "拉萨",
+    "display": "拉萨 Lhasa",
+    "lat": 29.65,
+    "lng": 91.1,
+    "pop": 150,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "日喀则",
+    "display": null,
+    "lat": 29.2686,
+    "lng": 88.8834,
+    "pop": 45,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "西安",
+    "display": "西安 Xi\\'an",
+    "lat": 34.3416,
+    "lng": 108.9398,
+    "pop": 1200,
+    "radius": 40,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "铜川",
+    "display": null,
+    "lat": 34.9067,
+    "lng": 108.9448,
+    "pop": 50,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "宝鸡",
+    "display": null,
+    "lat": 34.3631,
+    "lng": 107.1448,
+    "pop": 200,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "咸阳",
+    "display": null,
+    "lat": 34.3294,
+    "lng": 108.7075,
+    "pop": 300,
+    "radius": 18,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "渭南",
+    "display": null,
+    "lat": 34.5026,
+    "lng": 109.5098,
+    "pop": 270,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "延安",
+    "display": null,
+    "lat": 36.5952,
+    "lng": 109.4909,
+    "pop": 130,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "汉中",
+    "display": null,
+    "lat": 33.0677,
+    "lng": 107.0214,
+    "pop": 190,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "榆林",
+    "display": null,
+    "lat": 38.2906,
+    "lng": 109.7342,
+    "pop": 200,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "安康",
+    "display": null,
+    "lat": 32.6858,
+    "lng": 109.0228,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "商洛",
+    "display": null,
+    "lat": 33.87,
+    "lng": 109.941,
+    "pop": 110,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "兰州",
+    "display": "兰州 Lanzhou",
+    "lat": 36.0611,
+    "lng": 103.8343,
+    "pop": 450,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "嘉峪关",
+    "display": null,
+    "lat": 39.773,
+    "lng": 98.2893,
+    "pop": 25,
+    "radius": 6,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "金昌",
+    "display": null,
+    "lat": 38.52,
+    "lng": 102.1745,
+    "pop": 35,
+    "radius": 6,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "白银",
+    "display": null,
+    "lat": 36.5451,
+    "lng": 104.1395,
+    "pop": 100,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "天水",
+    "display": null,
+    "lat": 34.576,
+    "lng": 105.7262,
+    "pop": 180,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "武威",
+    "display": null,
+    "lat": 37.9293,
+    "lng": 102.6382,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "张掖",
+    "display": null,
+    "lat": 38.933,
+    "lng": 100.4486,
+    "pop": 70,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "平凉",
+    "display": null,
+    "lat": 35.5434,
+    "lng": 106.6854,
+    "pop": 120,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "酒泉",
+    "display": null,
+    "lat": 39.744,
+    "lng": 98.5155,
+    "pop": 70,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "庆阳",
+    "display": null,
+    "lat": 35.735,
+    "lng": 107.64,
+    "pop": 140,
+    "radius": 12,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "定西",
+    "display": null,
+    "lat": 35.5802,
+    "lng": 104.6259,
+    "pop": 130,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "陇南",
+    "display": null,
+    "lat": 33.388,
+    "lng": 104.921,
+    "pop": 130,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "西宁",
+    "display": "西宁 Xining",
+    "lat": 36.6171,
+    "lng": 101.7782,
+    "pop": 350,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "海东",
+    "display": null,
+    "lat": 36.5016,
+    "lng": 102.1034,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "银川",
+    "display": "银川 Yinchuan",
+    "lat": 38.4872,
+    "lng": 106.2309,
+    "pop": 300,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "石嘴山",
+    "display": null,
+    "lat": 39.0195,
+    "lng": 106.3839,
+    "pop": 50,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "吴忠",
+    "display": null,
+    "lat": 37.9977,
+    "lng": 106.1989,
+    "pop": 80,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "固原",
+    "display": null,
+    "lat": 36.0046,
+    "lng": 106.2852,
+    "pop": 60,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "中卫",
+    "display": null,
+    "lat": 37.5141,
+    "lng": 105.1931,
+    "pop": 60,
+    "radius": 8,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "乌鲁木齐",
+    "display": "乌鲁木齐 Urumqi",
+    "lat": 43.8256,
+    "lng": 87.6168,
+    "pop": 400,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "克拉玛依",
+    "display": null,
+    "lat": 45.58,
+    "lng": 84.8833,
+    "pop": 25,
+    "radius": 6,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "吐鲁番",
+    "display": null,
+    "lat": 42.9513,
+    "lng": 89.189,
+    "pop": 30,
+    "radius": 6,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "哈密",
+    "display": null,
+    "lat": 42.82,
+    "lng": 93.514,
+    "pop": 30,
+    "radius": 6,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "台北",
+    "display": "台北 Taipei",
+    "lat": 25.033,
+    "lng": 121.5654,
+    "pop": 900,
+    "radius": 35,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "高雄",
+    "display": "高雄 Kaohsiung",
+    "lat": 22.6273,
+    "lng": 120.3014,
+    "pop": 250,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "台中",
+    "display": null,
+    "lat": 24.1477,
+    "lng": 120.6736,
+    "pop": 270,
+    "radius": 20,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "台南",
+    "display": null,
+    "lat": 22.9997,
+    "lng": 120.227,
+    "pop": 150,
+    "radius": 15,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "香港",
+    "display": "香港 Hong Kong",
+    "lat": 22.3193,
+    "lng": 114.1694,
+    "pop": 750,
+    "radius": 25,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "澳门",
+    "display": "澳门 Macau",
+    "lat": 22.1987,
+    "lng": 113.5439,
+    "pop": 70,
+    "radius": 10,
+    "group": "🇨🇳 中国"
+  },
+  {
+    "name": "东京",
+    "display": "东京 Tokyo",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "pop": 3740,
+    "radius": 55,
+    "group": "东亚"
+  },
+  {
+    "name": "大阪",
+    "display": null,
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "pop": 1920,
+    "radius": 40,
+    "group": "东亚"
+  },
+  {
+    "name": "横滨",
+    "display": null,
+    "lat": 35.4437,
+    "lng": 139.638,
+    "pop": 920,
+    "radius": 30,
+    "group": "东亚"
+  },
+  {
+    "name": "名古屋",
+    "display": null,
+    "lat": 35.1815,
+    "lng": 136.9066,
+    "pop": 580,
+    "radius": 25,
+    "group": "东亚"
+  },
+  {
+    "name": "札幌",
+    "display": null,
+    "lat": 43.0621,
+    "lng": 141.3544,
+    "pop": 260,
+    "radius": 20,
+    "group": "东亚"
+  },
+  {
+    "name": "福冈",
+    "display": null,
+    "lat": 33.5902,
+    "lng": 130.4017,
+    "pop": 260,
+    "radius": 18,
+    "group": "东亚"
+  },
+  {
+    "name": "京都",
+    "display": null,
+    "lat": 35.0116,
+    "lng": 135.7681,
+    "pop": 220,
+    "radius": 15,
+    "group": "东亚"
+  },
+  {
+    "name": "神户",
+    "display": null,
+    "lat": 34.6901,
+    "lng": 135.1956,
+    "pop": 230,
+    "radius": 15,
+    "group": "东亚"
+  },
+  {
+    "name": "首尔",
+    "display": "首尔 Seoul",
+    "lat": 37.5665,
+    "lng": 126.978,
+    "pop": 2570,
+    "radius": 40,
+    "group": "东亚"
+  },
+  {
+    "name": "釜山",
+    "display": null,
+    "lat": 35.1796,
+    "lng": 129.0756,
+    "pop": 770,
+    "radius": 30,
+    "group": "东亚"
+  },
+  {
+    "name": "仁川",
+    "display": null,
+    "lat": 37.4563,
+    "lng": 126.7052,
+    "pop": 520,
+    "radius": 22,
+    "group": "东亚"
+  },
+  {
+    "name": "大邱",
+    "display": null,
+    "lat": 35.8714,
+    "lng": 128.6014,
+    "pop": 430,
+    "radius": 20,
+    "group": "东亚"
+  },
+  {
+    "name": "大田",
+    "display": null,
+    "lat": 36.3504,
+    "lng": 127.3845,
+    "pop": 230,
+    "radius": 15,
+    "group": "东亚"
+  },
+  {
+    "name": "平壤",
+    "display": null,
+    "lat": 39.0392,
+    "lng": 125.7625,
+    "pop": 310,
+    "radius": 20,
+    "group": "东亚"
+  },
+  {
+    "name": "乌兰巴托",
+    "display": null,
+    "lat": 47.8864,
+    "lng": 106.9057,
+    "pop": 150,
+    "radius": 15,
+    "group": "东亚"
+  },
+  {
+    "name": "曼谷",
+    "display": "曼谷 Bangkok",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "pop": 1550,
+    "radius": 40,
+    "group": "东南亚"
+  },
+  {
+    "name": "新加坡",
+    "display": "新加坡 Singapore",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "pop": 600,
+    "radius": 25,
+    "group": "东南亚"
+  },
+  {
+    "name": "雅加达",
+    "display": null,
+    "lat": -6.2088,
+    "lng": 106.8456,
+    "pop": 3400,
+    "radius": 50,
+    "group": "东南亚"
+  },
+  {
+    "name": "马尼拉",
+    "display": null,
+    "lat": 14.5995,
+    "lng": 120.9842,
+    "pop": 2400,
+    "radius": 45,
+    "group": "东南亚"
+  },
+  {
+    "name": "河内",
+    "display": null,
+    "lat": 21.0278,
+    "lng": 105.8342,
+    "pop": 550,
+    "radius": 25,
+    "group": "东南亚"
+  },
+  {
+    "name": "胡志明市",
+    "display": null,
+    "lat": 10.8231,
+    "lng": 106.6297,
+    "pop": 1350,
+    "radius": 35,
+    "group": "东南亚"
+  },
+  {
+    "name": "吉隆坡",
+    "display": null,
+    "lat": 3.139,
+    "lng": 101.6869,
+    "pop": 850,
+    "radius": 30,
+    "group": "东南亚"
+  },
+  {
+    "name": "仰光",
+    "display": null,
+    "lat": 16.8661,
+    "lng": 96.1951,
+    "pop": 520,
+    "radius": 22,
+    "group": "东南亚"
+  },
+  {
+    "name": "金边",
+    "display": null,
+    "lat": 11.5564,
+    "lng": 104.9282,
+    "pop": 200,
+    "radius": 15,
+    "group": "东南亚"
+  },
+  {
+    "name": "万象",
+    "display": null,
+    "lat": 17.9757,
+    "lng": 102.6331,
+    "pop": 80,
+    "radius": 10,
+    "group": "东南亚"
+  },
+  {
+    "name": "内比都",
+    "display": null,
+    "lat": 19.7633,
+    "lng": 96.0785,
+    "pop": 50,
+    "radius": 10,
+    "group": "东南亚"
+  },
+  {
+    "name": "斯里巴加湾",
+    "display": null,
+    "lat": 4.9031,
+    "lng": 114.9398,
+    "pop": 30,
+    "radius": 8,
+    "group": "东南亚"
+  },
+  {
+    "name": "帝力",
+    "display": null,
+    "lat": -8.5569,
+    "lng": 125.5603,
+    "pop": 20,
+    "radius": 6,
+    "group": "东南亚"
+  },
+  {
+    "name": "新德里",
+    "display": "新德里 New Delhi",
+    "lat": 28.6139,
+    "lng": 77.209,
+    "pop": 3200,
+    "radius": 50,
+    "group": "南亚"
+  },
+  {
+    "name": "孟买",
+    "display": null,
+    "lat": 19.076,
+    "lng": 72.8777,
+    "pop": 2100,
+    "radius": 45,
+    "group": "南亚"
+  },
+  {
+    "name": "班加罗尔",
+    "display": null,
+    "lat": 12.9716,
+    "lng": 77.5946,
+    "pop": 1050,
+    "radius": 35,
+    "group": "南亚"
+  },
+  {
+    "name": "海德拉巴",
+    "display": null,
+    "lat": 17.385,
+    "lng": 78.4867,
+    "pop": 770,
+    "radius": 30,
+    "group": "南亚"
+  },
+  {
+    "name": "艾哈迈达巴德",
+    "display": null,
+    "lat": 23.0225,
+    "lng": 72.5714,
+    "pop": 500,
+    "radius": 22,
+    "group": "南亚"
+  },
+  {
+    "name": "金奈",
+    "display": null,
+    "lat": 13.0827,
+    "lng": 80.2707,
+    "pop": 650,
+    "radius": 25,
+    "group": "南亚"
+  },
+  {
+    "name": "加尔各答",
+    "display": null,
+    "lat": 22.5726,
+    "lng": 88.3639,
+    "pop": 1100,
+    "radius": 35,
+    "group": "南亚"
+  },
+  {
+    "name": "浦那",
+    "display": null,
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "pop": 450,
+    "radius": 22,
+    "group": "南亚"
+  },
+  {
+    "name": "斋浦尔",
+    "display": null,
+    "lat": 26.9124,
+    "lng": 75.7873,
+    "pop": 250,
+    "radius": 15,
+    "group": "南亚"
+  },
+  {
+    "name": "勒克瑙",
+    "display": null,
+    "lat": 26.8467,
+    "lng": 80.9462,
+    "pop": 350,
+    "radius": 18,
+    "group": "南亚"
+  },
+  {
+    "name": "卡拉奇",
+    "display": null,
+    "lat": 24.8607,
+    "lng": 67.0011,
+    "pop": 1600,
+    "radius": 40,
+    "group": "南亚"
+  },
+  {
+    "name": "拉合尔",
+    "display": null,
+    "lat": 31.5204,
+    "lng": 74.3587,
+    "pop": 550,
+    "radius": 25,
+    "group": "南亚"
+  },
+  {
+    "name": "伊斯兰堡",
+    "display": null,
+    "lat": 33.6844,
+    "lng": 73.0479,
+    "pop": 110,
+    "radius": 15,
+    "group": "南亚"
+  },
+  {
+    "name": "达卡",
+    "display": null,
+    "lat": 23.8103,
+    "lng": 90.4125,
+    "pop": 2200,
+    "radius": 40,
+    "group": "南亚"
+  },
+  {
+    "name": "吉大港",
+    "display": null,
+    "lat": 22.3569,
+    "lng": 91.7832,
+    "pop": 300,
+    "radius": 18,
+    "group": "南亚"
+  },
+  {
+    "name": "科伦坡",
+    "display": null,
+    "lat": 6.9271,
+    "lng": 79.8612,
+    "pop": 250,
+    "radius": 15,
+    "group": "南亚"
+  },
+  {
+    "name": "加德满都",
+    "display": null,
+    "lat": 27.7172,
+    "lng": 85.324,
+    "pop": 150,
+    "radius": 12,
+    "group": "南亚"
+  },
+  {
+    "name": "达卡",
+    "display": null,
+    "lat": 27.4712,
+    "lng": 89.6339,
+    "pop": 80,
+    "radius": 10,
+    "group": "南亚"
+  },
+  {
+    "name": "迪拜",
+    "display": null,
+    "lat": 25.2048,
+    "lng": 55.2708,
+    "pop": 360,
+    "radius": 25,
+    "group": "中东"
+  },
+  {
+    "name": "阿布扎比",
+    "display": null,
+    "lat": 24.4539,
+    "lng": 54.3773,
+    "pop": 250,
+    "radius": 20,
+    "group": "中东"
+  },
+  {
+    "name": "利雅得",
+    "display": null,
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "pop": 750,
+    "radius": 30,
+    "group": "中东"
+  },
+  {
+    "name": "吉达",
+    "display": null,
+    "lat": 21.4858,
+    "lng": 39.1925,
+    "pop": 460,
+    "radius": 22,
+    "group": "中东"
+  },
+  {
+    "name": "麦加",
+    "display": null,
+    "lat": 21.3891,
+    "lng": 39.8579,
+    "pop": 200,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "德黑兰",
+    "display": null,
+    "lat": 35.6892,
+    "lng": 51.389,
+    "pop": 1470,
+    "radius": 40,
+    "group": "中东"
+  },
+  {
+    "name": "伊斯法罕",
+    "display": null,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "pop": 300,
+    "radius": 18,
+    "group": "中东"
+  },
+  {
+    "name": "马什哈德",
+    "display": null,
+    "lat": 36.2605,
+    "lng": 59.6168,
+    "pop": 350,
+    "radius": 20,
+    "group": "中东"
+  },
+  {
+    "name": "巴格达",
+    "display": null,
+    "lat": 33.3152,
+    "lng": 44.3661,
+    "pop": 900,
+    "radius": 30,
+    "group": "中东"
+  },
+  {
+    "name": "巴士拉",
+    "display": null,
+    "lat": 30.5081,
+    "lng": 47.7838,
+    "pop": 260,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "伊斯坦布尔",
+    "display": null,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "pop": 1560,
+    "radius": 40,
+    "group": "中东"
+  },
+  {
+    "name": "安卡拉",
+    "display": null,
+    "lat": 39.9334,
+    "lng": 32.8597,
+    "pop": 580,
+    "radius": 25,
+    "group": "中东"
+  },
+  {
+    "name": "特拉维夫",
+    "display": null,
+    "lat": 32.0853,
+    "lng": 34.7818,
+    "pop": 420,
+    "radius": 20,
+    "group": "中东"
+  },
+  {
+    "name": "耶路撒冷",
+    "display": null,
+    "lat": 31.7683,
+    "lng": 35.2137,
+    "pop": 130,
+    "radius": 12,
+    "group": "中东"
+  },
+  {
+    "name": "大马士革",
+    "display": null,
+    "lat": 33.5138,
+    "lng": 36.2765,
+    "pop": 250,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "贝鲁特",
+    "display": null,
+    "lat": 33.8938,
+    "lng": 35.5018,
+    "pop": 200,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "安曼",
+    "display": null,
+    "lat": 31.9454,
+    "lng": 35.9284,
+    "pop": 250,
+    "radius": 18,
+    "group": "中东"
+  },
+  {
+    "name": "科威特城",
+    "display": null,
+    "lat": 29.3759,
+    "lng": 47.9774,
+    "pop": 200,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "多哈",
+    "display": null,
+    "lat": 25.2854,
+    "lng": 51.531,
+    "pop": 100,
+    "radius": 12,
+    "group": "中东"
+  },
+  {
+    "name": "马斯喀特",
+    "display": null,
+    "lat": 23.588,
+    "lng": 58.3829,
+    "pop": 150,
+    "radius": 15,
+    "group": "中东"
+  },
+  {
+    "name": "伦敦",
+    "display": "伦敦 London",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "pop": 1425,
+    "radius": 45,
+    "group": "西欧"
+  },
+  {
+    "name": "巴黎",
+    "display": "巴黎 Paris",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "pop": 1240,
+    "radius": 40,
+    "group": "西欧"
+  },
+  {
+    "name": "柏林",
+    "display": null,
+    "lat": 52.52,
+    "lng": 13.405,
+    "pop": 550,
+    "radius": 30,
+    "group": "西欧"
+  },
+  {
+    "name": "罗马",
+    "display": null,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "pop": 430,
+    "radius": 25,
+    "group": "西欧"
+  },
+  {
+    "name": "马德里",
+    "display": null,
+    "lat": 40.4168,
+    "lng": -3.7038,
+    "pop": 670,
+    "radius": 30,
+    "group": "西欧"
+  },
+  {
+    "name": "里斯本",
+    "display": null,
+    "lat": 38.7223,
+    "lng": -9.1393,
+    "pop": 300,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "维也纳",
+    "display": null,
+    "lat": 48.2082,
+    "lng": 16.3738,
+    "pop": 270,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "阿姆斯特丹",
+    "display": null,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "pop": 330,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "布鲁塞尔",
+    "display": null,
+    "lat": 50.8503,
+    "lng": 4.3517,
+    "pop": 270,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "都柏林",
+    "display": null,
+    "lat": 53.3498,
+    "lng": -6.2603,
+    "pop": 210,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "慕尼黑",
+    "display": null,
+    "lat": 48.1351,
+    "lng": 11.582,
+    "pop": 310,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "汉堡",
+    "display": null,
+    "lat": 53.5511,
+    "lng": 9.9937,
+    "pop": 280,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "巴塞罗那",
+    "display": null,
+    "lat": 41.3874,
+    "lng": 2.1686,
+    "pop": 550,
+    "radius": 25,
+    "group": "西欧"
+  },
+  {
+    "name": "米兰",
+    "display": null,
+    "lat": 45.4642,
+    "lng": 9.19,
+    "pop": 500,
+    "radius": 25,
+    "group": "西欧"
+  },
+  {
+    "name": "那不勒斯",
+    "display": null,
+    "lat": 40.8518,
+    "lng": 14.2681,
+    "pop": 350,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "都灵",
+    "display": null,
+    "lat": 45.0703,
+    "lng": 7.6869,
+    "pop": 170,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "伯明翰",
+    "display": null,
+    "lat": 52.4862,
+    "lng": -1.8904,
+    "pop": 350,
+    "radius": 20,
+    "group": "西欧"
+  },
+  {
+    "name": "曼彻斯特",
+    "display": null,
+    "lat": 53.4808,
+    "lng": -2.2426,
+    "pop": 300,
+    "radius": 18,
+    "group": "西欧"
+  },
+  {
+    "name": "利物浦",
+    "display": null,
+    "lat": 53.4084,
+    "lng": -2.9916,
+    "pop": 150,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "爱丁堡",
+    "display": null,
+    "lat": 55.9533,
+    "lng": -3.1883,
+    "pop": 100,
+    "radius": 12,
+    "group": "西欧"
+  },
+  {
+    "name": "苏黎世",
+    "display": null,
+    "lat": 47.3769,
+    "lng": 8.5417,
+    "pop": 190,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "日内瓦",
+    "display": null,
+    "lat": 46.2044,
+    "lng": 6.1432,
+    "pop": 120,
+    "radius": 12,
+    "group": "西欧"
+  },
+  {
+    "name": "格拉斯哥",
+    "display": null,
+    "lat": 55.8642,
+    "lng": -4.2518,
+    "pop": 160,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "马赛",
+    "display": null,
+    "lat": 43.2965,
+    "lng": 5.3698,
+    "pop": 200,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "里昂",
+    "display": null,
+    "lat": 45.764,
+    "lng": 4.8357,
+    "pop": 180,
+    "radius": 15,
+    "group": "西欧"
+  },
+  {
+    "name": "法兰克福",
+    "display": null,
+    "lat": 50.1109,
+    "lng": 8.6821,
+    "pop": 250,
+    "radius": 18,
+    "group": "西欧"
+  },
+  {
+    "name": "斯图加特",
+    "display": null,
+    "lat": 48.7758,
+    "lng": 9.1829,
+    "pop": 130,
+    "radius": 12,
+    "group": "西欧"
+  },
+  {
+    "name": "杜塞尔多夫",
+    "display": null,
+    "lat": 51.2277,
+    "lng": 6.7735,
+    "pop": 150,
+    "radius": 12,
+    "group": "西欧"
+  },
+  {
+    "name": "科隆",
+    "display": null,
+    "lat": 50.9375,
+    "lng": 6.9603,
+    "pop": 120,
+    "radius": 12,
+    "group": "西欧"
+  },
+  {
+    "name": "卢森堡",
+    "display": null,
+    "lat": 49.6117,
+    "lng": 6.13,
+    "pop": 60,
+    "radius": 10,
+    "group": "西欧"
+  },
+  {
+    "name": "斯德哥尔摩",
+    "display": null,
+    "lat": 59.3293,
+    "lng": 18.0686,
+    "pop": 240,
+    "radius": 20,
+    "group": "北欧"
+  },
+  {
+    "name": "哥本哈根",
+    "display": null,
+    "lat": 55.6761,
+    "lng": 12.5683,
+    "pop": 200,
+    "radius": 20,
+    "group": "北欧"
+  },
+  {
+    "name": "赫尔辛基",
+    "display": null,
+    "lat": 60.1699,
+    "lng": 24.9384,
+    "pop": 160,
+    "radius": 15,
+    "group": "北欧"
+  },
+  {
+    "name": "奥斯陆",
+    "display": null,
+    "lat": 59.9139,
+    "lng": 10.7522,
+    "pop": 150,
+    "radius": 15,
+    "group": "北欧"
+  },
+  {
+    "name": "雷克雅未克",
+    "display": null,
+    "lat": 64.1466,
+    "lng": -21.9426,
+    "pop": 25,
+    "radius": 6,
+    "group": "北欧"
+  },
+  {
+    "name": "哥德堡",
+    "display": null,
+    "lat": 57.7089,
+    "lng": 11.9746,
+    "pop": 100,
+    "radius": 12,
+    "group": "北欧"
+  },
+  {
+    "name": "卑尔根",
+    "display": null,
+    "lat": 60.3913,
+    "lng": 5.3221,
+    "pop": 50,
+    "radius": 8,
+    "group": "北欧"
+  },
+  {
+    "name": "莫斯科",
+    "display": "莫斯科 Moscow",
+    "lat": 55.7558,
+    "lng": 37.6173,
+    "pop": 1710,
+    "radius": 40,
+    "group": "东欧"
+  },
+  {
+    "name": "圣彼得堡",
+    "display": null,
+    "lat": 59.9343,
+    "lng": 30.3351,
+    "pop": 540,
+    "radius": 25,
+    "group": "东欧"
+  },
+  {
+    "name": "新西伯利亚",
+    "display": null,
+    "lat": 55.0084,
+    "lng": 82.9357,
+    "pop": 160,
+    "radius": 15,
+    "group": "东欧"
+  },
+  {
+    "name": "叶卡捷琳堡",
+    "display": null,
+    "lat": 56.8389,
+    "lng": 60.6057,
+    "pop": 150,
+    "radius": 15,
+    "group": "东欧"
+  },
+  {
+    "name": "下诺夫哥罗德",
+    "display": null,
+    "lat": 56.2965,
+    "lng": 43.9361,
+    "pop": 130,
+    "radius": 12,
+    "group": "东欧"
+  },
+  {
+    "name": "喀山",
+    "display": null,
+    "lat": 55.7961,
+    "lng": 49.1064,
+    "pop": 130,
+    "radius": 12,
+    "group": "东欧"
+  },
+  {
+    "name": "车里雅宾斯克",
+    "display": null,
+    "lat": 55.16,
+    "lng": 61.4028,
+    "pop": 120,
+    "radius": 12,
+    "group": "东欧"
+  },
+  {
+    "name": "华沙",
+    "display": null,
+    "lat": 52.2297,
+    "lng": 21.0122,
+    "pop": 310,
+    "radius": 20,
+    "group": "东欧"
+  },
+  {
+    "name": "克拉科夫",
+    "display": null,
+    "lat": 50.0647,
+    "lng": 19.945,
+    "pop": 120,
+    "radius": 12,
+    "group": "东欧"
+  },
+  {
+    "name": "布拉格",
+    "display": null,
+    "lat": 50.0755,
+    "lng": 14.4378,
+    "pop": 270,
+    "radius": 20,
+    "group": "东欧"
+  },
+  {
+    "name": "布达佩斯",
+    "display": null,
+    "lat": 47.4979,
+    "lng": 19.0402,
+    "pop": 300,
+    "radius": 20,
+    "group": "东欧"
+  },
+  {
+    "name": "雅典",
+    "display": null,
+    "lat": 37.9838,
+    "lng": 23.7275,
+    "pop": 380,
+    "radius": 25,
+    "group": "东欧"
+  },
+  {
+    "name": "布加勒斯特",
+    "display": null,
+    "lat": 44.4268,
+    "lng": 26.1025,
+    "pop": 250,
+    "radius": 20,
+    "group": "东欧"
+  },
+  {
+    "name": "基辅",
+    "display": null,
+    "lat": 50.4501,
+    "lng": 30.5234,
+    "pop": 450,
+    "radius": 25,
+    "group": "东欧"
+  },
+  {
+    "name": "哈尔科夫",
+    "display": null,
+    "lat": 49.9935,
+    "lng": 36.2304,
+    "pop": 200,
+    "radius": 15,
+    "group": "东欧"
+  },
+  {
+    "name": "明斯克",
+    "display": null,
+    "lat": 53.9045,
+    "lng": 27.5615,
+    "pop": 300,
+    "radius": 20,
+    "group": "东欧"
+  },
+  {
+    "name": "贝尔格莱德",
+    "display": null,
+    "lat": 44.7866,
+    "lng": 20.4489,
+    "pop": 200,
+    "radius": 15,
+    "group": "东欧"
+  },
+  {
+    "name": "索菲亚",
+    "display": null,
+    "lat": 42.6977,
+    "lng": 23.3219,
+    "pop": 150,
+    "radius": 15,
+    "group": "东欧"
+  },
+  {
+    "name": "维尔纽斯",
+    "display": null,
+    "lat": 54.6872,
+    "lng": 25.2797,
+    "pop": 70,
+    "radius": 10,
+    "group": "东欧"
+  },
+  {
+    "name": "里加",
+    "display": null,
+    "lat": 56.9496,
+    "lng": 24.1052,
+    "pop": 80,
+    "radius": 10,
+    "group": "东欧"
+  },
+  {
+    "name": "塔林",
+    "display": null,
+    "lat": 59.437,
+    "lng": 24.7536,
+    "pop": 60,
+    "radius": 10,
+    "group": "东欧"
+  },
+  {
+    "name": "萨格勒布",
+    "display": null,
+    "lat": 45.8131,
+    "lng": 15.9773,
+    "pop": 110,
+    "radius": 12,
+    "group": "东欧"
+  },
+  {
+    "name": "开罗",
+    "display": "开罗 Cairo",
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "pop": 2130,
+    "radius": 35,
+    "group": "非洲"
+  },
+  {
+    "name": "亚历山大",
+    "display": null,
+    "lat": 31.2001,
+    "lng": 29.9187,
+    "pop": 550,
+    "radius": 25,
+    "group": "非洲"
+  },
+  {
+    "name": "拉各斯",
+    "display": null,
+    "lat": 6.5244,
+    "lng": 3.3792,
+    "pop": 2100,
+    "radius": 40,
+    "group": "非洲"
+  },
+  {
+    "name": "阿布贾",
+    "display": null,
+    "lat": 9.0579,
+    "lng": 7.4951,
+    "pop": 150,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "内罗毕",
+    "display": null,
+    "lat": -1.2921,
+    "lng": 36.8219,
+    "pop": 650,
+    "radius": 30,
+    "group": "非洲"
+  },
+  {
+    "name": "约翰内斯堡",
+    "display": null,
+    "lat": -26.2041,
+    "lng": 28.0473,
+    "pop": 1000,
+    "radius": 35,
+    "group": "非洲"
+  },
+  {
+    "name": "开普敦",
+    "display": null,
+    "lat": -33.9249,
+    "lng": 18.4241,
+    "pop": 450,
+    "radius": 22,
+    "group": "非洲"
+  },
+  {
+    "name": "比勒陀利亚",
+    "display": null,
+    "lat": -25.7479,
+    "lng": 28.2293,
+    "pop": 250,
+    "radius": 18,
+    "group": "非洲"
+  },
+  {
+    "name": "卡萨布兰卡",
+    "display": null,
+    "lat": 33.5731,
+    "lng": -7.5898,
+    "pop": 560,
+    "radius": 25,
+    "group": "非洲"
+  },
+  {
+    "name": "拉巴特",
+    "display": null,
+    "lat": 34.0209,
+    "lng": -6.8416,
+    "pop": 170,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "阿尔及尔",
+    "display": null,
+    "lat": 36.7538,
+    "lng": 3.0588,
+    "pop": 350,
+    "radius": 20,
+    "group": "非洲"
+  },
+  {
+    "name": "突尼斯",
+    "display": null,
+    "lat": 36.8065,
+    "lng": 10.1815,
+    "pop": 200,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "的黎波里",
+    "display": null,
+    "lat": 32.8872,
+    "lng": 13.1913,
+    "pop": 180,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "亚的斯亚贝巴",
+    "display": null,
+    "lat": 9.032,
+    "lng": 38.7469,
+    "pop": 500,
+    "radius": 25,
+    "group": "非洲"
+  },
+  {
+    "name": "金沙萨",
+    "display": null,
+    "lat": -4.4419,
+    "lng": 15.2663,
+    "pop": 1500,
+    "radius": 35,
+    "group": "非洲"
+  },
+  {
+    "name": "达累斯萨拉姆",
+    "display": null,
+    "lat": -6.7924,
+    "lng": 39.2083,
+    "pop": 600,
+    "radius": 25,
+    "group": "非洲"
+  },
+  {
+    "name": "阿克拉",
+    "display": null,
+    "lat": 5.6037,
+    "lng": -0.187,
+    "pop": 250,
+    "radius": 18,
+    "group": "非洲"
+  },
+  {
+    "name": "达喀尔",
+    "display": null,
+    "lat": 14.7167,
+    "lng": -17.4677,
+    "pop": 350,
+    "radius": 20,
+    "group": "非洲"
+  },
+  {
+    "name": "巴马科",
+    "display": null,
+    "lat": 12.6392,
+    "lng": -8.0029,
+    "pop": 200,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "坎帕拉",
+    "display": null,
+    "lat": 0.3476,
+    "lng": 32.5825,
+    "pop": 300,
+    "radius": 18,
+    "group": "非洲"
+  },
+  {
+    "name": "哈拉雷",
+    "display": null,
+    "lat": -17.8252,
+    "lng": 31.0335,
+    "pop": 200,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "罗安达",
+    "display": null,
+    "lat": -8.839,
+    "lng": 13.2894,
+    "pop": 800,
+    "radius": 30,
+    "group": "非洲"
+  },
+  {
+    "name": "摩加迪沙",
+    "display": null,
+    "lat": 2.0469,
+    "lng": 45.3182,
+    "pop": 250,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "哈博罗内",
+    "display": null,
+    "lat": -24.6282,
+    "lng": 25.9231,
+    "pop": 50,
+    "radius": 10,
+    "group": "非洲"
+  },
+  {
+    "name": "阿比让",
+    "display": null,
+    "lat": 5.36,
+    "lng": -4.0083,
+    "pop": 500,
+    "radius": 22,
+    "group": "非洲"
+  },
+  {
+    "name": "基加利",
+    "display": null,
+    "lat": -1.9441,
+    "lng": 30.0619,
+    "pop": 120,
+    "radius": 12,
+    "group": "非洲"
+  },
+  {
+    "name": "卢本巴希",
+    "display": null,
+    "lat": -11.6647,
+    "lng": 27.4795,
+    "pop": 200,
+    "radius": 15,
+    "group": "非洲"
+  },
+  {
+    "name": "马拉喀什",
+    "display": null,
+    "lat": 31.6295,
+    "lng": -7.9811,
+    "pop": 120,
+    "radius": 12,
+    "group": "非洲"
+  },
+  {
+    "name": "纽约",
+    "display": "纽约 New York",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "pop": 1950,
+    "radius": 50,
+    "group": "北美"
+  },
+  {
+    "name": "华盛顿",
+    "display": "华盛顿 Washington DC",
+    "lat": 38.9072,
+    "lng": -77.0369,
+    "pop": 635,
+    "radius": 40,
+    "group": "北美"
+  },
+  {
+    "name": "洛杉矶",
+    "display": null,
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "pop": 1300,
+    "radius": 45,
+    "group": "北美"
+  },
+  {
+    "name": "芝加哥",
+    "display": null,
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "pop": 950,
+    "radius": 40,
+    "group": "北美"
+  },
+  {
+    "name": "旧金山",
+    "display": null,
+    "lat": 37.7749,
+    "lng": -122.4194,
+    "pop": 775,
+    "radius": 35,
+    "group": "北美"
+  },
+  {
+    "name": "休斯顿",
+    "display": null,
+    "lat": 29.7604,
+    "lng": -95.3698,
+    "pop": 700,
+    "radius": 35,
+    "group": "北美"
+  },
+  {
+    "name": "西雅图",
+    "display": null,
+    "lat": 47.6062,
+    "lng": -122.3321,
+    "pop": 400,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "波士顿",
+    "display": null,
+    "lat": 42.3601,
+    "lng": -71.0589,
+    "pop": 480,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "圣地亚哥",
+    "display": null,
+    "lat": 32.7157,
+    "lng": -117.1611,
+    "pop": 330,
+    "radius": 20,
+    "group": "北美"
+  },
+  {
+    "name": "达拉斯",
+    "display": null,
+    "lat": 32.7767,
+    "lng": -96.797,
+    "pop": 750,
+    "radius": 30,
+    "group": "北美"
+  },
+  {
+    "name": "费城",
+    "display": null,
+    "lat": 39.9526,
+    "lng": -75.1652,
+    "pop": 620,
+    "radius": 28,
+    "group": "北美"
+  },
+  {
+    "name": "亚特兰大",
+    "display": null,
+    "lat": 33.749,
+    "lng": -84.388,
+    "pop": 600,
+    "radius": 28,
+    "group": "北美"
+  },
+  {
+    "name": "迈阿密",
+    "display": null,
+    "lat": 25.7617,
+    "lng": -80.1918,
+    "pop": 620,
+    "radius": 28,
+    "group": "北美"
+  },
+  {
+    "name": "凤凰城",
+    "display": null,
+    "lat": 33.4484,
+    "lng": -112.074,
+    "pop": 490,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "丹佛",
+    "display": null,
+    "lat": 39.7392,
+    "lng": -104.9903,
+    "pop": 290,
+    "radius": 20,
+    "group": "北美"
+  },
+  {
+    "name": "底特律",
+    "display": null,
+    "lat": 42.3314,
+    "lng": -83.0458,
+    "pop": 430,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "明尼阿波利斯",
+    "display": null,
+    "lat": 44.9778,
+    "lng": -93.265,
+    "pop": 370,
+    "radius": 22,
+    "group": "北美"
+  },
+  {
+    "name": "坦帕",
+    "display": null,
+    "lat": 27.9506,
+    "lng": -82.4572,
+    "pop": 320,
+    "radius": 20,
+    "group": "北美"
+  },
+  {
+    "name": "夏洛特",
+    "display": null,
+    "lat": 35.2271,
+    "lng": -80.8431,
+    "pop": 270,
+    "radius": 18,
+    "group": "北美"
+  },
+  {
+    "name": "拉斯维加斯",
+    "display": null,
+    "lat": 36.1699,
+    "lng": -115.1398,
+    "pop": 230,
+    "radius": 18,
+    "group": "北美"
+  },
+  {
+    "name": "波特兰",
+    "display": null,
+    "lat": 45.5152,
+    "lng": -122.6784,
+    "pop": 250,
+    "radius": 18,
+    "group": "北美"
+  },
+  {
+    "name": "多伦多",
+    "display": null,
+    "lat": 43.6532,
+    "lng": -79.3832,
+    "pop": 930,
+    "radius": 40,
+    "group": "北美"
+  },
+  {
+    "name": "温哥华",
+    "display": null,
+    "lat": 49.2827,
+    "lng": -123.1207,
+    "pop": 310,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "蒙特利尔",
+    "display": null,
+    "lat": 45.5017,
+    "lng": -73.5673,
+    "pop": 430,
+    "radius": 25,
+    "group": "北美"
+  },
+  {
+    "name": "卡尔加里",
+    "display": null,
+    "lat": 51.0447,
+    "lng": -114.0719,
+    "pop": 160,
+    "radius": 15,
+    "group": "北美"
+  },
+  {
+    "name": "渥太华",
+    "display": null,
+    "lat": 45.4215,
+    "lng": -75.6972,
+    "pop": 150,
+    "radius": 15,
+    "group": "北美"
+  },
+  {
+    "name": "墨西哥城",
+    "display": null,
+    "lat": 19.4326,
+    "lng": -99.1332,
+    "pop": 2150,
+    "radius": 45,
+    "group": "北美"
+  },
+  {
+    "name": "瓜达拉哈拉",
+    "display": null,
+    "lat": 20.6597,
+    "lng": -103.3496,
+    "pop": 500,
+    "radius": 22,
+    "group": "北美"
+  },
+  {
+    "name": "蒙特雷",
+    "display": null,
+    "lat": 25.6866,
+    "lng": -100.3161,
+    "pop": 500,
+    "radius": 22,
+    "group": "北美"
+  },
+  {
+    "name": "圣保罗",
+    "display": null,
+    "lat": -23.5505,
+    "lng": -46.6333,
+    "pop": 2200,
+    "radius": 45,
+    "group": "拉美"
+  },
+  {
+    "name": "里约热内卢",
+    "display": null,
+    "lat": -22.9068,
+    "lng": -43.1729,
+    "pop": 1350,
+    "radius": 40,
+    "group": "拉美"
+  },
+  {
+    "name": "巴西利亚",
+    "display": null,
+    "lat": -15.7942,
+    "lng": -47.8822,
+    "pop": 450,
+    "radius": 22,
+    "group": "拉美"
+  },
+  {
+    "name": "萨尔瓦多",
+    "display": null,
+    "lat": -12.9714,
+    "lng": -38.5014,
+    "pop": 400,
+    "radius": 20,
+    "group": "拉美"
+  },
+  {
+    "name": "福塔莱萨",
+    "display": null,
+    "lat": -3.7172,
+    "lng": -38.5433,
+    "pop": 380,
+    "radius": 20,
+    "group": "拉美"
+  },
+  {
+    "name": "贝洛奥里藏特",
+    "display": null,
+    "lat": -19.9167,
+    "lng": -43.9345,
+    "pop": 550,
+    "radius": 25,
+    "group": "拉美"
+  },
+  {
+    "name": "布宜诺斯艾利斯",
+    "display": null,
+    "lat": -34.6037,
+    "lng": -58.3816,
+    "pop": 1520,
+    "radius": 40,
+    "group": "拉美"
+  },
+  {
+    "name": "科尔多瓦",
+    "display": null,
+    "lat": -31.4201,
+    "lng": -64.1888,
+    "pop": 250,
+    "radius": 15,
+    "group": "拉美"
+  },
+  {
+    "name": "罗萨里奥",
+    "display": null,
+    "lat": -32.9468,
+    "lng": -60.6393,
+    "pop": 150,
+    "radius": 12,
+    "group": "拉美"
+  },
+  {
+    "name": "圣地亚哥",
+    "display": null,
+    "lat": -33.4489,
+    "lng": -70.6693,
+    "pop": 750,
+    "radius": 30,
+    "group": "拉美"
+  },
+  {
+    "name": "瓦尔帕莱索",
+    "display": null,
+    "lat": -33.0472,
+    "lng": -71.6127,
+    "pop": 100,
+    "radius": 12,
+    "group": "拉美"
+  },
+  {
+    "name": "利马",
+    "display": null,
+    "lat": -12.0464,
+    "lng": -77.0428,
+    "pop": 1100,
+    "radius": 35,
+    "group": "拉美"
+  },
+  {
+    "name": "波哥大",
+    "display": null,
+    "lat": 4.711,
+    "lng": -74.0721,
+    "pop": 1100,
+    "radius": 35,
+    "group": "拉美"
+  },
+  {
+    "name": "麦德林",
+    "display": null,
+    "lat": 6.2476,
+    "lng": -75.5658,
+    "pop": 400,
+    "radius": 20,
+    "group": "拉美"
+  },
+  {
+    "name": "卡利",
+    "display": null,
+    "lat": 3.4516,
+    "lng": -76.532,
+    "pop": 300,
+    "radius": 18,
+    "group": "拉美"
+  },
+  {
+    "name": "基多",
+    "display": null,
+    "lat": -0.1807,
+    "lng": -78.4678,
+    "pop": 300,
+    "radius": 18,
+    "group": "拉美"
+  },
+  {
+    "name": "瓜亚基尔",
+    "display": null,
+    "lat": -2.2038,
+    "lng": -79.897,
+    "pop": 300,
+    "radius": 18,
+    "group": "拉美"
+  },
+  {
+    "name": "加拉加斯",
+    "display": null,
+    "lat": 10.4806,
+    "lng": -66.9036,
+    "pop": 400,
+    "radius": 22,
+    "group": "拉美"
+  },
+  {
+    "name": "拉巴斯",
+    "display": null,
+    "lat": -16.5,
+    "lng": -68.15,
+    "pop": 200,
+    "radius": 15,
+    "group": "拉美"
+  },
+  {
+    "name": "蒙得维的亚",
+    "display": null,
+    "lat": -34.9011,
+    "lng": -56.1645,
+    "pop": 180,
+    "radius": 15,
+    "group": "拉美"
+  },
+  {
+    "name": "亚松森",
+    "display": null,
+    "lat": -25.2637,
+    "lng": -57.5759,
+    "pop": 150,
+    "radius": 12,
+    "group": "拉美"
+  },
+  {
+    "name": "哈瓦那",
+    "display": null,
+    "lat": 23.1136,
+    "lng": -82.3666,
+    "pop": 220,
+    "radius": 15,
+    "group": "拉美"
+  },
+  {
+    "name": "圣何塞",
+    "display": null,
+    "lat": 9.9281,
+    "lng": -84.0907,
+    "pop": 150,
+    "radius": 12,
+    "group": "拉美"
+  },
+  {
+    "name": "巴拿马城",
+    "display": null,
+    "lat": 8.9824,
+    "lng": -79.5199,
+    "pop": 200,
+    "radius": 15,
+    "group": "拉美"
+  },
+  {
+    "name": "悉尼",
+    "display": "悉尼 Sydney",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "pop": 540,
+    "radius": 35,
+    "group": "大洋洲"
+  },
+  {
+    "name": "墨尔本",
+    "display": null,
+    "lat": -37.8136,
+    "lng": 144.9631,
+    "pop": 510,
+    "radius": 35,
+    "group": "大洋洲"
+  },
+  {
+    "name": "布里斯班",
+    "display": null,
+    "lat": -27.4698,
+    "lng": 153.0251,
+    "pop": 250,
+    "radius": 20,
+    "group": "大洋洲"
+  },
+  {
+    "name": "珀斯",
+    "display": null,
+    "lat": -31.9505,
+    "lng": 115.8605,
+    "pop": 210,
+    "radius": 18,
+    "group": "大洋洲"
+  },
+  {
+    "name": "阿德莱德",
+    "display": null,
+    "lat": -34.9285,
+    "lng": 138.6007,
+    "pop": 130,
+    "radius": 15,
+    "group": "大洋洲"
+  },
+  {
+    "name": "奥克兰",
+    "display": null,
+    "lat": -36.8485,
+    "lng": 174.7633,
+    "pop": 170,
+    "radius": 20,
+    "group": "大洋洲"
+  },
+  {
+    "name": "惠灵顿",
+    "display": null,
+    "lat": -41.2865,
+    "lng": 174.7762,
+    "pop": 40,
+    "radius": 8,
+    "group": "大洋洲"
+  },
+  {
+    "name": "克赖斯特彻奇",
+    "display": null,
+    "lat": -43.532,
+    "lng": 172.6362,
+    "pop": 40,
+    "radius": 8,
+    "group": "大洋洲"
+  },
+  {
+    "name": "莫尔兹比港",
+    "display": null,
+    "lat": -9.4438,
+    "lng": 147.1803,
+    "pop": 40,
+    "radius": 8,
+    "group": "大洋洲"
+  },
+  {
+    "name": "苏瓦",
+    "display": null,
+    "lat": -18.1416,
+    "lng": 178.4419,
+    "pop": 10,
+    "radius": 5,
+    "group": "大洋洲"
+  }
+]
