@@ -1,0 +1,97 @@
+# ============================================
+# Node.js / npm / Electron
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.yarn/
+.pnpm/
+.npm/
+
+# Electron build output
+dist/
+release/
+out/
+
+# ============================================
+# Android / Gradle
+# ============================================
+.gradle/
+build/
+*.apk
+*.aab
+*.ap_
+*.aab_
+local.properties
+*.iml
+.idea/workspace.xml
+.idea/caches/
+.idea/shelf/
+.idea/tasks/
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# Kotlin
+*.class
+*.kotlin_module
+
+# ============================================
+# IDE / Editor
+# ============================================
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# Environment / Config
+# ============================================
+.env
+.env.local
+.env.*.local
+*.log
+
+# ============================================
+# AI / Workbuddy
+# ============================================
+.workbuddy/
+
+# ============================================
+# Temp & Cache
+# ============================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ============================================
+# Windows
+# ============================================
+[Dd]esktop.ini
+[Ww]indows/[Tt]hin/[Dd]atabase/*.sdf

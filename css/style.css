@@ -1,0 +1,1301 @@
+/* === MIRV Sim - 主样式表 === */
+
+/* === CSS 变量与主题 === */
+:root {
+    --bg-primary: #1a1d23;
+    --bg-secondary: #21252b;
+    --bg-tertiary: #282c34;
+    --bg-elevated: #2c313a;
+    --bg-hover: #353b48;
+    --border-color: #3a3f4b;
+    --border-light: #4a4f5b;
+    --text-primary: #e1e4e8;
+    --text-secondary: #a0a6b0;
+    --text-muted: #6a6f7a;
+    --accent: #ff6b35;
+    --accent-hover: #ff8255;
+    --accent-dim: rgba(255, 107, 53, 0.15);
+    --danger: #e5534b;
+    --danger-hover: #f06962;
+    --warning: #f0a020;
+    --success: #3fb950;
+    --info: #58a6ff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --sidebar-width: 340px;
+    --stats-width: 320px;
+    --header-height: 50px;
+}
+
+/* === 基础重置 === */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+input, select, button, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* === 滚动条 === */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-light);
+}
+
+/* === 应用容器 === */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* === 顶部导航栏 === */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+    flex-shrink: 0;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    color: var(--accent);
+    animation: pulse-icon 3s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #ff6b35, #ff9066);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-left: 8px;
+    border-left: 1px solid var(--border-color);
+    margin-left: 2px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.btn-header:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* === 主布局 === */
+.main-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* === 侧边栏 === */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 100;
+    transition: transform var(--transition-slow);
+}
+
+.sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+/* === 面板 === */
+.panel {
+    margin-bottom: 10px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition-fast);
+}
+
+.panel-header:hover {
+    background: var(--bg-hover);
+}
+
+.panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.panel-arrow {
+    color: var(--text-muted);
+    transition: transform var(--transition-normal);
+}
+
+.panel.collapsed .panel-arrow {
+    transform: rotate(-90deg);
+}
+
+.panel-body {
+    padding: 0 14px 14px;
+    transition: all var(--transition-normal);
+}
+
+.panel.collapsed .panel-body {
+    display: none;
+}
+
+/* === 预设网格 === */
+.preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    text-align: left;
+    gap: 2px;
+}
+
+.preset-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+}
+
+.preset-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.preset-btn-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.preset-btn-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* === 表单 === */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* === 范围滑块 === */
+.range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-elevated);
+    border-radius: 3px;
+    outline: none;
+    margin-bottom: 4px;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-secondary);
+    box-shadow: 0 0 8px rgba(255,107,53,0.4);
+    transition: transform var(--transition-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.range-slider::-webkit-slider-thumb:active {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255,107,53,0.6);
+}
+
+.range-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 0 2px;
+}
+
+/* === 当量预设按钮 === */
+.yield-presets {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.yield-btn {
+    padding: 4px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.yield-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.yield-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* === 数字输入 === */
+.form-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-number {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+    outline: none;
+}
+
+.input-number:focus {
+    border-color: var(--accent);
+}
+
+.input-suffix {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+/* === 模式选择按钮 === */
+.pattern-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.pattern-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    color: var(--text-secondary);
+}
+
+.pattern-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+}
+
+.pattern-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+}
+
+.pattern-btn span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.pattern-btn svg {
+    opacity: 0.8;
+}
+
+.pattern-btn.active svg {
+    opacity: 1;
+}
+
+/* === 下拉选择 === */
+.select-input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    outline: none;
+    transition: border-color var(--transition-fast);
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z' fill='%23a0a6b0'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+.select-input:focus {
+    border-color: var(--accent);
+}
+
+.select-input option {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* === 坐标输入 === */
+.coord-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.coord-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.coord-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.input-coord {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.input-coord:focus {
+    border-color: var(--accent);
+}
+
+.input-coord::placeholder {
+    color: var(--text-muted);
+}
+
+/* === 地图操作按钮 === */
+.btn-map-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border-light);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--info);
+    transition: all var(--transition-fast);
+}
+
+.btn-map-action:hover {
+    background: rgba(88,166,255,0.1);
+    border-color: var(--info);
+    border-style: solid;
+}
+
+/* === 发射区域 === */
+.launch-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 0 8px;
+}
+
+.btn-launch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #e0442b, #cc3318);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 16px rgba(224,68,43,0.35);
+}
+
+.btn-launch:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(224,68,43,0.5);
+}
+
+.btn-launch:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(224,68,43,0.3);
+}
+
+.btn-launch-text {
+    position: relative;
+    z-index: 2;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.btn-launch-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s ease-out;
+}
+
+.btn-launch:hover .btn-launch-ring {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-clear {
+    width: 100%;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+
+.btn-clear:hover {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    border-color: var(--border-light);
+}
+
+/* === 地图区域 === */
+.map-area {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+/* Leaflet 样式覆盖 */
+.leaflet-container {
+    background: var(--bg-primary);
+    font-family: var(--font-sans);
+}
+
+.leaflet-control-zoom a {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: var(--bg-hover) !important;
+}
+
+.leaflet-control-attribution {
+    background: rgba(26,29,35,0.85) !important;
+    color: var(--text-muted) !important;
+    font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+    color: var(--text-secondary) !important;
+}
+
+/* === 地图覆盖层 === */
+.map-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.map-coord-display {
+    padding: 8px 14px;
+    background: rgba(26,29,35,0.92);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+    backdrop-filter: blur(12px);
+    font-family: var(--font-mono);
+}
+
+/* 十字准星光标 */
+.map-area.crosshair #map {
+    cursor: crosshair;
+}
+
+/* === 加载指示器 === */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(26,29,35,0.8);
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* === 统计面板 === */
+.stats-panel {
+    width: var(--stats-width);
+    min-width: var(--stats-width);
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 100;
+    animation: slideInRight 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.stats-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.btn-close-stats {
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+
+.btn-close-stats:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.stats-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+/* === 统计卡片 === */
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.stat-card:hover {
+    border-color: var(--border-light);
+}
+
+/* === 地图环上标签 === */
+.ring-label-marker {
+    background: none !important;
+    border: none !important;
+}
+
+.ring-label-text {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    background: rgba(26, 29, 35, 0.85);
+    border: 1.5px solid;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* 毁伤环渲染层（无交互，点击由地图级处理器精确计算） */
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-dim);
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.stat-icon-danger {
+    background: rgba(229, 83, 75, 0.15);
+    color: var(--danger);
+}
+
+.stat-icon-warning {
+    background: rgba(240, 160, 32, 0.15);
+    color: var(--warning);
+}
+
+.stats-city {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.stat-value-danger {
+    color: var(--danger);
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.stats-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-section {
+    margin-top: 16px;
+}
+
+.stat-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === 统计条形图 === */
+.stat-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stat-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-bar-label {
+    width: 60px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.stat-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-bar-value {
+    width: 50px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    text-align: left;
+    flex-shrink: 0;
+}
+
+/* === 弹头列表 === */
+.warhead-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.warhead-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    animation: fadeInUp 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.warhead-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+}
+
+.warhead-id {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 30px;
+}
+
+.warhead-coords {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+}
+
+/* === 图例 === */
+.legend-section {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    flex-shrink: 0;
+}
+
+.legend-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-hint {
+    font-size: 9px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.legend-label {
+    flex: 1;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-dash {
+    width: 28px;
+    flex-shrink: 0;
+}
+
+/* === 移动端抽屉 === */
+.mobile-drawer-handle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    z-index: 200;
+}
+
+.mobile-drawer-handle:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+/* === 弹头落点标记动画 === */
+.warhead-marker {
+    animation: markerDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes markerDrop {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* === 毁伤圆脉冲动画 === */
+.damage-circle-pulse {
+    animation: circlePulse 0.6s ease-out forwards;
+}
+
+@keyframes circlePulse {
+    from {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* === Toast 提示 === */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    padding: 10px 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
+    pointer-events: auto;
+}
+
+.toast.success {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.toast.error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+@keyframes toastIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-20px); opacity: 0; }
+}
+
+/* === 响应式设计 === */
+
+/* 中等屏幕 (平板) */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 300px;
+        min-width: 300px;
+    }
+    .stats-panel {
+        width: 280px;
+        min-width: 280px;
+    }
+    :root {
+        --sidebar-width: 300px;
+        --stats-width: 280px;
+    }
+}
+
+/* 小屏幕 (平板竖屏) */
+@media (max-width: 900px) {
+    .main-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        order: 1;
+    }
+
+    .map-area {
+        order: 2;
+        min-height: 35vh;
+    }
+
+    .stats-panel {
+        position: fixed;
+        top: var(--header-height);
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 360px;
+        transform: translateX(100%);
+        transition: transform var(--transition-slow);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stats-panel.open {
+        transform: translateX(0);
+    }
+
+    .mobile-drawer-handle {
+        display: flex;
+        order: 3;
+    }
+
+    .header-subtitle {
+        display: none;
+    }
+
+    .preset-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .pattern-buttons {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 手机屏幕 */
+@media (max-width: 600px) {
+    .header {
+        padding: 0 10px;
+    }
+
+    .header-title {
+        font-size: 16px;
+    }
+
+    .btn-header {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+
+    .btn-header span {
+        display: none;
+    }
+
+    .sidebar {
+        max-height: 50vh;
+    }
+
+    .sidebar-scroll {
+        padding: 8px;
+    }
+
+    .preset-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .pattern-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .panel-body {
+        padding: 0 10px 10px;
+    }
+
+    .panel-header {
+        padding: 10px;
+    }
+
+    .map-overlay {
+        top: 8px;
+        left: 8px;
+    }
+
+    .map-coord-display {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+}
+
+/* 亮色地图瓦片（已移除暗色滤镜） */
+
+/* === Leaflet 弹窗样式 === */
+.leaflet-popup-content-wrapper {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color);
+}
+
+.leaflet-popup-tip {
+    background: var(--bg-secondary) !important;
+}
+
+.leaflet-popup-content {
+    margin: 10px 14px !important;
+    font-size: 13px !important;
+    font-family: var(--font-sans) !important;
+}
+
+/* === 工具提示 === */
+.leaflet-tooltip {
+    background: var(--bg-elevated) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+}
+
+/* === 按键的过渡动画 === */
+.btn-header, .btn-map-action, .btn-clear, .btn-launch,
+.pattern-btn, .yield-btn, .preset-btn {
+    transition: all var(--transition-fast);
+}
+
+/* === 表单元素焦点可见性 === */
+input:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

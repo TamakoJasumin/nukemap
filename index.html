@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRV Sim - 洲际导弹多弹头攻击模拟器</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-brand">
+                <svg class="header-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="12" y1="2" x2="12" y2="7" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span class="header-title">MIRV Sim</span>
+                <span class="header-subtitle">多弹头攻击模拟系统</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-header" id="btnReset" title="重置">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M17.65 6.35A7.96 7.96 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/></svg>
+                    重置
+                </button>
+                <button class="btn-header" id="btnShare" title="复制链接">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" fill="currentColor"/></svg>
+                    分享
+                </button>
+                <a href="https://github.com" class="btn-header" target="_blank" title="GitHub" id="linkGitHub">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" fill="currentColor"/></svg>
+                </a>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <div class="main-wrapper">
+            <!-- 左侧控制面板 -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-scroll">
+                    <!-- 预设场景 -->
+                    <section class="panel" id="panelPresets">
+                        <div class="panel-header" data-toggle="presets">
+                            <span class="panel-title">预设场景</span>
+                            <svg class="panel-arrow" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="panel-body" id="bodyPresets">
+                            <div class="preset-grid" id="presetGrid"></div>
+                        </div>
+                    </section>
+
+                    <!-- 弹头参数配置 -->
+                    <section class="panel" id="panelWarhead">
+                        <div class="panel-header" data-toggle="warhead">
+                            <span class="panel-title">弹头参数配置</span>
+                            <svg class="panel-arrow" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="panel-body" id="bodyWarhead">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>弹头数量</span>
+                                    <span class="form-value" id="valWarheadCount">4</span>
+                                </label>
+                                <input type="range" class="range-slider" id="sliderWarheadCount" min="1" max="20" value="4" step="1">
+                                <div class="range-ticks">
+                                    <span>1</span><span>5</span><span>10</span><span>15</span><span>20</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>单弹头当量 (kt)</span>
+                                    <span class="form-value" id="valYield">150</span>
+                                </label>
+                                <input type="range" class="range-slider" id="sliderYield" min="1" max="50000" value="150" step="1">
+                                <div class="yield-presets">
+                                    <button class="yield-btn" data-yield="15">15 kt</button>
+                                    <button class="yield-btn" data-yield="100">100 kt</button>
+                                    <button class="yield-btn active" data-yield="150">150 kt</button>
+                                    <button class="yield-btn" data-yield="300">300 kt</button>
+                                    <button class="yield-btn" data-yield="500">500 kt</button>
+                                    <button class="yield-btn" data-yield="1000">1 Mt</button>
+                                    <button class="yield-btn" data-yield="10000">10 Mt</button>
+                                    <button class="yield-btn" data-yield="50000">50 Mt</button>
+                                </div>
+                                <div class="form-input-row">
+                                    <input type="number" class="input-number" id="inputYield" value="150" min="0.01" max="50000" step="0.1">
+                                    <span class="input-suffix">kt</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>分离距离</span>
+                                    <span class="form-value" id="valSeparation">1.5 km</span>
+                                </label>
+                                <input type="range" class="range-slider" id="sliderSeparation" min="0.1" max="10" value="1.5" step="0.1">
+                                <div class="range-ticks">
+                                    <span>0.1</span><span>2.5</span><span>5</span><span>7.5</span><span>10 km</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">散布模式</label>
+                                <div class="pattern-buttons" id="patternButtons">
+                                    <button class="pattern-btn active" data-pattern="circular">
+                                        <svg viewBox="0 0 40 40" width="36" height="36">
+                                            <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                                            <circle cx="20" cy="8" r="2" fill="currentColor"/><circle cx="30" cy="14" r="2" fill="currentColor"/>
+                                            <circle cx="30" cy="26" r="2" fill="currentColor"/><circle cx="20" cy="32" r="2" fill="currentColor"/>
+                                            <circle cx="10" cy="26" r="2" fill="currentColor"/><circle cx="10" cy="14" r="2" fill="currentColor"/>
+                                        </svg>
+                                        <span>圆形</span>
+                                    </button>
+                                    <button class="pattern-btn" data-pattern="linear">
+                                        <svg viewBox="0 0 40 40" width="36" height="36">
+                                            <line x1="6" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                                            <circle cx="8" cy="20" r="2" fill="currentColor"/><circle cx="14" cy="20" r="2" fill="currentColor"/>
+                                            <circle cx="26" cy="20" r="2" fill="currentColor"/><circle cx="32" cy="20" r="2" fill="currentColor"/>
+                                        </svg>
+                                        <span>线性</span>
+                                    </button>
+                                    <button class="pattern-btn" data-pattern="elliptical">
+                                        <svg viewBox="0 0 40 40" width="36" height="36">
+                                            <ellipse cx="20" cy="20" rx="15" ry="8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                                            <circle cx="20" cy="14" r="2" fill="currentColor"/><circle cx="32" cy="20" r="2" fill="currentColor"/>
+                                            <circle cx="20" cy="26" r="2" fill="currentColor"/><circle cx="8" cy="20" r="2" fill="currentColor"/>
+                                        </svg>
+                                        <span>椭圆</span>
+                                    </button>
+                                    <button class="pattern-btn" data-pattern="grid">
+                                        <svg viewBox="0 0 40 40" width="36" height="36">
+                                            <rect x="8" y="8" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                                            <circle cx="14" cy="14" r="2" fill="currentColor"/><circle cx="26" cy="14" r="2" fill="currentColor"/>
+                                            <circle cx="14" cy="26" r="2" fill="currentColor"/><circle cx="26" cy="26" r="2" fill="currentColor"/>
+                                        </svg>
+                                        <span>网格</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>爆高模式</span>
+                                </label>
+                                <select class="select-input" id="selectHOB">
+                                    <option value="surface">地爆 (最大化局部破坏)</option>
+                                    <option value="optimal" selected>空爆 (最大化综合毁伤)</option>
+                                    <option value="custom">自定义爆高</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="groupCustomHOB" style="display:none;">
+                                <div class="form-input-row">
+                                    <input type="number" class="input-number" id="inputHOB" value="600" min="0" max="50000" step="10">
+                                    <span class="input-suffix">m</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 目标定位 -->
+                    <section class="panel" id="panelTarget">
+                        <div class="panel-header" data-toggle="target">
+                            <span class="panel-title">目标定位</span>
+                            <svg class="panel-arrow" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="panel-body" id="bodyTarget">
+                            <div class="form-group">
+                                <label class="form-label">瞄点坐标</label>
+                                <div class="coord-row">
+                                    <div class="coord-input-group">
+                                        <span class="coord-label">纬度</span>
+                                        <input type="text" class="input-coord" id="inputLat" value="39.9042" placeholder="39.9042">
+                                    </div>
+                                    <div class="coord-input-group">
+                                        <span class="coord-label">经度</span>
+                                        <input type="text" class="input-coord" id="inputLng" value="116.4074" placeholder="116.4074">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">城市快速定位</label>
+                                <select class="select-input" id="selectCity">
+                                    <option value="39.9042,116.4074" selected>北京 Beijing</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">目标类型</label>
+                                <select class="select-input" id="selectTargetType">
+                                    <option value="urban" selected>城市核心区 (高密度人口)</option>
+                                    <option value="suburban">郊区/城郊 (中密度人口)</option>
+                                    <option value="rural">乡村/荒漠 (低密度人口)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn-map-action" id="btnPickOnMap">
+                                    <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><line x1="12" y1="0" x2="12" y2="4" stroke="currentColor" stroke-width="2"/><line x1="12" y1="20" x2="12" y2="24" stroke="currentColor" stroke-width="2"/><line x1="0" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/><line x1="20" y1="12" x2="24" y2="12" stroke="currentColor" stroke-width="2"/></svg>
+                                    在地图上点选目标
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 发射按钮 -->
+                    <div class="launch-section">
+                        <button class="btn-launch" id="btnLaunch">
+                            <span class="btn-launch-ring"></span>
+                            <span class="btn-launch-text">发 射 模 拟</span>
+                        </button>
+                        <button class="btn-clear" id="btnClear">清除结果</button>
+                    </div>
+                </div>
+
+                <!-- 图例（固定在侧边栏底部） -->
+                <div class="legend-section" id="legendSection" style="display:none;">
+                    <div class="legend-title">毁伤效果图例 <span class="legend-hint">← 点击弹出详情</span></div>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(255,215,0,0.3);border:2.5px solid #FFD700;"></span>
+                            <span class="legend-label">火球半径</span>
+                            <span class="legend-dash" style="border-top:2px solid #FFD700;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(229,57,53,0.2);border:2.5px solid #E53935;"></span>
+                            <span class="legend-label">20 psi 重度毁伤</span>
+                            <span class="legend-dash" style="border-top:3px solid #E53935;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(244,81,30,0.2);border:2.5px solid #F4511E;"></span>
+                            <span class="legend-label">10 psi 严重毁伤</span>
+                            <span class="legend-dash" style="border-top:2.5px solid #F4511E;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(255,143,0,0.15);border:2px solid #FF8F00;"></span>
+                            <span class="legend-label">5 psi 中度毁伤</span>
+                            <span class="legend-dash" style="border-top:2px dashed #FF8F00;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(0,188,212,0.12);border:2px solid #00BCD4;"></span>
+                            <span class="legend-label">3 psi 轻度毁伤</span>
+                            <span class="legend-dash" style="border-top:2px dotted #00BCD4;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(124,179,66,0.1);border:1.5px solid #7CB342;"></span>
+                            <span class="legend-label">1 psi 玻璃碎裂</span>
+                            <span class="legend-dash" style="border-top:1.5px dotted #7CB342;"></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background:rgba(224,64,251,0.2);border:2.5px solid #E040FB;"></span>
+                            <span class="legend-label">热辐射 三度烧伤</span>
+                            <span class="legend-dash" style="border-top:2.5px dashed #E040FB;"></span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 地图区域 -->
+            <main class="map-area" id="mapArea">
+                <div id="map"></div>
+                <!-- 地图上的悬浮信息 -->
+                <div class="map-overlay" id="mapOverlay">
+                    <div class="map-coord-display" id="coordDisplay">
+                        点击地图选择目标点
+                    </div>
+                </div>
+                <!-- 加载指示器 -->
+                <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+                    <div class="spinner">
+                        <svg viewBox="0 0 50 50" width="50" height="50">
+                            <circle cx="25" cy="25" r="20" fill="none" stroke="#ff6b35" stroke-width="3" stroke-dasharray="31.4 31.4"><animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/></circle>
+                        </svg>
+                    </div>
+                    <span>计算中...</span>
+                </div>
+            </main>
+
+            <!-- 右侧统计面板 -->
+            <aside class="stats-panel" id="statsPanel" style="display:none;">
+                <div class="stats-header">
+                    <div>
+                        <h3>攻击结果统计</h3>
+                        <span class="stats-city" id="statsCityName"></span>
+                    </div>
+                    <button class="btn-close-stats" id="btnCloseStats">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
+                    </button>
+                </div>
+                <div class="stats-body">
+                    <div class="stats-cards" id="statsCards">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotalArea">--</span>
+                                <span class="stat-label">总毁伤面积 (km²)</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-danger">
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" fill="currentColor"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value stat-value-danger" id="statDeaths">--</span>
+                                <span class="stat-label">预估死亡人数</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-warning">
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" fill="currentColor"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statInjuries">--</span>
+                                <span class="stat-label">预估受伤人数</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotalCasualties">--</span>
+                                <span class="stat-label">总伤亡人数</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-section">
+                        <h4>各毁伤等级覆盖面积</h4>
+                        <div class="stat-bars" id="statBars"></div>
+                    </div>
+                    <div class="stat-section">
+                        <h4>弹头落点详情</h4>
+                        <div class="warhead-list" id="warheadList"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 移动端底部抽屉 -->
+        <div class="mobile-drawer-handle" id="drawerHandle">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+            统计面板
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/cities.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
