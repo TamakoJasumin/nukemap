@@ -5,10 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-packager . MIRV-Sim --platform=win32 --arch=x64 --out=dist --overwrite --icon=assets/icon.svg",
-    "build:win:portable": "electron-packager . MIRV-Sim --platform=win32 --arch=x64 --out=dist --overwrite --icon=assets/icon.svg",
-    "build:mac": "electron-packager . MIRV-Sim --platform=darwin --arch=x64 --out=dist --overwrite --icon=assets/icon.svg",
-    "build:linux": "electron-packager . MIRV-Sim --platform=linux --arch=x64 --out=dist --overwrite --icon=assets/icon.svg"
+    "build:win": "powershell -ExecutionPolicy Bypass -File build-win.ps1",
+    "package": "powershell -ExecutionPolicy Bypass -Command \"electron-packager.cmd . MIRV-Sim --platform=win32 --arch=x64 --out=dist --overwrite --prune=true --ignore=NukemapApp --ignore=.git --ignore=dist --ignore=installer.iss --ignore=build-win.ps1 --ignore=\u771f\u539f\u751f\u5b89\u5353\""
   },
   "devDependencies": {
     "electron": "^28.0.0",

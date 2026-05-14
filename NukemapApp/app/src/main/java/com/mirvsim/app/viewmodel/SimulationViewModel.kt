@@ -132,6 +132,14 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(controlDrawerOpen = !it.controlDrawerOpen) }
     }
 
+    fun togglePresetsDrawer() {
+        _uiState.update { it.copy(presetsDrawerOpen = !it.presetsDrawerOpen) }
+    }
+
+    fun toggleSettings() {
+        _uiState.update { it.copy(settingsOpen = !it.settingsOpen) }
+    }
+
     fun toggleStatsSheet() {
         _uiState.update { it.copy(statsSheetOpen = !it.statsSheetOpen) }
     }
@@ -148,10 +156,13 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                 targetLat = preset.lat,
                 targetLng = preset.lng,
                 activePresetId = preset.id,
-                controlDrawerOpen = false
+                controlDrawerOpen = false,
+                presetsDrawerOpen = false
             )
         }
-        executeSimulation()
+        if (_uiState.value.autoLaunchPreset) {
+            executeSimulation()
+        }
     }
 
     fun applyCity(city: City) {
@@ -160,6 +171,15 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                 targetLat = city.lat,
                 targetLng = city.lng,
                 controlDrawerOpen = false
+            )
+        }
+    }
+
+    fun selectCity(city: City) {
+        _uiState.update {
+            it.copy(
+                targetLat = city.lat,
+                targetLng = city.lng
             )
         }
     }
@@ -256,12 +276,46 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
 
     fun resetAll() {
         _uiState.update {
-            MainUiState(cityList = it.cityList)
+            MainUiState(
+                cityList = it.cityList,
+                isDarkTheme = it.isDarkTheme,
+                useDynamicColor = it.useDynamicColor,
+                tileSource = it.tileSource,
+                popupEnabled = it.popupEnabled,
+                autoLaunchPreset = it.autoLaunchPreset,
+                ringAnimation = it.ringAnimation
+            )
         }
     }
 
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    // === 设置方法 ===
+
+    fun setDarkTheme(dark: Boolean) {
+        _uiState.update { it.copy(isDarkTheme = dark) }
+    }
+
+    fun setDynamicColor(use: Boolean) {
+        _uiState.update { it.copy(useDynamicColor = use) }
+    }
+
+    fun setTileSource(source: String) {
+        _uiState.update { it.copy(tileSource = source) }
+    }
+
+    fun setPopupEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(popupEnabled = enabled) }
+    }
+
+    fun setAutoLaunchPreset(auto: Boolean) {
+        _uiState.update { it.copy(autoLaunchPreset = auto) }
+    }
+
+    fun setRingAnimation(enabled: Boolean) {
+        _uiState.update { it.copy(ringAnimation = enabled) }
     }
 
     // === 导航方法 ===
@@ -271,14 +325,12 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
 
         when (route) {
             BottomNavItem.SIMULATE -> {
-                // 点击模拟：切换控制面板
+                // 点击模拟：切换模拟参数面板
                 toggleControlDrawer()
             }
             BottomNavItem.PRESETS -> {
-                // 点击预设：打开控制面板并定位到预设区域
-                if (!_uiState.value.controlDrawerOpen) {
-                    toggleControlDrawer()
-                }
+                // 点击预设：切换预设场景面板
+                togglePresetsDrawer()
             }
             BottomNavItem.STATS -> {
                 // 点击统计：打开统计详情
@@ -291,9 +343,7 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                 }
             }
             BottomNavItem.SETTINGS -> {
-                viewModelScope.launch {
-                    _events.emit(MainUiEvent.NavigateToLogs)
-                }
+                toggleSettings()
             }
         }
     }

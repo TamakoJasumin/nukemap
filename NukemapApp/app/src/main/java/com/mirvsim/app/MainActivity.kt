@@ -5,12 +5,15 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.mirvsim.app.ui.MainScreen
@@ -33,6 +36,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         Configuration.getInstance().apply {
             userAgentValue = packageName
             osmdroidBasePath = File(cacheDir, "osmdroid")
@@ -41,12 +45,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         
         viewModel = ViewModelProvider(this)[SimulationViewModel::class.java]
-        
+
         setContent {
-            NukemapTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    MainScreen(viewModel = viewModel)
-                }
+            val state = viewModel.uiState.collectAsStateWithLifecycle().value
+            val isDark = state.isDarkTheme
+            NukemapTheme(
+                darkTheme = if (isDark != null) isDark else isSystemInDarkTheme(),
+                dynamicColor = state.useDynamicColor
+            ) {
+                MainScreen(viewModel = viewModel)
             }
         }
 

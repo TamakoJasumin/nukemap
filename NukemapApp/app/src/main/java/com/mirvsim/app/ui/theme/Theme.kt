@@ -118,7 +118,7 @@ fun NukemapTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            // 移除手动设置背景色，让 enableEdgeToEdge 接管透明度
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

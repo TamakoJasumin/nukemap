@@ -1,13 +1,11 @@
 package com.mirvsim.app.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,11 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
@@ -30,7 +27,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -46,7 +42,6 @@ import com.mirvsim.app.data.Presets
 import com.mirvsim.app.model.City
 import com.mirvsim.app.model.Preset
 import com.mirvsim.app.ui.theme.*
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,6 +190,161 @@ fun ControlPanel(
 }
 
 @Composable
+fun PresetsPanel(
+    activePresetId: String?,
+    onPresetApply: (Preset) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(BgSecondary)
+            .fillMaxHeight()
+            .widthIn(max = 320.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        PanelSection(
+            title = "预设场景",
+            expanded = true,
+            onToggle = {}
+        ) {
+            PresetGrid(
+                presets = Presets.all,
+                activeId = activePresetId,
+                onPresetClick = onPresetApply
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimulationPanel(
+    warheadCount: Int,
+    yieldKt: Double,
+    separationKm: Double,
+    pattern: String,
+    hobMode: String,
+    targetLat: Double,
+    targetLng: Double,
+    targetType: String,
+    cityList: List<City>,
+    isComputing: Boolean,
+    onWarheadCountChange: (Int) -> Unit,
+    onYieldChange: (Double) -> Unit,
+    onSeparationChange: (Double) -> Unit,
+    onPatternChange: (String) -> Unit,
+    onHobModeChange: (String) -> Unit,
+    onTargetLatChange: (Double) -> Unit,
+    onTargetLngChange: (Double) -> Unit,
+    onTargetTypeChange: (String) -> Unit,
+    onCitySelect: (City) -> Unit,
+    onPickOnMap: () -> Unit,
+    onLaunch: () -> Unit,
+    onClear: () -> Unit,
+    onReset: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .background(BgSecondary)
+            .fillMaxHeight()
+            .widthIn(max = 320.dp)
+            .verticalScroll(scrollState)
+    ) {
+        PanelSection(
+            title = "弹头参数配置",
+            expanded = true,
+            onToggle = {}
+        ) {
+            WarheadParams(
+                warheadCount = warheadCount,
+                yieldKt = yieldKt,
+                separationKm = separationKm,
+                pattern = pattern,
+                hobMode = hobMode,
+                onWarheadCountChange = onWarheadCountChange,
+                onYieldChange = onYieldChange,
+                onSeparationChange = onSeparationChange,
+                onPatternChange = onPatternChange,
+                onHobModeChange = onHobModeChange
+            )
+        }
+
+        PanelSection(
+            title = "目标定位",
+            expanded = true,
+            onToggle = {}
+        ) {
+            TargetParams(
+                targetLat = targetLat,
+                targetLng = targetLng,
+                targetType = targetType,
+                cityList = cityList,
+                onTargetLatChange = onTargetLatChange,
+                onTargetLngChange = onTargetLngChange,
+                onTargetTypeChange = onTargetTypeChange,
+                onCitySelect = onCitySelect,
+                onPickOnMap = onPickOnMap
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = onLaunch,
+                enabled = !isComputing,
+                colors = ButtonDefaults.buttonColors(containerColor = Accent),
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                if (isComputing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text("发射模拟", fontWeight = FontWeight.Bold)
+            }
+            OutlinedButton(
+                onClick = onClear,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.weight(0.5f)
+            ) {
+                Text("清除")
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextButton(onClick = onReset) {
+                Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("重置", fontSize = 12.sp)
+            }
+            TextButton(onClick = onShare) {
+                Icon(Icons.Filled.Share, contentDescription = null, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("分享", fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+@Composable
 fun PanelSection(
     title: String,
     expanded: Boolean,
@@ -248,41 +398,54 @@ fun PresetGrid(
     activeId: String?,
     onPresetClick: (Preset) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.heightIn(max = 360.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    Column(
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(presets) { preset ->
-            val isActive = preset.id == activeId
-            Surface(
-                onClick = { onPresetClick(preset) },
-                shape = RoundedCornerShape(6.dp),
-                color = if (isActive) Accent.copy(alpha = 0.2f) else BgTertiary,
-                border = if (isActive) androidx.compose.foundation.BorderStroke(
-                    1.dp, Accent
-                ) else null,
-                modifier = Modifier.fillMaxWidth()
+        for (i in presets.indices step 2) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text(
-                        text = preset.name,
-                        color = if (isActive) Accent else TextPrimary,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp,
-                        maxLines = 1
-                    )
-                    Text(
-                        text = preset.desc,
-                        color = TextMuted,
-                        fontSize = 10.sp,
-                        maxLines = 1
-                    )
+                PresetCard(presets[i], presets[i].id == activeId, { onPresetClick(presets[i]) }, Modifier.weight(1f))
+                if (i + 1 < presets.size) {
+                    PresetCard(presets[i + 1], presets[i + 1].id == activeId, { onPresetClick(presets[i + 1]) }, Modifier.weight(1f))
+                } else {
+                    Spacer(Modifier.weight(1f))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PresetCard(
+    preset: Preset,
+    isActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(6.dp),
+        color = if (isActive) Accent.copy(alpha = 0.2f) else BgTertiary,
+        border = if (isActive) androidx.compose.foundation.BorderStroke(1.dp, Accent) else null,
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = preset.name,
+                color = if (isActive) Accent else TextPrimary,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                maxLines = 1
+            )
+            Text(
+                text = preset.desc,
+                color = TextMuted,
+                fontSize = 10.sp,
+                maxLines = 1
+            )
         }
     }
 }
@@ -606,114 +769,157 @@ fun CitySearchDropdown(
     cityList: List<City>,
     onCitySelect: (City) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var isFocused by remember { mutableStateOf(false) }
+    var selectedGroup by remember { mutableStateOf("") }
+    var showGroupPicker by remember { mutableStateOf(false) }
 
-    val filtered = remember(searchQuery, cityList) {
-        if (searchQuery.isBlank()) cityList.take(50)
-        else cityList.filter {
+    val groups = remember(cityList) {
+        cityList.map { it.group }.distinct().sortedBy { g ->
+            if (g.contains("🇨🇳")) 1 else 0
+        }
+    }
+
+    val displayList = remember(searchQuery, selectedGroup, cityList) {
+        val byGroup = if (selectedGroup.isEmpty()) cityList
+                      else cityList.filter { it.group == selectedGroup }
+        if (searchQuery.isBlank()) byGroup.take(150)
+        else byGroup.filter {
             (it.display?.contains(searchQuery, ignoreCase = true) == true) ||
-            it.name.contains(searchQuery, ignoreCase = true) ||
-            it.group.contains(searchQuery, ignoreCase = true)
-        }.take(50)
+            it.name.contains(searchQuery, ignoreCase = true)
+        }
     }
 
     Column {
-        Text("城市选择", color = TextSecondary, fontSize = 12.sp)
-        Spacer(Modifier.height(4.dp))
-        ExposedDropdownMenuBox(
-            expanded = expanded && filtered.isNotEmpty(),
-            onExpandedChange = {
-                if (filtered.isNotEmpty()) expanded = !expanded
-            }
-        ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    expanded = it.isNotEmpty() || isFocused
-                },
-                placeholder = { Text("搜索城市...", fontSize = 12.sp, color = TextMuted) },
-                leadingIcon = {
-                    Icon(Icons.Filled.Search, contentDescription = null,
-                        modifier = Modifier.size(18.dp), tint = TextSecondary)
-                },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = {
-                            searchQuery = ""
-                            expanded = false
-                        }, modifier = Modifier.size(18.dp)) {
-                            Icon(Icons.Filled.Clear, contentDescription = "清除",
-                                modifier = Modifier.size(14.dp), tint = TextSecondary)
-                        }
-                    } else {
-                        Icon(Icons.Filled.ArrowDropDown, contentDescription = null,
-                            modifier = Modifier.size(18.dp).rotate(if (expanded) 180f else 0f),
-                            tint = TextSecondary)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
-                    .onFocusChanged { isFocused = it.isFocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Accent,
-                    unfocusedBorderColor = BorderColor,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
-                )
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded && filtered.isNotEmpty(),
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.heightIn(max = 240.dp)
-            ) {
-                LazyColumn(
-                    modifier = Modifier.heightIn(max = 240.dp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.LocationOn, "目标城市",
+                modifier = Modifier.size(14.dp), tint = Accent)
+            Spacer(Modifier.width(6.dp))
+            Text("目标城市", color = TextSecondary, fontSize = 12.sp)
+        }
+        Spacer(Modifier.height(6.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // 地区选择
+            Box(modifier = Modifier.weight(0.35f)) {
+                Surface(
+                    onClick = { showGroupPicker = true },
+                    shape = RoundedCornerShape(8.dp),
+                    color = BgTertiary,
+                    border = BorderStroke(0.5.dp, BorderColor.copy(alpha = 0.4f))
                 ) {
-                    items(filtered) { city ->
-                        DropdownMenuItem(
-                            text = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Filled.LocationOn,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(14.dp),
-                                        tint = Accent
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Column {
-                                        Text(
-                                            city.display ?: city.name,
-                                            fontSize = 12.sp,
-                                            color = TextPrimary
-                                        )
-                                        Text(
-                                            "${city.group} · %.0f万人口".format(city.pop),
-                                            fontSize = 10.sp,
-                                            color = TextMuted
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
-                                onCitySelect(city)
-                                searchQuery = city.display ?: city.name
-                                expanded = false
-                            }
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                    ) {
+                        Text(
+                            if (selectedGroup.isEmpty()) "全部" else selectedGroup,
+                            fontSize = 12.sp, maxLines = 1,
+                            color = if (selectedGroup.isNotEmpty()) Accent else TextMuted,
+                            modifier = Modifier.weight(1f)
                         )
+                        Icon(Icons.Filled.ArrowDropDown, null,
+                            modifier = Modifier.size(16.dp), tint = TextMuted)
+                    }
+                }
+                DropdownMenu(
+                    expanded = showGroupPicker,
+                    onDismissRequest = { showGroupPicker = false },
+                    modifier = Modifier.heightIn(max = 320.dp)
+                ) {
+                    Surface(color = BgSecondary, shape = RoundedCornerShape(8.dp)) {
+                        Column {
+                            DropdownMenuItem(
+                                text = { Text("全部", fontSize = 13.sp,
+                                    color = if (selectedGroup.isEmpty()) Accent else TextPrimary) },
+                                onClick = { selectedGroup = ""; showGroupPicker = false }
+                            )
+                            groups.forEach { g ->
+                                DropdownMenuItem(
+                                    text = { Text(g, fontSize = 13.sp,
+                                        color = if (selectedGroup == g) Accent else TextPrimary) },
+                                    onClick = { selectedGroup = g; showGroupPicker = false }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            // 城市选择
+            ExposedDropdownMenuBox(
+                expanded = dropdownExpanded && displayList.isNotEmpty(),
+                onExpandedChange = {
+                    if (displayList.isNotEmpty()) dropdownExpanded = !dropdownExpanded
+                },
+                modifier = Modifier.weight(0.65f)
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it; dropdownExpanded = true },
+                    placeholder = { Text("搜索城市", fontSize = 12.sp, color = TextMuted) },
+                    leadingIcon = { Icon(Icons.Filled.Search, null,
+                        modifier = Modifier.size(16.dp), tint = Accent) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = ""; dropdownExpanded = false },
+                                modifier = Modifier.size(16.dp)) {
+                                Icon(Icons.Filled.Clear, "清除",
+                                    modifier = Modifier.size(14.dp), tint = TextSecondary)
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Accent, unfocusedBorderColor = BorderColor,
+                        cursorColor = Accent,
+                        focusedContainerColor = BgTertiary, unfocusedContainerColor = BgTertiary
+                    ),
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = dropdownExpanded && displayList.isNotEmpty(),
+                    onDismissRequest = { dropdownExpanded = false },
+                    modifier = Modifier.heightIn(max = 360.dp)
+                ) {
+                    Surface(color = BgSecondary, shape = RoundedCornerShape(8.dp)) {
+                        Column {
+                            DropdownMenuItem(
+                                text = { Text("${displayList.size} 个城市", fontSize = 11.sp, color = TextMuted) },
+                                onClick = {}, enabled = false
+                            )
+                            displayList.forEach { city ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onCitySelect(city)
+                                        searchQuery = city.display ?: city.name
+                                        dropdownExpanded = false
+                                    },
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier.size(28.dp)
+                                                    .background(Accent.copy(alpha = 0.1f), RoundedCornerShape(7.dp)),
+                                                contentAlignment = Alignment.Center
+                                            ) { Icon(Icons.Filled.LocationOn, null,
+                                                modifier = Modifier.size(14.dp), tint = Accent) }
+                                            Spacer(Modifier.width(8.dp))
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text(city.display ?: city.name, fontSize = 13.sp,
+                                                    color = TextPrimary, fontWeight = FontWeight.Medium)
+                                                Text("${city.group} · %.0f万".format(city.pop),
+                                                    fontSize = 10.sp, color = TextMuted, maxLines = 1)
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
-
 fun formatYield(kt: Double): String {
     return if (kt >= 1000) "%.1f Mt".format(kt / 1000)
     else "%.0f kt".format(kt)
