@@ -1,37 +1,48 @@
 package com.mirvsim.app.ui.components
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mirvsim.app.model.DamageEffects
 import com.mirvsim.app.model.DamageLevel
+import com.mirvsim.app.model.RingType
 import com.mirvsim.app.model.SimulationResult
 import com.mirvsim.app.model.TargetType
 import com.mirvsim.app.model.WarheadPoint
 import com.mirvsim.app.ui.theme.*
+import java.text.NumberFormat
+import java.util.Locale
+
+private val ringColors = mapOf(
+    RingType.fireball to Color(0xFFFFD700),
+    RingType.psi20 to Color(0xFFE53935),
+    RingType.psi10 to Color(0xFFF4511E),
+    RingType.psi5 to Color(0xFFFF8F00),
+    RingType.psi3 to Color(0xFF00BCD4),
+    RingType.thermal to Color(0xFFE040FB),
+    RingType.psi1 to Color(0xFF7CB342)
+)
+
+private val ringOrder = listOf(
+    RingType.fireball, RingType.psi20, RingType.psi10,
+    RingType.psi5, RingType.psi3, RingType.thermal, RingType.psi1
+)
 
 @Composable
 fun StatsPanel(
@@ -41,22 +52,26 @@ fun StatsPanel(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.width(280.dp).animateContentSize(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = BgSecondary)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "攻击结果统计",
-                    color = TextPrimary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
+                Column {
+                    Text("攻击结果统计", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    if (result.cityName != null) {
+                        Text(
+                            "\uD83D\uDCCD ${result.cityName} · ${targetTypeLabel(result.targetType.name)}",
+                            color = TextMuted, fontSize = 11.sp
+                        )
+                    }
+                }
                 IconButton(onClick = onClose, modifier = Modifier.size(28.dp)) {
                     Icon(Icons.Filled.Close, "关闭", tint = TextSecondary, modifier = Modifier.size(18.dp))
                 }
@@ -64,198 +79,158 @@ fun StatsPanel(
 
             Spacer(Modifier.height(12.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatCard(
-                    title = "死亡人数",
-                    value = formatNumber(result.deaths),
-                    color = Danger
-                )
-                StatCard(
-                    title = "受伤人数",
-                    value = formatNumber(result.injuries),
-                    color = Warning
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatCard(
-                    title = "毁伤总面积",
-                    value = formatArea(result.totalArea),
-                    color = Accent
-                )
-                StatCard(
-                    title = "弹头数量",
-                    value = warheadPoints.size.toString(),
-                    color = TextPrimary
-                )
-            }
+            // 4 stat cards in column
+            StatsCards(result)
 
             Spacer(Modifier.height(16.dp))
 
-            Text(
-                "毁伤等级分布",
-                color = TextSecondary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
+            // Damage bars
+            Text("各毁伤等级覆盖面积", color = TextSecondary, fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
             Spacer(Modifier.height(8.dp))
 
-            DamageBarChart(
-                levels = result.levels,
-                modifier = Modifier.fillMaxWidth().height(140.dp)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            LevelLegend()
+            DamageBars(damageAreas = result.damageAreas)
 
             Spacer(Modifier.height(16.dp))
 
-            Text(
-                "弹头落点详情",
-                color = TextSecondary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
+            // Warhead details
+            Text("弹头落点详情", color = TextSecondary, fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
             Spacer(Modifier.height(8.dp))
 
-            WarheadDetailList(
-                warheadPoints = warheadPoints,
-                targetType = result.targetType.name
-            )
+            WarheadList(warheadPoints = warheadPoints)
         }
     }
 }
 
 @Composable
-private fun RowScope.StatCard(
-    title: String,
+private fun StatsCards(result: SimulationResult) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        StatCard(
+            icon = {
+                Icon(Icons.Filled.Warning, null, tint = Accent, modifier = Modifier.size(20.dp))
+            },
+            color = Accent,
+            value = formatArea(result.totalArea),
+            label = "总毁伤面积 (km²)"
+        )
+        StatCard(
+            icon = {
+                Icon(Icons.Filled.Close, null, tint = Danger, modifier = Modifier.size(20.dp))
+            },
+            color = Danger,
+            value = formatCount(result.deaths),
+            label = "预估死亡人数",
+            valueColor = Danger
+        )
+        StatCard(
+            icon = {
+                Icon(Icons.Filled.Warning, null, tint = Warning, modifier = Modifier.size(20.dp))
+            },
+            color = Warning,
+            value = formatCount(result.injuries),
+            label = "预估受伤人数"
+        )
+        StatCard(
+            icon = {
+                Icon(Icons.Filled.People, null, tint = Accent, modifier = Modifier.size(20.dp))
+            },
+            color = Accent,
+            value = formatCount(result.totalCasualties),
+            label = "总伤亡人数"
+        )
+    }
+}
+
+@Composable
+private fun StatCard(
+    icon: @Composable () -> Unit,
+    color: Color,
     value: String,
-    color: Color
+    label: String,
+    valueColor: Color? = null
 ) {
-    Column(
+    Row(
         modifier = Modifier
-            .weight(1f)
-            .clip(RoundedCornerShape(8.dp))
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
             .background(BgTertiary)
-            .padding(10.dp)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            value,
-            color = color,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-        Spacer(Modifier.height(2.dp))
-        Text(
-            title,
-            color = TextMuted,
-            fontSize = 10.sp
-        )
-    }
-}
-
-@Composable
-private fun DamageBarChart(
-    levels: List<com.mirvsim.app.model.DamageLevel>,
-    modifier: Modifier = Modifier
-) {
-    val maxArea = levels.maxOfOrNull { it.areaKm2 } ?: 1.0
-    val levelColors = listOf(
-        Color(0xFFCC0000),
-        Color(0xFFFF6600),
-        Color(0xFFFF9900),
-        Color(0xFFFFCC00)
-    )
-    val levelLabels = listOf("V毁伤", "IV毁伤", "III毁伤", "II毁伤")
-
-    val barAnim = remember { Animatable(0f) }
-    val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
-
-    LaunchedEffect(Unit) {
-        barAnim.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
-        )
-    }
-
-    Canvas(modifier = modifier.padding(vertical = 4.dp)) {
-        val barCount = levels.size.coerceAtMost(4)
-        if (barCount == 0) return@Canvas
-
-        val chartWidth = size.width
-        val chartHeight = size.height - 24f
-        val barWidth = chartWidth / barCount * 0.4f
-        val gap = chartWidth / barCount * 0.15f
-
-        for (i in 0 until barCount) {
-            val level = levels[i]
-            val ratio = (level.areaKm2 / maxArea).toFloat() * barAnim.value
-            val color = levelColors[i % levelColors.size]
-            val label = levelLabels[i % levelLabels.size]
-            val x = i * (chartWidth / barCount) + gap
-
-            val barHeight = chartHeight * ratio
-            val barTop = chartHeight - barHeight
-
-            drawRoundRect(
-                color = color.copy(alpha = 0.75f),
-                topLeft = Offset(x, barTop),
-                size = Size(barWidth, barHeight),
-                cornerRadius = CornerRadius(6f, 6f)
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .background(color.copy(alpha = 0.15f), RoundedCornerShape(6.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            icon()
+        }
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(
+                value,
+                color = valueColor ?: TextPrimary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                fontFamily = FontFamily.Monospace,
+                lineHeight = 24.sp
             )
-
-            val measured = textMeasurer.measure(
-                text = label,
-                style = TextStyle(
-                    fontSize = 9.sp,
-                    color = Color.White
-                )
-            )
-            drawText(
-                textLayoutResult = measured,
-                topLeft = Offset(
-                    x + barWidth / 2 - measured.size.width / 2f,
-                    barTop + 4f
-                )
-            )
+            Text(label, color = TextMuted, fontSize = 11.sp)
         }
     }
 }
 
 @Composable
-private fun LevelLegend() {
-    val items = listOf(
-        "V" to Color(0xFFCC0000),
-        "IV" to Color(0xFFFF6600),
-        "III" to Color(0xFFFF9900),
-        "II" to Color(0xFFFFCC00)
-    )
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        items.forEach { (label, color) ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
+private fun DamageBars(damageAreas: Map<RingType, Double>) {
+    val maxArea = remember(damageAreas) {
+        ringOrder.maxOf { damageAreas[it] ?: 0.0 }.coerceAtLeast(1.0)
+    }
+    val animProgress = remember { Animatable(0f) }
+
+    LaunchedEffect(damageAreas) {
+        animProgress.snapTo(0f)
+        animProgress.animateTo(1f, tween(800, easing = FastOutSlowInEasing))
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        ringOrder.forEach { type ->
+            val area = damageAreas[type] ?: 0.0
+            val pct = (area / maxArea * animProgress.value).toFloat().coerceIn(0f, 1f)
+            val color = ringColors[type] ?: Accent
+
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    type.displayName,
+                    fontSize = 11.sp,
+                    color = TextSecondary,
+                    fontFamily = FontFamily.Monospace,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End,
+                    modifier = Modifier.width(68.dp)
+                )
+                Spacer(Modifier.width(6.dp))
                 Box(
                     modifier = Modifier
-                        .size(10.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(color)
-                )
-                Spacer(Modifier.width(4.dp))
+                        .weight(1f)
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(BgTertiary)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(fraction = pct)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(color)
+                    )
+                }
+                Spacer(Modifier.width(6.dp))
                 Text(
-                    label,
-                    color = TextMuted,
-                    fontSize = 9.sp
+                    formatArea(area),
+                    fontSize = 11.sp,
+                    color = TextPrimary,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.width(52.dp)
                 )
             }
         }
@@ -263,102 +238,47 @@ private fun LevelLegend() {
 }
 
 @Composable
-private fun WarheadDetailList(
-    warheadPoints: List<WarheadPoint>,
-    targetType: String
-) {
-    val sorted = warheadPoints.sortedBy { it.index }
-    LazyColumn(
-        modifier = Modifier.heightIn(max = 200.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        itemsIndexed(sorted) { idx, wp ->
-            val singleArea = listOf(
-                wp.effects.fireball, wp.effects.psi20, wp.effects.psi10,
-                wp.effects.psi5, wp.effects.psi3, wp.effects.psi1, wp.effects.thermal
-            ).max().let { Math.PI * it * it }
+private fun WarheadList(warheadPoints: List<WarheadPoint>) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        warheadPoints.sortedBy { it.index }.forEachIndexed { i, wp ->
+            val hue = (i.toFloat() / warheadPoints.size.coerceAtLeast(1)) * 300f
+            val dotColor = Color.hsl(hue, 0.9f, 0.6f)
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(6.dp))
                     .background(BgTertiary)
                     .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Accent.copy(alpha = 0.2f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "#${wp.index + 1}",
-                            color = Accent,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            "%.4f°, %.4f°".format(wp.lat, wp.lng),
-                            color = TextPrimary,
-                            fontSize = 11.sp
-                        )
-                        Text(
-                            "HOB: %.0fm · %s".format(
-                                wp.hobMeters,
-                                when (targetType) {
-                                    "urban" -> "城区"
-                                    "suburban" -> "郊区"
-                                    else -> "乡村"
-                                }
-                            ),
-                            color = TextMuted,
-                            fontSize = 9.sp
-                        )
-                    }
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        formatYieldCompact(wp.yieldKt),
-                        color = Warning,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        "%.1f km²".format(singleArea),
-                        color = TextMuted,
-                        fontSize = 9.sp
-                    )
-                }
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(dotColor, RoundedCornerShape(50))
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("#${wp.index + 1}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
+                    color = TextPrimary, modifier = Modifier.width(30.dp))
+                Text("%.4f, %.4f".format(wp.lat, wp.lng), fontSize = 11.sp,
+                    color = TextMuted, fontFamily = FontFamily.Monospace)
             }
         }
     }
 }
 
-private fun formatNumber(num: Int): String {
-    return when {
-        num >= 1_000_000_000 -> "%.1fB".format(num / 1_000_000_000.0)
-        num >= 1_000_000 -> "%.1fM".format(num / 1_000_000.0)
-        num >= 1_000 -> "%.1fK".format(num / 1_000.0)
-        else -> num.toString()
-    }
+private val numberFormatter = NumberFormat.getIntegerInstance(Locale.US)
+private val areaFormatter = NumberFormat.getNumberInstance(Locale.US).apply {
+    minimumFractionDigits = 1
+    maximumFractionDigits = 1
 }
 
-private fun formatArea(area: Double): String {
-    return when {
-        area >= 10_000 -> "%.0fK km²".format(area / 1_000)
-        area >= 1 -> "%.0f km²".format(area)
-        else -> "%.2f km²".format(area)
-    }
-}
+private fun formatCount(num: Int): String = numberFormatter.format(num)
 
-private fun formatYieldCompact(kt: Double): String {
-    return if (kt >= 1000) "%.1fMt".format(kt / 1000) else "%.0fkt".format(kt)
+private fun formatArea(area: Double): String = areaFormatter.format(area) + " km²"
+
+private fun targetTypeLabel(type: String): String = when (type) {
+    "urban" -> "城区"; "suburban" -> "郊区"; else -> "乡村"
 }
 
 @Preview(showBackground = true)
@@ -369,24 +289,16 @@ fun StatsPanelPreview() {
         psi3 = 6.0, psi1 = 10.0, thermal = 15.0, radiation = 3.0
     )
     val dummyResult = SimulationResult(
-        warheadCount = 1,
-        totalArea = 150.0,
-        severeArea = 50.0,
-        deaths = 1200000,
-        injuries = 3500000,
-        totalCasualties = 4700000,
+        warheadCount = 1, totalArea = 150.0, severeArea = 50.0,
+        deaths = 1200000, injuries = 3500000, totalCasualties = 4700000,
         overlapRatio = 0.1,
-        damageAreas = emptyMap(),
-        singleAreas = emptyMap(),
-        effects = dummyEffects,
-        targetType = TargetType.urban,
-        cityName = "北京",
-        levels = listOf(
-            DamageLevel("V毁伤", 40.0),
-            DamageLevel("IV毁伤", 80.0),
-            DamageLevel("III毁伤", 120.0),
-            DamageLevel("II毁伤", 200.0)
-        )
+        damageAreas = mapOf(
+            RingType.fireball to 0.5, RingType.psi20 to 1.0,
+            RingType.psi10 to 2.0, RingType.psi5 to 4.0,
+            RingType.psi3 to 6.0, RingType.thermal to 8.0, RingType.psi1 to 10.0
+        ),
+        singleAreas = emptyMap(), effects = dummyEffects,
+        targetType = TargetType.urban, cityName = "北京"
     )
     val dummyWarheadPoints = listOf(
         WarheadPoint(0, 39.9042, 116.4074, dummyEffects, 100.0, 600.0)
@@ -394,9 +306,7 @@ fun StatsPanelPreview() {
 
     NukemapTheme {
         StatsPanel(
-            result = dummyResult,
-            warheadPoints = dummyWarheadPoints,
-            onClose = {}
+            result = dummyResult, warheadPoints = dummyWarheadPoints, onClose = {}
         )
     }
 }

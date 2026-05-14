@@ -31,7 +31,9 @@ data class MainUiState(
     val isComputing: Boolean = false,
     val isPickMode: Boolean = false,
     val controlDrawerOpen: Boolean = false,
+    val presetsDrawerOpen: Boolean = false,
     val statsSheetOpen: Boolean = false,
+    val settingsOpen: Boolean = false,
     val activePresetId: String? = null,
 
     // === 导航状态 ===
@@ -43,7 +45,15 @@ data class MainUiState(
     val errorMessage: String? = null,
 
     // === 数据 ===
-    val cityList: List<City> = emptyList()
+    val cityList: List<City> = emptyList(),
+
+    // === 设置 ===
+    val isDarkTheme: Boolean? = null,
+    val useDynamicColor: Boolean = true,
+    val tileSource: String = "MAPNIK",
+    val popupEnabled: Boolean = true,
+    val autoLaunchPreset: Boolean = true,
+    val ringAnimation: Boolean = true
 ) {
     val hasSimulationResult: Boolean get() = simulationResult != null
 }
@@ -55,5 +65,4 @@ data class MainUiState(
 sealed interface MainUiEvent {
     data class ShowToast(val message: String) : MainUiEvent
     data class ShowError(val message: String) : MainUiEvent
-    object NavigateToLogs : MainUiEvent
 }
