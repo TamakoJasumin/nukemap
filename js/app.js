@@ -768,65 +768,168 @@
     }
 
     // 浏览器地理定位 — 定位到用户所在城市并同步地图和模拟
+    // 通过 IP 获取大致位置（作为 navigator.geolocation 的备用方案）
+    function fallbackToIPLocation() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://ipapi.co/json/', true);
+        xhr.timeout = 5000;
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.latitude && data.longitude) {
+                        var lat = parseFloat(data.latitude);
+                        var lng = parseFloat(data.longitude);
+                        applyLocation(lat, lng);
+                        showToast('已通过 IP 获取大致位置', 'success');
+                    }
+                } catch (e) {
+                    console.log('IP 定位解析失败');
+                }
+            }
+        };
+        xhr.onerror = function() {
+            console.log('IP 定位请求失败');
+        };
+        xhr.send();
+    }
+
+    // 应用位置到界面
+    function applyLocation(lat, lng) {
+        State.myLat = lat;
+        State.myLng = lng;
+        MapEngine.setMyLocation(lat, lng);
+
+        State.targetLat = lat;
+        State.targetLng = lng;
+
+        var city = findNearestCity(lat, lng);
+        var val = lat.toFixed(4) + ',' + lng.toFixed(4);
+        if (city) {
+            val = city.lat.toFixed(4) + ',' + city.lng.toFixed(4);
+        }
+
+        var select = document.getElementById('selectCity');
+        if (select) {
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === val) {
+                    select.value = val;
+                    break;
+                }
+            }
+        }
+
+        var inputLat = document.getElementById('inputLat');
+        var inputLng = document.getElementById('inputLng');
+        if (inputLat) inputLat.value = lat;
+        if (inputLng) inputLng.value = lng;
+
+        MapEngine.setTarget(lat, lng);
+        MapEngine.map.setView([lat, lng], 11);
+
+        document.getElementById('coordDisplay').textContent =
+            '目标: ' + lat.toFixed(4) + '°, ' + lng.toFixed(4) + '°';
+
+        console.log('已定位到当前城市: ' + (city ? city.display : (lat.toFixed(4) + ', ' + lng.toFixed(4))));
+    }
+
     function tryGeolocate() {
-        if (!navigator.geolocation) return;
+        // 1. 优先尝试原生 Windows 定位（GPS/WiFi，最准确）
+        if (window.electronAPI && window.electronAPI.getNativeLocation) {
+            window.electronAPI.getNativeLocation().then(function(pos) {
+                if (pos && pos.latitude && pos.longitude) {
+                    applyLocation(pos.latitude, pos.longitude);
+                    showToast('已通过 Windows 定位获取位置', 'success');
+                    return;
+                }
+                // 2. 原生定位失败，尝试浏览器定位
+                tryBrowserGeolocate();
+            }).catch(function() {
+                tryBrowserGeolocate();
+            });
+        } else {
+            tryBrowserGeolocate();
+        }
+    }
+
+    function tryBrowserGeolocate() {
+        if (!navigator.geolocation) {
+            console.log('浏览器不支持地理定位，尝试 IP 定位...');
+            fallbackToIPLocation();
+            return;
+        }
 
         navigator.geolocation.getCurrentPosition(
             function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-
-                State.myLat = lat;
-                State.myLng = lng;
-                MapEngine.setMyLocation(lat, lng);
-
-                State.targetLat = lat;
-                State.targetLng = lng;
-
-                var city = findNearestCity(lat, lng);
-                var val = lat.toFixed(4) + ',' + lng.toFixed(4);
-                if (city) {
-                    // 仅用于选中最接近的城市下拉项，不改动坐标
-                    val = city.lat.toFixed(4) + ',' + city.lng.toFixed(4);
-                }
-
-                var select = document.getElementById('selectCity');
-                if (select) {
-                    for (var i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === val) {
-                            select.value = val;
-                            break;
-                        }
-                    }
-                }
-
-                var inputLat = document.getElementById('inputLat');
-                var inputLng = document.getElementById('inputLng');
-                if (inputLat) inputLat.value = lat;
-                if (inputLng) inputLng.value = lng;
-
-                MapEngine.setTarget(lat, lng);
-                MapEngine.map.setView([lat, lng], 11);
-
-                document.getElementById('coordDisplay').textContent =
-                    '目标: ' + lat.toFixed(4) + '°, ' + lng.toFixed(4) + '°';
-
-                console.log('已定位到当前城市: ' + (city ? city.display : (lat.toFixed(4) + ', ' + lng.toFixed(4))));
+                applyLocation(position.coords.latitude, position.coords.longitude);
             },
             function(error) {
-                console.log('地理定位失败，使用默认位置: ' + error.message);
+                console.log('浏览器地理定位失败: ' + error.message + '，尝试 IP 定位...');
+                fallbackToIPLocation();
             },
             {
                 enableHighAccuracy: false,
-                timeout: 5000,
+                timeout: 8000,
                 maximumAge: 300000
             }
         );
     }
 
+    // 通过备用 IP 服务获取大致位置（仅刷新我的位置标记）
+    function fallbackRefreshIP() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://ipinfo.io/json', true);
+        xhr.timeout = 5000;
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.loc) {
+                        var parts = data.loc.split(',');
+                        var lat = parseFloat(parts[0]);
+                        var lng = parseFloat(parts[1]);
+                        State.myLat = lat;
+                        State.myLng = lng;
+                        MapEngine.setMyLocation(lat, lng);
+                        showToast('已通过 IP 更新位置', 'success');
+                        return;
+                    }
+                } catch (e) {}
+            }
+            showToast('获取位置失败，请检查网络或手动设置坐标', 'error');
+        };
+        xhr.onerror = function() {
+            showToast('获取位置失败，请检查网络或手动设置坐标', 'error');
+        };
+        xhr.send();
+    }
+
     // 重新请求地理位置，仅更新我的位置标记，不改变目标
     function refreshMyLocation() {
-        if (!navigator.geolocation) return;
+        // 1. 优先尝试原生 Windows 定位
+        if (window.electronAPI && window.electronAPI.getNativeLocation) {
+            window.electronAPI.getNativeLocation().then(function(pos) {
+                if (pos && pos.latitude && pos.longitude) {
+                    State.myLat = pos.latitude;
+                    State.myLng = pos.longitude;
+                    MapEngine.setMyLocation(pos.latitude, pos.longitude);
+                    showToast('已通过 Windows 定位更新位置', 'success');
+                    return;
+                }
+                refreshBrowserLocation();
+            }).catch(function() {
+                refreshBrowserLocation();
+            });
+        } else {
+            refreshBrowserLocation();
+        }
+    }
+
+    function refreshBrowserLocation() {
+        if (!navigator.geolocation) {
+            fallbackRefreshIP();
+            return;
+        }
 
         navigator.geolocation.getCurrentPosition(
             function(position) {
@@ -838,11 +941,12 @@
                 showToast('已更新当前位置', 'success');
             },
             function(error) {
-                showToast('获取位置失败: ' + error.message, 'error');
+                console.log('刷新位置失败: ' + error.message + '，尝试 IP 定位...');
+                fallbackRefreshIP();
             },
             {
-                enableHighAccuracy: true,
-                timeout: 10000,
+                enableHighAccuracy: false,
+                timeout: 8000,
                 maximumAge: 60000
             }
         );
