@@ -307,19 +307,6 @@ object StatsCalculator {
 
         val damageAreasMap = ringPriority.indices.associate { ringPriority[it] to damageAreas[it] }
 
-        val sumArea = ringPriority.sumOf { type ->
-            val r = getRingRadius(effects, type)
-            if (r != null) PI * r * r * warheadPoints.size else 0.0
-        }
-        val overlapRatio = if (sumArea > 0) {
-            maxOf(0.0, minOf(0.95, 1.0 - totalAreaKm2 / sumArea))
-        } else 0.0
-
-        val singleAreas = ringPriority.associateWith { type ->
-            val r = getRingRadius(effects, type)
-            if (r != null) PI * r * r else 0.0
-        }
-
         // 重叠率计算：1 - (实际覆盖面积 / 各弹头独立覆盖面积之和)
         // 值越接近 1 表示重叠越严重
         var sumArea = 0.0
