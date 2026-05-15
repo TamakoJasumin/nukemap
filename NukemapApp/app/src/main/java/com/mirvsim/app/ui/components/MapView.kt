@@ -10,7 +10,8 @@
  * 6. 环展开动画效果
  *
  * 图源支持：
- * - MAPNIK: OpenStreetMap 默认样式
+ * - AUTONAVI: 高德地图（GCJ-02，默认）
+ * - MAPNIK: OpenStreetMap
  * - CARTO_LIGHT: CartoDB 浅色高清（512px 瓦片）
  * - USGS_SAT: ESRI 卫星混合图
  * - OPEN_TOPO_MAP: OpenTopoMap 地形图
@@ -62,6 +63,24 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.util.MapTileIndex
 
+/** 高德地图瓦片源（GCJ-02 坐标系） */
+private val AUTONAVI = object : OnlineTileSourceBase(
+    "AutoNavi", 2, 18, 256, "",
+    arrayOf(
+        "https://webrd01.is.autonavi.com/appmaptile",
+        "https://webrd02.is.autonavi.com/appmaptile",
+        "https://webrd03.is.autonavi.com/appmaptile",
+        "https://webrd04.is.autonavi.com/appmaptile",
+    )
+) {
+    override fun getTileURLString(pMapTileIndex: Long): String {
+        return baseUrl + "?lang=zh_cn&size=1&scale=1&style=8&x=" +
+                MapTileIndex.getX(pMapTileIndex) + "&y=" +
+                MapTileIndex.getY(pMapTileIndex) + "&z=" +
+                MapTileIndex.getZoom(pMapTileIndex)
+    }
+}
+
 /** CartoDB 浅色高清瓦片源（512px Retina 级别） */
 private val CARTO_LIGHT_RETINA = XYTileSource(
     "CartoDB_Light_Retina",
@@ -85,8 +104,9 @@ fun MapView(
     modifier: Modifier = Modifier,
     myLat: Double = 0.0,
     myLng: Double = 0.0,
+    myLocationTrigger: Int = 0,
     popupEnabled: Boolean = true,
-    tileSource: String = "MAPNIK",
+    tileSource: String = "AUTONAVI",
     ringAnimEnabled: Boolean = true,
 ) {
     val context = LocalContext.current
@@ -101,6 +121,8 @@ fun MapView(
         }
         return
     }
+
+    val useGcj02 = tileSource == "AUTONAVI"
 
     var showRingAnimation by remember { mutableStateOf(value = false) }
     val ringAnimProgress = remember { Animatable(0f) }
@@ -117,19 +139,25 @@ fun MapView(
     val currentMyLat by rememberUpdatedState(myLat)
     val currentMyLng by rememberUpdatedState(myLng)
     val currentPopupEnabled by rememberUpdatedState(popupEnabled)
+    val currentUseGcj02 by rememberUpdatedState(useGcj02)
 
     // 创建 osmdroid MapView 实例（仅创建一次）
     val mapView = remember {
         val density = context.resources.displayMetrics.density
         OSMMapView(context).apply {
             id = android.R.id.content
-            setTileSource(TileSourceFactory.MAPNIK)
+            setTileSource(AUTONAVI)
             setMultiTouchControls(true)                       // 启用手势缩放
             zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
             minZoomLevel = 2.0
             maxZoomLevel = 18.0
             controller.setZoom(5.0)                           // 默认缩放级别
-            controller.setCenter(GeoPoint(35.0, 105.0))       // 默认中心（中国附近）
+            if (useGcj02) {
+                val g = CoordTransform.wgs84togcj02(105.0, 35.0)
+                controller.setCenter(GeoPoint(g[1], g[0]))
+            } else {
+                controller.setCenter(GeoPoint(35.0, 105.0))
+            }
 
             // 降低瓦片缩放上限以减少拉伸模糊，高 DPI 下字体更清晰
             setTilesScaleFactor(
@@ -143,11 +171,17 @@ fun MapView(
         val eventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
                 if (currentPickMode) {
-                    currentOnMapClick(p.latitude, p.longitude)
+                    if (currentUseGcj02) {
+                        val g = CoordTransform.gcj02towgs84(p.longitude, p.latitude)
+                        currentOnMapClick(g[1], g[0])
+                    } else {
+                        currentOnMapClick(p.latitude, p.longitude)
+                    }
                     return true
                 }
                 if (currentPopupEnabled) {
-                    showDamagePopup(mapView, p, currentWarheadPoints, currentEffects) { popupInfo = it }
+                    // 传原始地图坐标（GCJ-02）用于标记位置，传递 WGS-84 用于距离计算
+                    showDamagePopup(mapView, p, currentWarheadPoints, currentEffects, currentUseGcj02) { popupInfo = it }
                 }
                 return true
             }
@@ -157,17 +191,23 @@ fun MapView(
     }
 
     // 数据变化时重建覆盖层（标记、毁伤环等）
-    LaunchedEffect(warheadPoints, effects) {
+    LaunchedEffect(warheadPoints, effects, targetLat, targetLng, myLat, myLng, useGcj02) {
         rebuildOverlays(mapView, currentTargetLat, currentTargetLng,
-            currentMyLat, currentMyLng, currentWarheadPoints, currentEffects)
+            currentMyLat, currentMyLng, currentWarheadPoints, currentEffects, useGcj02)
     }
 
-    // 目标位置变化时地图自动移动（跳过初始未设置状态）
-    LaunchedEffect(targetLat, targetLng) {
+    // 目标位置变化或点击回到我的位置时，地图自动移动
+    LaunchedEffect(targetLat, targetLng, myLocationTrigger, useGcj02) {
         if (targetLat == 0.0 && targetLng == 0.0) return@LaunchedEffect
-        mapView.controller.animateTo(GeoPoint(targetLat, targetLng))
+        val center = if (useGcj02) {
+            val g = CoordTransform.wgs84togcj02(targetLng, targetLat)
+            GeoPoint(g[1], g[0])
+        } else {
+            GeoPoint(targetLat, targetLng)
+        }
+        mapView.controller.animateTo(center)
         if (mapView.zoomLevelDouble < 8.0) {
-            mapView.controller.setZoom(11.0)  // 初次定位自动放大到城市级别
+            mapView.controller.setZoom(12.0)  // 初次定位或回到位置自动放大
         }
     }
 
@@ -191,6 +231,12 @@ fun MapView(
         val adaptiveScale = (density * 0.6f).coerceIn(1.2f, 2.0f)
         
         when (tileSource) {
+            "AUTONAVI" -> {
+                mapView.setTileSource(AUTONAVI)
+                mapView.setTilesScaleFactor(
+                    (density / 2.0f).coerceIn(1.0f, 1.4f)
+                )
+            }
             "CARTO_LIGHT" -> {
                 mapView.setTileSource(CARTO_LIGHT_RETINA)
                 mapView.setTilesScaleFactor((density / 1.8f).coerceIn(1.0f, 1.6f))
@@ -313,6 +359,7 @@ private fun showDamagePopup(
     clickPoint: GeoPoint,
     warheadPoints: List<WarheadPoint>,
     effectsList: List<NukeEffectsResult>?,
+    useGcj02: Boolean = false,
     onPopup: (PopupInfo) -> Unit
 ) {
     if (warheadPoints.isEmpty() || effectsList.isNullOrEmpty()) return
@@ -324,8 +371,13 @@ private fun showDamagePopup(
     }
     popupMarkers.clear()
 
-    val clickLat = clickPoint.latitude
-    val clickLng = clickPoint.longitude
+    // 将点击坐标统一为 WGS-84 用于与弹头数据做距离计算
+    val (clickLat, clickLng) = if (useGcj02) {
+        val g = CoordTransform.gcj02towgs84(clickPoint.longitude, clickPoint.latitude)
+        g[1] to g[0]
+    } else {
+        clickPoint.latitude to clickPoint.longitude
+    }
 
     // 找到离点击点最近的弹头
     var bestDist = Double.MAX_VALUE
@@ -449,8 +501,14 @@ private fun rebuildOverlays(
     myLat: Double,
     myLng: Double,
     warheadPoints: List<WarheadPoint>,
-    effects: List<NukeEffectsResult>?
+    effects: List<NukeEffectsResult>?,
+    useGcj02: Boolean = false
 ) {
+    fun toGcj(lat: Double, lng: Double): GeoPoint {
+        if (!useGcj02) return GeoPoint(lat, lng)
+        val g = CoordTransform.wgs84togcj02(lng, lat)
+        return GeoPoint(g[1], g[0])
+    }
     // 清除旧的弹窗标记
     for (m in popupMarkers) { mapView.overlays.remove(m) }
     popupMarkers.clear()
@@ -470,7 +528,7 @@ private fun rebuildOverlays(
                 if (ring.outerRadiusKm <= 0) return@forEachIndexed
                 val radiusM = ring.outerRadiusKm * 1000.0
                 val points = Polygon.pointsAsCircle(
-                    GeoPoint(effect.centerLat, effect.centerLng), radiusM
+                    toGcj(effect.centerLat, effect.centerLng), radiusM
                 )
                 // 不同毁伤等级使用不同虚线样式
                 val dashPattern = when (ri) {
@@ -500,7 +558,7 @@ private fun rebuildOverlays(
             if (wp.index == 0) {
                 effect.rings.forEach { ring ->
                     if (ring.outerRadiusKm <= 0) return@forEach
-                    val labelPos = GeoPoint(
+                    val labelPos = toGcj(
                         effect.centerLat + ring.outerRadiusKm / 111.32 * 1.02,
                         effect.centerLng
                     )
@@ -518,24 +576,12 @@ private fun rebuildOverlays(
 
     // 目标位置标记
     val targetMarker = Marker(mapView).apply {
-        position = GeoPoint(targetLat, targetLng)
+        position = toGcj(targetLat, targetLng)
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
         icon = createTargetMarker(mapView.context)
         title = "目标"
     }
     mapView.overlays.add(targetMarker)
-
-    // 设备当前位置标记（蓝色圆点，仅在有效坐标时显示）
-    if (myLat != 0.0 && myLng != 0.0) {
-        val myLocationMarker = Marker(mapView).apply {
-            position = GeoPoint(myLat, myLng)
-            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-            icon = createMyLocationMarker(mapView.context)
-            title = "我的位置"
-            setInfoWindow(null)
-        }
-        mapView.overlays.add(myLocationMarker)
-    }
 
     // 弹头落点标记（每个弹头使用 HLS 色相区分颜色）
     if (warheadPoints.isNotEmpty() && effects != null) {
@@ -544,7 +590,7 @@ private fun rebuildOverlays(
             val color = Color.hsl(hue, 0.9f, 0.6f)
 
             val marker = Marker(mapView).apply {
-                position = GeoPoint(wp.lat, wp.lng)
+                position = toGcj(wp.lat, wp.lng)
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                 icon = createWarheadMarker(mapView.context, color)
                 title = "#%d: %.0fkt".format(wp.index + 1, wp.yieldKt)
@@ -552,6 +598,19 @@ private fun rebuildOverlays(
             }
             mapView.overlays.add(marker)
         }
+    }
+
+    // 设备当前位置标记（蓝色圆点，仅在有效坐标时显示）
+    // 放在最后添加以确保显示在弹头标记之上
+    if (myLat != 0.0 && myLng != 0.0) {
+        val myLocationMarker = Marker(mapView).apply {
+            position = toGcj(myLat, myLng)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            icon = createMyLocationMarker(mapView.context)
+            title = "我的位置"
+            setInfoWindow(null)
+        }
+        mapView.overlays.add(myLocationMarker)
     }
 
     // 将事件监听器移到最上层，确保点击响应
