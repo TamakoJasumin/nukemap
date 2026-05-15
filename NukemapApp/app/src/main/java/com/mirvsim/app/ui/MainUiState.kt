@@ -22,16 +22,18 @@ import com.mirvsim.app.ui.components.BottomNavItem
 
 data class MainUiState(
     // ========== 模拟参数 ==========
-    val warheadCount: Int = 4,         // 弹头数量（默认 4 枚）
-    val yieldKt: Double = 150.0,       // 单弹头当量，单位 kt
+    val warheadCount: Int = 1,         // 弹头数量（默认 1 枚）
+    val yieldKt: Double = 50000.0,     // 单弹头当量，单位 kt（默认最大当量 50Mt）
     val separationKm: Double = 1.5,    // 弹头分离距离，单位 km
     val pattern: String = "circular",   // 散布模式
     val hobMode: String = "optimal",    // 爆高模式
     val targetType: String = "urban",   // 目标类型
 
     // ========== 目标位置 ==========
-    val targetLat: Double = 39.9042,   // 目标纬度（默认北京）
-    val targetLng: Double = 116.4074,  // 目标经度（默认北京）
+    val targetLat: Double = 0.0,       // 目标纬度（初始未设置，由 GPS 或用户选择确定）
+    val targetLng: Double = 0.0,       // 目标经度（初始未设置，由 GPS 或用户选择确定）
+    val myLat: Double = 0.0,           // 设备当前位置纬度
+    val myLng: Double = 0.0,           // 设备当前位置经度
 
     // ========== 模拟结果 ==========
     val warheadPoints: List<WarheadPoint> = emptyList(),   // 弹头落点列表

@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mirvsim.app.model.DamageEffects
-import com.mirvsim.app.model.DamageLevel
 import com.mirvsim.app.model.RingType
 import com.mirvsim.app.model.SimulationResult
 import com.mirvsim.app.model.TargetType
@@ -66,7 +65,7 @@ fun StatsPanel(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(0.dp),
-        colors = CardDefaults.cardColors(containerColor = BgSecondary)
+        colors = CardDefaults.cardColors(containerColor = DarkSurface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // 顶部标题栏（含关闭按钮）
@@ -76,14 +75,14 @@ fun StatsPanel(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("攻击结果统计", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("攻击结果统计", color = DarkOnBackground, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     if (result.cityName != null) {
                         Text("\uD83D\uDCCD ${result.cityName} · ${targetTypeLabel(result.targetType.name)}",
-                            color = TextMuted, fontSize = 11.sp)
+                            color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 11.sp)
                     }
                 }
                 IconButton(onClick = onClose, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Filled.Close, "关闭", tint = TextSecondary, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Close, "关闭", tint = DarkOnSurfaceVariant, modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -95,7 +94,7 @@ fun StatsPanel(
             Spacer(Modifier.height(16.dp))
 
             // 各毁伤等级覆盖面积条形图
-            Text("各毁伤等级覆盖面积", color = TextSecondary, fontSize = 12.sp,
+            Text("各毁伤等级覆盖面积", color = DarkOnSurfaceVariant, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
             Spacer(Modifier.height(8.dp))
             DamageBars(damageAreas = result.damageAreas)
@@ -103,7 +102,7 @@ fun StatsPanel(
             Spacer(Modifier.height(16.dp))
 
             // 弹头落点详情列表
-            Text("弹头落点详情", color = TextSecondary, fontSize = 12.sp,
+            Text("弹头落点详情", color = DarkOnSurfaceVariant, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
             Spacer(Modifier.height(8.dp))
             WarheadList(warheadPoints = warheadPoints)
@@ -116,17 +115,17 @@ fun StatsPanel(
 private fun StatsCards(result: SimulationResult) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         StatCard(
-            icon = { Icon(Icons.Filled.Warning, null, tint = Accent, modifier = Modifier.size(20.dp)) },
-            color = Accent, value = formatArea(result.totalArea), label = "总毁伤面积 (km²)")
+            icon = { Icon(Icons.Filled.Warning, null, tint = NukeOrange, modifier = Modifier.size(20.dp)) },
+            color = NukeOrange, value = formatArea(result.totalArea), label = "总毁伤面积 (km²)")
         StatCard(
-            icon = { Icon(Icons.Filled.Close, null, tint = Danger, modifier = Modifier.size(20.dp)) },
-            color = Danger, value = formatCount(result.deaths), label = "预估死亡人数", valueColor = Danger)
+            icon = { Icon(Icons.Filled.Close, null, tint = NukeRed, modifier = Modifier.size(20.dp)) },
+            color = NukeRed, value = formatCount(result.deaths), label = "预估死亡人数", valueColor = NukeRed)
         StatCard(
-            icon = { Icon(Icons.Filled.Warning, null, tint = Warning, modifier = Modifier.size(20.dp)) },
-            color = Warning, value = formatCount(result.injuries), label = "预估受伤人数")
+            icon = { Icon(Icons.Filled.Warning, null, tint = NukeYellow, modifier = Modifier.size(20.dp)) },
+            color = NukeYellow, value = formatCount(result.injuries), label = "预估受伤人数")
         StatCard(
-            icon = { Icon(Icons.Filled.People, null, tint = Accent, modifier = Modifier.size(20.dp)) },
-            color = Accent, value = formatCount(result.totalCasualties), label = "总伤亡人数")
+            icon = { Icon(Icons.Filled.People, null, tint = NukeOrange, modifier = Modifier.size(20.dp)) },
+            color = NukeOrange, value = formatCount(result.totalCasualties), label = "总伤亡人数")
     }
 }
 
@@ -142,7 +141,7 @@ private fun StatCard(
     Row(
         modifier = Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(BgTertiary)
+            .background(DarkSurfaceVariant)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -153,9 +152,9 @@ private fun StatCard(
         ) { icon() }
         Spacer(Modifier.width(12.dp))
         Column {
-            Text(value, color = valueColor ?: TextPrimary, fontWeight = FontWeight.Bold,
+            Text(value, color = valueColor ?: DarkOnBackground, fontWeight = FontWeight.Bold,
                 fontSize = 20.sp, fontFamily = FontFamily.Monospace, lineHeight = 24.sp)
-            Text(label, color = TextMuted, fontSize = 11.sp)
+            Text(label, color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 11.sp)
         }
     }
 }
@@ -182,21 +181,21 @@ private fun DamageBars(damageAreas: Map<RingType, Double>) {
         ringOrder.forEach { type ->
             val area = damageAreas[type] ?: 0.0
             val pct = (area / maxArea * animProgress.value).toFloat().coerceIn(0f, 1f)
-            val color = ringColors[type] ?: Accent
+            val color = ringColors[type] ?: NukeOrange
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(type.displayName, fontSize = 11.sp, color = TextSecondary,
+                Text(type.displayName, fontSize = 11.sp, color = DarkOnSurfaceVariant,
                     fontFamily = FontFamily.Monospace,
                     textAlign = androidx.compose.ui.text.style.TextAlign.End,
                     modifier = Modifier.width(68.dp))
                 Spacer(Modifier.width(6.dp))
                 Box(modifier = Modifier.weight(1f).height(12.dp)
-                    .clip(RoundedCornerShape(6.dp)).background(BgTertiary)) {
+                    .clip(RoundedCornerShape(6.dp)).background(DarkSurfaceVariant)) {
                     Box(modifier = Modifier.fillMaxHeight().fillMaxWidth(fraction = pct)
                         .clip(RoundedCornerShape(6.dp)).background(color))
                 }
                 Spacer(Modifier.width(6.dp))
-                Text(formatArea(area), fontSize = 11.sp, color = TextPrimary,
+                Text(formatArea(area), fontSize = 11.sp, color = DarkOnBackground,
                     fontFamily = FontFamily.Monospace, modifier = Modifier.width(52.dp))
             }
         }
@@ -214,16 +213,16 @@ private fun WarheadList(warheadPoints: List<WarheadPoint>) {
             Row(
                 modifier = Modifier.fillMaxWidth()
                     .clip(RoundedCornerShape(6.dp))
-                    .background(BgTertiary)
+                    .background(DarkSurfaceVariant)
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(modifier = Modifier.size(10.dp).background(dotColor, RoundedCornerShape(50)))
                 Spacer(Modifier.width(8.dp))
                 Text("#${wp.index + 1}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary, modifier = Modifier.width(30.dp))
+                    color = DarkOnBackground, modifier = Modifier.width(30.dp))
                 Text("%.4f, %.4f".format(wp.lat, wp.lng), fontSize = 11.sp,
-                    color = TextMuted, fontFamily = FontFamily.Monospace)
+                    color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontFamily = FontFamily.Monospace)
             }
         }
     }

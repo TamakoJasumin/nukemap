@@ -188,6 +188,8 @@ fun MainScreen(
             MapView(
                 targetLat = uiState.targetLat,
                 targetLng = uiState.targetLng,
+                myLat = uiState.myLat,
+                myLng = uiState.myLng,
                 warheadPoints = uiState.warheadPoints,
                 effects = uiState.simulationResult?.effectsList,
                 pickMode = uiState.isPickMode,
@@ -322,6 +324,7 @@ fun MainScreen(
                                                 onClear = { viewModel.clearResult() },
                                                 onReset = { viewModel.resetAll() },
                                                 onShare = handleShare,
+                                                onSavePreset = { viewModel.saveCurrentPreset("我的预设") },
                                                 modifier = Modifier.fillMaxSize()
                                             )
                                         }
@@ -412,11 +415,12 @@ fun MainScreen(
                         onClear = { viewModel.clearResult() },
                         onReset = { viewModel.resetAll() },
                         onShare = handleShare,
+                        onSavePreset = { viewModel.saveCurrentPreset("我的预设") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-
+ 
             // 预设场景面板（手机端底部抽屉）
             if (isCompact && uiState.presetsDrawerOpen) {
                 ModalBottomSheet(

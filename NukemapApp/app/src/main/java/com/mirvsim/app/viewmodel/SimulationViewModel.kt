@@ -13,14 +13,22 @@
  */
 package com.mirvsim.app.viewmodel
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.LocationServices
+import com.mirvsim.app.data.local.AppDatabase
+import com.mirvsim.app.data.local.SettingsManager
+import com.mirvsim.app.data.local.entity.SimulationHistory
+import com.mirvsim.app.data.local.entity.UserPreset
 import com.mirvsim.app.data.repository.CityRepositoryImpl
 import com.mirvsim.app.domain.repository.CityRepository
 import com.mirvsim.app.domain.usecase.SimulationUseCase
@@ -58,6 +66,11 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
     private val simulationUseCase = SimulationUseCase()
     private var cityDatabase: CityDatabase? = null
 
+    // ========== 持久化存储 ==========
+
+    private val database = AppDatabase.getInstance(application)
+    private val settingsManager = SettingsManager(application)
+
     // ========== 网络状态监听 ==========
 
     private val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE)
@@ -80,6 +93,22 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
     init {
         loadCities()
         registerNetworkCallback()
+        fetchLastLocation()
+        // 从 DataStore 恢复设置
+        viewModelScope.launch {
+            settingsManager.settingsFlow.collect { prefs ->
+                _uiState.update { state ->
+                    state.copy(
+                        isDarkTheme = prefs[SettingsManager.IS_DARK_THEME] ?: false,
+                        useDynamicColor = prefs[SettingsManager.USE_DYNAMIC_COLOR] ?: true,
+                        tileSource = prefs[SettingsManager.MAP_TILE_SOURCE] ?: "MAPNIK",
+                        autoLaunchPreset = prefs[SettingsManager.AUTO_LAUNCH_PRESET] ?: true,
+                        popupEnabled = prefs[SettingsManager.POPUP_ENABLED] ?: true,
+                        ringAnimation = prefs[SettingsManager.RING_ANIMATION] ?: true
+                    )
+                }
+            }
+        }
     }
 
     /** 注册网络状态监听器 */
@@ -93,6 +122,26 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
     override fun onCleared() {
         super.onCleared()
         connectivityManager.unregisterNetworkCallback(networkCallback)
+    }
+
+    /** 获取缓存的 last known location，实现打开即定位 */
+    private fun fetchLastLocation() {
+        viewModelScope.launch {
+            try {
+                val ctx = getApplication<Application>()
+                val fineGranted = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+                val coarseGranted = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)
+                if (fineGranted != PackageManager.PERMISSION_GRANTED && coarseGranted != PackageManager.PERMISSION_GRANTED) {
+                    return@launch
+                }
+                val client = LocationServices.getFusedLocationProviderClient(ctx)
+                client.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        _uiState.update { it.copy(targetLat = location.latitude, targetLng = location.longitude, myLat = location.latitude, myLng = location.longitude) }
+                    }
+                }
+            } catch (_: Exception) { }
+        }
     }
 
     /** 从仓库加载城市数据并初始化 CityDatabase */
@@ -156,9 +205,12 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
 
     // ========== UI 交互方法 ==========
 
-    /** 切换地图点选模式 */
+    /** 切换地图点选模式（进入时自动关闭抽屉返回地图） */
     fun togglePickMode() {
-        _uiState.update { it.copy(isPickMode = !it.isPickMode) }
+        _uiState.update {
+            if (it.isPickMode) it.copy(isPickMode = false)
+            else it.copy(isPickMode = true, controlDrawerOpen = false, presetsDrawerOpen = false)
+        }
     }
 
     /** 切换控制面板（手机端底部抽屉） */
@@ -210,17 +262,6 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    /** 应用城市选择（旧版，保留兼容性） */
-    fun applyCity(city: City) {
-        _uiState.update {
-            it.copy(
-                targetLat = city.lat,
-                targetLng = city.lng,
-                controlDrawerOpen = false
-            )
-        }
-    }
-
     /** 选择城市作为目标位置 */
     fun selectCity(city: City) {
         _uiState.update {
@@ -236,7 +277,9 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update {
             it.copy(
                 targetLat = lat,
-                targetLng = lng
+                targetLng = lng,
+                myLat = lat,
+                myLng = lng
             )
         }
         viewModelScope.launch {
@@ -308,6 +351,20 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                     )
                 }
 
+                // 自动保存模拟历史
+                database.historyDao().insert(
+                    SimulationHistory(
+                        targetLat = currentState.targetLat,
+                        targetLng = currentState.targetLng,
+                        cityName = result.cityName,
+                        warheadCount = currentState.warheadCount,
+                        yieldKt = currentState.yieldKt,
+                        deaths = result.deaths,
+                        totalCasualties = result.totalCasualties,
+                        targetType = currentState.targetType
+                    )
+                )
+
                 _events.emit(MainUiEvent.ShowToast("模拟完成: ${currentState.warheadCount} 枚弹头已投放"))
 
             } catch (e: Exception) {
@@ -334,7 +391,7 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    /** 重置所有参数到默认值（保留设置项） */
+    /** 重置所有参数到默认值（保留设置项和当前位置） */
     fun resetAll() {
         _uiState.update {
             MainUiState(
@@ -344,7 +401,9 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                 tileSource = it.tileSource,
                 popupEnabled = it.popupEnabled,
                 autoLaunchPreset = it.autoLaunchPreset,
-                ringAnimation = it.ringAnimation
+                ringAnimation = it.ringAnimation,
+                myLat = it.myLat,
+                myLng = it.myLng
             )
         }
     }
@@ -358,26 +417,51 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
 
     fun setDarkTheme(dark: Boolean) {
         _uiState.update { it.copy(isDarkTheme = dark) }
+        viewModelScope.launch { settingsManager.setDarkTheme(dark) }
     }
 
     fun setDynamicColor(use: Boolean) {
         _uiState.update { it.copy(useDynamicColor = use) }
+        viewModelScope.launch { settingsManager.setDynamicColor(use) }
     }
 
     fun setTileSource(source: String) {
         _uiState.update { it.copy(tileSource = source) }
+        viewModelScope.launch { settingsManager.setTileSource(source) }
     }
 
     fun setPopupEnabled(enabled: Boolean) {
         _uiState.update { it.copy(popupEnabled = enabled) }
+        viewModelScope.launch { settingsManager.setPopupEnabled(enabled) }
     }
 
     fun setAutoLaunchPreset(auto: Boolean) {
         _uiState.update { it.copy(autoLaunchPreset = auto) }
+        viewModelScope.launch { settingsManager.setAutoLaunchPreset(auto) }
     }
 
     fun setRingAnimation(enabled: Boolean) {
         _uiState.update { it.copy(ringAnimation = enabled) }
+        viewModelScope.launch { settingsManager.setRingAnimation(enabled) }
+    }
+
+    // ========== 自定义预设方法 ==========
+
+    fun saveCurrentPreset(name: String) {
+        val state = _uiState.value
+        viewModelScope.launch {
+            database.presetDao().insert(
+                UserPreset(
+                    name = name,
+                    warheadCount = state.warheadCount,
+                    yieldKt = state.yieldKt,
+                    separationKm = state.separationKm,
+                    pattern = state.pattern,
+                    hobMode = state.hobMode
+                )
+            )
+            _events.emit(MainUiEvent.ShowToast("预设「$name」已保存"))
+        }
     }
 
     // ========== 导航方法 ==========

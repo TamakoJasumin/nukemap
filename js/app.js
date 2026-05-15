@@ -668,6 +668,80 @@
         });
     }
 
+    // 根据经纬度查找最近的城市（CITY_LIST 中匹配）
+    function findNearestCity(lat, lng) {
+        if (typeof window.CITY_LIST === 'undefined') return null;
+        var bestCity = null;
+        var bestDistSq = Infinity;
+        window.CITY_LIST.forEach(function(c) {
+            if (typeof c !== 'object' || !c.lat) return;
+            var dLat = c.lat - lat;
+            var dLng = c.lng - lng;
+            var distSq = dLat * dLat + dLng * dLng;
+            if (distSq < bestDistSq) {
+                bestDistSq = distSq;
+                bestCity = c;
+            }
+        });
+        // 仅在 2 度以内（约 200km）视为匹配
+        if (bestCity && bestDistSq < 4) return bestCity;
+        return null;
+    }
+
+    // 浏览器地理定位 — 定位到用户所在城市并同步地图和模拟
+    function tryGeolocate() {
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                var city = findNearestCity(lat, lng);
+
+                if (city) {
+                    lat = city.lat;
+                    lng = city.lng;
+                }
+
+                State.targetLat = lat;
+                State.targetLng = lng;
+
+                var val = lat.toFixed(4) + ',' + lng.toFixed(4);
+
+                var select = document.getElementById('selectCity');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === val) {
+                            select.value = val;
+                            break;
+                        }
+                    }
+                }
+
+                var inputLat = document.getElementById('inputLat');
+                var inputLng = document.getElementById('inputLng');
+                if (inputLat) inputLat.value = lat;
+                if (inputLng) inputLng.value = lng;
+
+                MapEngine.setTarget(lat, lng);
+                MapEngine.map.setView([lat, lng], 11);
+
+                document.getElementById('coordDisplay').textContent =
+                    '目标: ' + lat.toFixed(4) + '°, ' + lng.toFixed(4) + '°';
+
+                console.log('已定位到当前城市: ' + (city ? city.display : (lat.toFixed(4) + ', ' + lng.toFixed(4))));
+            },
+            function(error) {
+                console.log('地理定位失败，使用默认位置: ' + error.message);
+            },
+            {
+                enableHighAccuracy: false,
+                timeout: 5000,
+                maximumAge: 300000
+            }
+        );
+    }
+
     const StatsCalculator = {
         // 人口密度模型参数 (人/km²) — 当无城市数据时使用通用指数衰减模型
         // peakDensity: 中心峰值密度, decayScale: 衰减尺度(km), backgroundDensity: 背景保底密度
@@ -1797,6 +1871,11 @@
 
         document.getElementById('coordDisplay').textContent =
             `目标: ${State.targetLat.toFixed(4)}°, ${State.targetLng.toFixed(4)}°`;
+
+        // 尝试通过浏览器定位到用户所在城市
+        if (!hasParams) {
+            tryGeolocate();
+        }
 
         console.log('%c MIRV Sim %c多弹头攻击模拟系统已就绪',
             'color:#ff6b35;font-size:18px;font-weight:bold;',
