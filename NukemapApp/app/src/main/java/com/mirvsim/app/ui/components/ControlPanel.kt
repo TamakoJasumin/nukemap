@@ -16,23 +16,19 @@ package com.mirvsim.app.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -40,7 +36,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
@@ -254,6 +249,7 @@ fun SimulationPanel(
     onReset: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
+    onSavePreset: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -302,6 +298,10 @@ fun SimulationPanel(
             TextButton(onClick = onShare) {
                 Icon(Icons.Filled.Share, null, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(4.dp)); Text("分享", fontSize = 12.sp)
+            }
+            TextButton(onClick = onSavePreset) {
+                Icon(Icons.Filled.Save, null, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp)); Text("保存预设", fontSize = 12.sp)
             }
         }
     }
@@ -426,7 +426,7 @@ fun WarheadParams(
     YieldPresetRow(currentYield = yieldKt, onYieldClick = onYieldChange)
     SliderField(label = "分离距离", value = separationKm.toFloat(), valueText = "%.1f km".format(separationKm),
         range = 0.1f..10f, steps = 98, onValueChange = { onSeparationChange(it.toDouble()) })
-    Text("散布模式", color = TextSecondary, fontSize = 12.sp)
+    Text("散布模式", color = DarkOnSurfaceVariant, fontSize = 12.sp)
     Spacer(Modifier.height(4.dp))
     PatternSelector(current = pattern, onSelect = onPatternChange)
     Spacer(Modifier.height(8.dp))
@@ -466,16 +466,16 @@ fun YieldPresetRow(
         500.0 to "500 kt", 1000.0 to "1 Mt", 10000.0 to "10 Mt", 50000.0 to "50 Mt"
     )
     Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text("当量预设", color = TextSecondary, fontSize = 12.sp)
+        Text("当量预设", color = DarkOnSurfaceVariant, fontSize = 12.sp)
         Spacer(Modifier.height(4.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             presets.forEach { (yield, label) ->
                 val isActive = yield == currentYield
                 Surface(onClick = { onYieldClick(yield) }, shape = RoundedCornerShape(4.dp),
-                    color = if (isActive) Accent else BgTertiary, modifier = Modifier.height(28.dp)) {
+                    color = if (isActive) NukeOrange else DarkSurfaceVariant, modifier = Modifier.height(28.dp)) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 8.dp)) {
                         Text(text = label, fontSize = 10.sp,
-                            color = if (isActive) Color.White else TextSecondary,
+                            color = if (isActive) Color.White else DarkOnSurfaceVariant,
                             fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
@@ -499,9 +499,9 @@ fun PatternSelector(
         patterns.forEach { (value, label) ->
             val isActive = current == value
             Surface(onClick = { onSelect(value) }, shape = RoundedCornerShape(6.dp),
-                color = if (isActive) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                color = if (isActive) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(text = label, fontSize = 12.sp, color = if (isActive) Color.White else TextSecondary,
+                    Text(text = label, fontSize = 12.sp, color = if (isActive) Color.White else DarkOnSurfaceVariant,
                         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal)
                 }
             }
@@ -519,15 +519,15 @@ fun HOBSelector(
     current: String,
     onSelect: (String) -> Unit
 ) {
-    Text("爆高模式", color = TextSecondary, fontSize = 12.sp)
+    Text("爆高模式", color = DarkOnSurfaceVariant, fontSize = 12.sp)
     Spacer(Modifier.height(4.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
         listOf("surface" to "地爆", "optimal" to "空爆", "custom" to "自定义").forEach { (value, label) ->
             val isActive = current == value
             Surface(onClick = { onSelect(value) }, shape = RoundedCornerShape(4.dp),
-                color = if (isActive) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                color = if (isActive) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(text = label, fontSize = 11.sp, color = if (isActive) Color.White else TextSecondary)
+                    Text(text = label, fontSize = 11.sp, color = if (isActive) Color.White else DarkOnSurfaceVariant)
                 }
             }
         }
@@ -563,7 +563,7 @@ fun TargetParams(
     CitySearchDropdown(cityList = cityList, onCitySelect = onCitySelect)
 
     Spacer(Modifier.height(8.dp))
-    Text("瞄点坐标", color = TextSecondary, fontSize = 12.sp)
+    Text("瞄点坐标", color = DarkOnSurfaceVariant, fontSize = 12.sp)
     Spacer(Modifier.height(4.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(value = latText, onValueChange = { latText = it },
@@ -578,27 +578,27 @@ fun TargetParams(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { lngText.toDoubleOrNull()?.let { onTargetLngChange(it) }; focusManager.clearFocus() }),
             modifier = Modifier.weight(1f), textStyle = LocalTextStyle.current.copy(fontSize = 12.sp), singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Accent, unfocusedBorderColor = BorderColor,
-                focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary))
+            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = NukeOrange, unfocusedBorderColor = DarkOutline,
+                focusedTextColor = DarkOnBackground, unfocusedTextColor = DarkOnBackground))
     }
 
     Spacer(Modifier.height(8.dp))
-    Text("目标类型", color = TextSecondary, fontSize = 12.sp)
+    Text("目标类型", color = DarkOnSurfaceVariant, fontSize = 12.sp)
     Spacer(Modifier.height(4.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         listOf("urban" to "城区", "suburban" to "郊区", "rural" to "乡村").forEach { (value, label) ->
             val isActive = targetType == value
             Surface(onClick = { onTargetTypeChange(value) }, shape = RoundedCornerShape(4.dp),
-                color = if (isActive) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                color = if (isActive) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(text = label, fontSize = 11.sp, color = if (isActive) Color.White else TextSecondary)
+                    Text(text = label, fontSize = 11.sp, color = if (isActive) Color.White else DarkOnSurfaceVariant)
                 }
             }
         }
     }
 
     Spacer(Modifier.height(8.dp))
-    Button(onClick = onPickOnMap, colors = ButtonDefaults.buttonColors(containerColor = BgTertiary),
+    Button(onClick = onPickOnMap, colors = ButtonDefaults.buttonColors(containerColor = DarkSurfaceVariant),
         shape = RoundedCornerShape(6.dp), modifier = Modifier.fillMaxWidth()) {
         Icon(Icons.Filled.Explore, null, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(6.dp))
@@ -636,9 +636,9 @@ fun CitySearchDropdown(
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.LocationOn, "选择城市", modifier = Modifier.size(14.dp), tint = Accent)
+            Icon(Icons.Filled.LocationOn, "选择城市", modifier = Modifier.size(14.dp), tint = NukeOrange)
             Spacer(Modifier.width(6.dp))
-            Text("选择城市", color = TextSecondary, fontSize = 12.sp)
+            Text("选择城市", color = DarkOnSurfaceVariant, fontSize = 12.sp)
         }
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -655,12 +655,12 @@ fun CitySearchDropdown(
                 }
                 DropdownMenu(expanded = showGroupPicker, onDismissRequest = { showGroupPicker = false },
                     modifier = Modifier.heightIn(max = 320.dp)) {
-                    Surface(color = BgSecondary, shape = RoundedCornerShape(8.dp)) {
+                    Surface(color = DarkSurface, shape = RoundedCornerShape(8.dp)) {
                         Column {
-                            DropdownMenuItem(text = { Text("全部", fontSize = 13.sp, color = if (selectedGroup.isEmpty()) Accent else TextPrimary) },
+                            DropdownMenuItem(text = { Text("全部", fontSize = 13.sp, color = if (selectedGroup.isEmpty()) NukeOrange else DarkOnBackground) },
                                 onClick = { selectedGroup = ""; showGroupPicker = false })
                             groups.forEach { g ->
-                                DropdownMenuItem(text = { Text(g, fontSize = 13.sp, color = if (selectedGroup == g) Accent else TextPrimary) },
+                                DropdownMenuItem(text = { Text(g, fontSize = 13.sp, color = if (selectedGroup == g) NukeOrange else DarkOnBackground) },
                                     onClick = { selectedGroup = g; showGroupPicker = false })
                             }
                         }
@@ -672,31 +672,31 @@ fun CitySearchDropdown(
                 onExpandedChange = { if (displayList.isNotEmpty()) dropdownExpanded = !dropdownExpanded },
                 modifier = Modifier.weight(0.5f)) {
                 OutlinedTextField(value = searchQuery, onValueChange = { searchQuery = it; dropdownExpanded = true },
-                    placeholder = { Text("选择城市", fontSize = 12.sp, color = TextMuted) },
-                    leadingIcon = { Icon(Icons.Filled.Search, null, modifier = Modifier.size(16.dp), tint = Accent) },
-                    trailingIcon = { if (searchQuery.isNotEmpty()) { IconButton(onClick = { searchQuery = ""; dropdownExpanded = false }, modifier = Modifier.size(16.dp)) { Icon(Icons.Filled.Clear, "清除", modifier = Modifier.size(14.dp), tint = TextSecondary) } } },
+                    placeholder = { Text("选择城市", fontSize = 12.sp, color = DarkOnSurfaceVariant.copy(alpha = 0.7f)) },
+                    leadingIcon = { Icon(Icons.Filled.Search, null, modifier = Modifier.size(16.dp), tint = NukeOrange) },
+                    trailingIcon = { if (searchQuery.isNotEmpty()) { IconButton(onClick = { searchQuery = ""; dropdownExpanded = false }, modifier = Modifier.size(16.dp)) { Icon(Icons.Filled.Clear, "清除", modifier = Modifier.size(14.dp), tint = DarkOnSurfaceVariant) } } },
                     singleLine = true, textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Accent, unfocusedBorderColor = BorderColor,
-                        cursorColor = Accent, focusedContainerColor = BgTertiary, unfocusedContainerColor = BgTertiary),
-                    modifier = Modifier.fillMaxWidth().menuAnchor())
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = NukeOrange, unfocusedBorderColor = DarkOutline,
+                        cursorColor = NukeOrange, focusedContainerColor = DarkSurfaceVariant, unfocusedContainerColor = DarkSurfaceVariant),
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable))
                 ExposedDropdownMenu(expanded = dropdownExpanded && displayList.isNotEmpty(),
                     onDismissRequest = { dropdownExpanded = false }, modifier = Modifier.heightIn(max = 360.dp)) {
-                    Surface(color = BgSecondary, shape = RoundedCornerShape(8.dp)) {
+                    Surface(color = DarkSurface, shape = RoundedCornerShape(8.dp)) {
                         Column {
-                            DropdownMenuItem(text = { Text("${displayList.size} 个城市", fontSize = 11.sp, color = TextMuted) }, onClick = {}, enabled = false)
+                            DropdownMenuItem(text = { Text("${displayList.size} 个城市", fontSize = 11.sp, color = DarkOnSurfaceVariant.copy(alpha = 0.7f)) }, onClick = {}, enabled = false)
                             displayList.forEach { city ->
                                 DropdownMenuItem(onClick = { onCitySelect(city); searchQuery = city.display ?: city.name; dropdownExpanded = false },
                                     text = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Box(modifier = Modifier.size(28.dp).background(Accent.copy(alpha = 0.1f), RoundedCornerShape(7.dp)),
+                                            Box(modifier = Modifier.size(28.dp).background(NukeOrange.copy(alpha = 0.1f), RoundedCornerShape(7.dp)),
                                                 contentAlignment = Alignment.Center) {
-                                                Icon(Icons.Filled.LocationOn, null, modifier = Modifier.size(14.dp), tint = Accent)
+                                                Icon(Icons.Filled.LocationOn, null, modifier = Modifier.size(14.dp), tint = NukeOrange)
                                             }
                                             Spacer(Modifier.width(8.dp))
                                             Column(modifier = Modifier.weight(1f)) {
-                                                Text(city.display ?: city.name, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
-                                                Text("${city.group} · %.0f万".format(city.pop), fontSize = 10.sp, color = TextMuted, maxLines = 1)
+                                                Text(city.display ?: city.name, fontSize = 13.sp, color = DarkOnBackground, fontWeight = FontWeight.Medium)
+                                                Text("${city.group} · %.0f万".format(city.pop), fontSize = 10.sp, color = DarkOnSurfaceVariant.copy(alpha = 0.7f), maxLines = 1)
                                             }
                                         }
                                     })

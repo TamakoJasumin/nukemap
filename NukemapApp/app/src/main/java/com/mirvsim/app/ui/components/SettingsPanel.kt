@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.mirvsim.app.ui.MainUiState
 import com.mirvsim.app.ui.theme.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -47,8 +46,6 @@ fun SettingsPanel(
     onRingAnimationChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     Column(
@@ -64,7 +61,7 @@ fun SettingsPanel(
             onDynamicColorChange = onDynamicColorChange
         )
 
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = BorderColor)
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = DarkOutline)
 
         SettingsHeader("地图")
         MapSettingsSection(
@@ -74,7 +71,7 @@ fun SettingsPanel(
             onPopupEnabledChange = onPopupEnabledChange
         )
 
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = BorderColor)
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = DarkOutline)
 
         SettingsHeader("模拟")
         SimulationSettingsSection(
@@ -84,11 +81,11 @@ fun SettingsPanel(
             onRingAnimationChange = onRingAnimationChange
         )
 
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = BorderColor)
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = DarkOutline)
 
         SystemLogSection()
 
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = BorderColor)
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = DarkOutline)
 
         AboutSection()
 
@@ -101,7 +98,7 @@ fun SettingsPanel(
 private fun SettingsHeader(title: String) {
     Text(
         text = title,
-        color = Accent,
+        color = NukeOrange,
         fontWeight = FontWeight.Bold,
         fontSize = 13.sp,
         modifier = Modifier.padding(start = 14.dp, top = 16.dp, bottom = 8.dp)
@@ -121,15 +118,15 @@ private fun ThemeSection(
     onDynamicColorChange: (Boolean) -> Unit
 ) {
     val options = listOf("深色" to true, "浅色" to false)
-    Text("主题模式", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
+    Text("主题模式", color = DarkOnSurfaceVariant, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
     Spacer(Modifier.height(6.dp))
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         options.forEach { (label, value) ->
             val selected = darkTheme == value
             Surface(onClick = { onDarkThemeChange(value) }, shape = RoundedCornerShape(6.dp),
-                color = if (selected) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                color = if (selected) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(label, fontSize = 12.sp, color = if (selected) Color.White else TextSecondary,
+                    Text(label, fontSize = 12.sp, color = if (selected) Color.White else DarkOnSurfaceVariant,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
                 }
             }
@@ -153,15 +150,15 @@ private fun MapSettingsSection(
     onPopupEnabledChange: (Boolean) -> Unit
 ) {
     val sources = listOf("MAPNIK" to "Mapnik (默认)", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
-    Text("地图源", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
+    Text("地图源", color = DarkOnSurfaceVariant, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
     Spacer(Modifier.height(6.dp))
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         sources.forEach { (value, label) ->
             val selected = tileSource == value
             Surface(onClick = { onTileSourceChange(value) }, shape = RoundedCornerShape(6.dp),
-                color = if (selected) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                color = if (selected) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
-                    Text(label, fontSize = 11.sp, color = if (selected) Color.White else TextSecondary,
+                    Text(label, fontSize = 11.sp, color = if (selected) Color.White else DarkOnSurfaceVariant,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
                 }
             }
@@ -204,11 +201,11 @@ private fun SettingToggle(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = TextPrimary, fontSize = 13.sp)
-            Text(subtitle, color = TextMuted, fontSize = 10.sp)
+            Text(title, color = DarkOnBackground, fontSize = 13.sp)
+            Text(subtitle, color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 10.sp)
         }
         Switch(checked = checked, onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(checkedThumbColor = Accent, checkedTrackColor = Accent.copy(alpha = 0.4f)))
+            colors = SwitchDefaults.colors(checkedThumbColor = NukeOrange, checkedTrackColor = NukeOrange.copy(alpha = 0.4f)))
     }
 }
 
@@ -226,11 +223,11 @@ private fun SystemLogSection() {
 
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "系统日志", color = Accent, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+        Text(text = "系统日志", color = NukeOrange, fontWeight = FontWeight.Bold, fontSize = 13.sp,
             modifier = Modifier.weight(1f))
         if (!expanded) {
             TextButton(onClick = { expanded = true; isLoading = true }) {
-                Text("查看日志", fontSize = 12.sp, color = Accent)
+                Text("查看日志", fontSize = 12.sp, color = NukeOrange)
             }
         }
     }
@@ -239,32 +236,32 @@ private fun SystemLogSection() {
         if (isLoading && logs.isEmpty()) {
             LaunchedEffect(Unit) { logs = loadLogs(); isLoading = false }
             Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Accent, strokeWidth = 2.dp)
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = NukeOrange, strokeWidth = 2.dp)
             }
         }
 
         if (logs.isNotEmpty()) {
             Surface(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
-                shape = RoundedCornerShape(8.dp), color = BgPrimary) {
+                shape = RoundedCornerShape(8.dp), color = DarkBackground) {
                 Column {
                     Box(modifier = Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
-                        Text(text = logs, color = TextSecondary, fontSize = 10.sp, lineHeight = 14.sp,
+                        Text(text = logs, color = DarkOnSurfaceVariant, fontSize = 10.sp, lineHeight = 14.sp,
                             modifier = Modifier.padding(10.dp))
                     }
-                    HorizontalDivider(color = BorderColor)
+                    HorizontalDivider(color = DarkOutline)
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                         horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { expanded = false }) { Text("关闭", fontSize = 12.sp, color = TextSecondary) }
+                        TextButton(onClick = { expanded = false }) { Text("关闭", fontSize = 12.sp, color = DarkOnSurfaceVariant) }
                         TextButton(onClick = {
                             (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
                                 .setPrimaryClip(ClipData.newPlainText("MIRV Sim Logs", logs))
                         }) {
-                            Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(14.dp), tint = Accent)
-                            Spacer(Modifier.width(4.dp)); Text("复制", fontSize = 12.sp, color = Accent)
+                            Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(14.dp), tint = NukeOrange)
+                            Spacer(Modifier.width(4.dp)); Text("复制", fontSize = 12.sp, color = NukeOrange)
                         }
                         TextButton(onClick = { isLoading = true; logs = "" }) {
-                            Icon(Icons.Filled.Refresh, null, modifier = Modifier.size(14.dp), tint = Accent)
-                            Spacer(Modifier.width(4.dp)); Text("刷新", fontSize = 12.sp, color = Accent)
+                            Icon(Icons.Filled.Refresh, null, modifier = Modifier.size(14.dp), tint = NukeOrange)
+                            Spacer(Modifier.width(4.dp)); Text("刷新", fontSize = 12.sp, color = NukeOrange)
                         }
                     }
                 }
@@ -303,14 +300,14 @@ private suspend fun loadLogs(): String = withContext(Dispatchers.IO) {
 @Composable
 private fun AboutSection() {
     Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-        Text("关于", color = Accent, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+        Text("关于", color = NukeOrange, fontWeight = FontWeight.Bold, fontSize = 13.sp)
         Spacer(Modifier.height(8.dp))
         AboutRow("版本", "1.0.0")
         AboutRow("数据源", "OpenStreetMap (osmdroid)")
         Spacer(Modifier.height(6.dp))
         Text(
             text = "基于 NUKEMAP (https://nuclearsecrecy.com/nukemap/) 设计理念开发的交互式核武器多弹头（MIRV）攻击模拟系统。",
-            color = TextMuted, fontSize = 11.sp, lineHeight = 16.sp)
+            color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 11.sp, lineHeight = 16.sp)
     }
 }
 
@@ -318,7 +315,7 @@ private fun AboutSection() {
 private fun AboutRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, color = TextSecondary, fontSize = 12.sp)
-        Text(value, color = TextPrimary, fontWeight = FontWeight.Medium, fontSize = 12.sp)
+        Text(label, color = DarkOnSurfaceVariant, fontSize = 12.sp)
+        Text(value, color = DarkOnBackground, fontWeight = FontWeight.Medium, fontSize = 12.sp)
     }
 }

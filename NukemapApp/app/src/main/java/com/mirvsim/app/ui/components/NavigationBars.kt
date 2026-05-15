@@ -14,7 +14,6 @@ package com.mirvsim.app.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -65,8 +64,8 @@ fun BottomNavigationBar(
 ) {
     NavigationBar(
         modifier = modifier,
-        containerColor = BgSecondary,
-        contentColor = TextPrimary,
+        containerColor = DarkSurface,
+        contentColor = DarkOnBackground,
         tonalElevation = 0.dp
     ) {
         BottomNavItem.entries.forEach { item ->
@@ -85,7 +84,7 @@ fun BottomNavigationBar(
                         )
                         if (showBadge) {
                             Badge(modifier = Modifier.offset(x = 8.dp, y = (-4).dp),
-                                containerColor = Accent) {
+                                containerColor = NukeOrange) {
                                 Text("●", fontSize = 8.sp, color = Color.White)
                             }
                         }
@@ -94,9 +93,9 @@ fun BottomNavigationBar(
                 label = { Text(text = item.title, fontSize = 11.sp,
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Accent, selectedTextColor = Accent,
-                    unselectedIconColor = TextSecondary, unselectedTextColor = TextSecondary,
-                    indicatorColor = Accent.copy(alpha = 0.15f))
+                    selectedIconColor = NukeOrange, selectedTextColor = NukeOrange,
+                    unselectedIconColor = DarkOnSurfaceVariant, unselectedTextColor = DarkOnSurfaceVariant,
+                    indicatorColor = NukeOrange.copy(alpha = 0.15f))
             )
         }
     }
@@ -115,7 +114,7 @@ fun SideNavigationRail(
     modifier: Modifier = Modifier
 ) {
     NavigationRail(
-        modifier = modifier, containerColor = BgSecondary, contentColor = TextPrimary
+        modifier = modifier, containerColor = DarkSurface, contentColor = DarkOnBackground
     ) {
         Spacer(Modifier.height(8.dp))
         BottomNavItem.entries.forEach { item ->
@@ -131,7 +130,7 @@ fun SideNavigationRail(
                             contentDescription = item.title, modifier = Modifier.size(24.dp))
                         if (showBadge) {
                             Badge(modifier = Modifier.offset(x = 6.dp, y = (-4).dp),
-                                containerColor = Accent) {
+                                containerColor = NukeOrange) {
                                 Text("●", fontSize = 8.sp, color = Color.White)
                             }
                         }
@@ -140,8 +139,8 @@ fun SideNavigationRail(
                 label = { Text(text = item.title, fontSize = 11.sp,
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal) },
                 colors = NavigationRailItemDefaults.colors(
-                    selectedIconColor = Accent, selectedTextColor = Accent,
-                    unselectedIconColor = TextSecondary, unselectedTextColor = TextSecondary)
+                    selectedIconColor = NukeOrange, selectedTextColor = NukeOrange,
+                    unselectedIconColor = DarkOnSurfaceVariant, unselectedTextColor = DarkOnSurfaceVariant)
             )
         }
     }
@@ -169,7 +168,7 @@ fun SideDrawer(
     ) {
         PermanentDrawerSheet(
             modifier = modifier.width(200.dp),
-            drawerContainerColor = BgSecondary
+            drawerContainerColor = DarkSurface
         ) {
             Spacer(Modifier.height(16.dp))
 
@@ -177,9 +176,9 @@ fun SideDrawer(
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "MIRV Sim", color = Accent, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(text = "MIRV Sim", color = NukeOrange, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 IconButton(onClick = onExpandToggle, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Filled.ChevronLeft, contentDescription = "收起", tint = TextSecondary,
+                    Icon(Icons.Filled.ChevronLeft, contentDescription = "收起", tint = DarkOnSurfaceVariant,
                         modifier = Modifier.size(20.dp))
                 }
             }
@@ -193,7 +192,7 @@ fun SideDrawer(
 
                 Surface(
                     onClick = { onItemSelected(item) },
-                    color = if (selected) Accent.copy(alpha = 0.12f) else Color.Transparent,
+                    color = if (selected) NukeOrange.copy(alpha = 0.12f) else Color.Transparent,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 2.dp)
                 ) {
@@ -201,21 +200,21 @@ fun SideDrawer(
                         Box(contentAlignment = Alignment.TopEnd) {
                             Icon(imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
                                 contentDescription = item.title,
-                                tint = if (selected) Accent else TextSecondary,
+                                tint = if (selected) NukeOrange else DarkOnSurfaceVariant,
                                 modifier = Modifier.size(22.dp))
                             if (showBadge) {
                                 Badge(modifier = Modifier.offset(x = 8.dp, y = (-4).dp),
-                                    containerColor = Accent) {
+                                    containerColor = NukeOrange) {
                                     Text("●", fontSize = 8.sp, color = Color.White)
                                 }
                             }
                         }
                         Spacer(Modifier.width(12.dp))
                         Column {
-                            Text(text = item.title, color = if (selected) Accent else TextPrimary,
+                            Text(text = item.title, color = if (selected) NukeOrange else DarkOnBackground,
                                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                                 fontSize = 14.sp)
-                            Text(text = item.description, color = TextMuted, fontSize = 10.sp)
+                            Text(text = item.description, color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 10.sp)
                         }
                     }
                 }
@@ -224,9 +223,9 @@ fun SideDrawer(
             Spacer(Modifier.weight(1f))
 
             // 底部版本信息
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = BorderColor)
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = DarkOutline)
             Spacer(Modifier.height(12.dp))
-            Text(text = "版本 1.0.0", color = TextMuted, fontSize = 10.sp,
+            Text(text = "版本 1.0.0", color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 10.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         }
     }
@@ -235,8 +234,8 @@ fun SideDrawer(
     if (!isExpanded) {
         SmallFloatingActionButton(
             onClick = onExpandToggle,
-            containerColor = BgSecondary,
-            contentColor = Accent,
+            containerColor = DarkSurface,
+            contentColor = NukeOrange,
             shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp),
             modifier = Modifier.size(32.dp)
         ) {

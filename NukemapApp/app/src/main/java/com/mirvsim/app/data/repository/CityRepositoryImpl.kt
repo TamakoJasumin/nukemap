@@ -22,6 +22,10 @@ class CityRepositoryImpl(
     
     /** 城市数据缓存，首次加载后非空 */
     private var cachedCities: List<City>? = null
+
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true }
+    }
     
     /**
      * 获取所有城市列表
@@ -67,13 +71,11 @@ class CityRepositoryImpl(
         try {
             context.assets.open("cities.json").use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                    val json = reader.readText()
-                    Json {
-                        ignoreUnknownKeys = true  // 忽略 JSON 中未定义的字段
-                    }.decodeFromString<List<City>>(json)
+                    val content = reader.readText()
+                    json.decodeFromString<List<City>>(content)
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()  // 加载失败时静默处理，返回空列表
         }
     }

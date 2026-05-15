@@ -81,11 +81,13 @@ fun MapView(
     warheadPoints: List<WarheadPoint>,
     effects: List<NukeEffectsResult>?,
     pickMode: Boolean,
+    onMapClick: (Double, Double) -> Unit,
+    modifier: Modifier = Modifier,
+    myLat: Double = 0.0,
+    myLng: Double = 0.0,
     popupEnabled: Boolean = true,
     tileSource: String = "MAPNIK",
     ringAnimEnabled: Boolean = true,
-    onMapClick: (Double, Double) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -112,6 +114,8 @@ fun MapView(
     val currentEffects by rememberUpdatedState(effects)
     val currentTargetLat by rememberUpdatedState(targetLat)
     val currentTargetLng by rememberUpdatedState(targetLng)
+    val currentMyLat by rememberUpdatedState(myLat)
+    val currentMyLng by rememberUpdatedState(myLng)
     val currentPopupEnabled by rememberUpdatedState(popupEnabled)
 
     // 创建 osmdroid MapView 实例（仅创建一次）
@@ -155,11 +159,12 @@ fun MapView(
     // 数据变化时重建覆盖层（标记、毁伤环等）
     LaunchedEffect(warheadPoints, effects) {
         rebuildOverlays(mapView, currentTargetLat, currentTargetLng,
-            currentWarheadPoints, currentEffects)
+            currentMyLat, currentMyLng, currentWarheadPoints, currentEffects)
     }
 
-    // 目标位置变化时地图自动移动
+    // 目标位置变化时地图自动移动（跳过初始未设置状态）
     LaunchedEffect(targetLat, targetLng) {
+        if (targetLat == 0.0 && targetLng == 0.0) return@LaunchedEffect
         mapView.controller.animateTo(GeoPoint(targetLat, targetLng))
         if (mapView.zoomLevelDouble < 8.0) {
             mapView.controller.setZoom(11.0)  // 初次定位自动放大到城市级别
@@ -417,7 +422,7 @@ private fun showDamagePopup(
     Marker(mapView).apply {
         position = clickPoint
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        icon = createSimpleMarker(mapView.context, 0xFF6B35)
+        icon = createSimpleMarker(mapView.context)
     }.also { popup ->
         mapView.overlays.add(popup)
         popupMarkers.add(popup)
@@ -433,13 +438,16 @@ private fun showDamagePopup(
  * 清除旧的覆盖层后重新添加：
  * 1. 各弹头的毁伤环（Polygon，带虚线样式）
  * 2. 目标位置标记（十字准星）
- * 3. 弹头落点标记（彩色圆点，HLS 色相区分）
- * 4. 第一个弹头的毁伤环标签
+ * 3. 设备位置标记（蓝色圆点）
+ * 4. 弹头落点标记（彩色圆点，HLS 色相区分）
+ * 5. 第一个弹头的毁伤环标签
  */
 private fun rebuildOverlays(
     mapView: OSMMapView,
     targetLat: Double,
     targetLng: Double,
+    myLat: Double,
+    myLng: Double,
     warheadPoints: List<WarheadPoint>,
     effects: List<NukeEffectsResult>?
 ) {
@@ -516,6 +524,18 @@ private fun rebuildOverlays(
         title = "目标"
     }
     mapView.overlays.add(targetMarker)
+
+    // 设备当前位置标记（蓝色圆点，仅在有效坐标时显示）
+    if (myLat != 0.0 && myLng != 0.0) {
+        val myLocationMarker = Marker(mapView).apply {
+            position = GeoPoint(myLat, myLng)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            icon = createMyLocationMarker(mapView.context)
+            title = "我的位置"
+            setInfoWindow(null)
+        }
+        mapView.overlays.add(myLocationMarker)
+    }
 
     // 弹头落点标记（每个弹头使用 HLS 色相区分颜色）
     if (warheadPoints.isNotEmpty() && effects != null) {
@@ -610,7 +630,7 @@ private fun createTargetMarker(context: android.content.Context): android.graphi
     val canvas = Canvas(bitmap)
     val c = size / 2f
     val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0x44FF4444.toInt(); style = Paint.Style.FILL
+        color = 0x44FF4444; style = Paint.Style.FILL
     }
     canvas.drawCircle(c, c, 22f * d, glow)
     val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -624,10 +644,32 @@ private fun createTargetMarker(context: android.content.Context): android.graphi
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
 }
 
+/** 创建设备当前位置标记（蓝色脉冲圆点） */
+private fun createMyLocationMarker(context: android.content.Context): android.graphics.drawable.Drawable {
+    val d = context.resources.displayMetrics.density
+    val size = (32 * d).toInt()
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val c = size / 2f
+    val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0x221A73E8; style = Paint.Style.FILL
+    }
+    canvas.drawCircle(c, c, 14f * d, glow)
+    val outer = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF1A73E8.toInt(); style = Paint.Style.STROKE; strokeWidth = 2.5f * d
+    }
+    canvas.drawCircle(c, c, 9f * d, outer)
+    val inner = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF1A73E8.toInt(); style = Paint.Style.FILL
+    }
+    canvas.drawCircle(c, c, 4.5f * d, inner)
+    return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
+}
+
 /** 创建弹头落点标记（彩色圆点，带白色描边和发光） */
 private fun createWarheadMarker(
     context: android.content.Context,
-    color: androidx.compose.ui.graphics.Color
+    color: Color
 ): android.graphics.drawable.Drawable {
     val d = context.resources.displayMetrics.density
     val size = (24 * d).toInt()
@@ -651,15 +693,14 @@ private fun createWarheadMarker(
 
 /** 创建简单点击标记点 */
 private fun createSimpleMarker(
-    context: android.content.Context,
-    colorInt: Int
+    context: android.content.Context
 ): android.graphics.drawable.Drawable {
     val d = context.resources.displayMetrics.density
     val size = (12 * d).toInt()
     val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = colorInt; style = Paint.Style.FILL
+        color = 0xFF6B35; style = Paint.Style.FILL
     }
     canvas.drawCircle(size / 2f, size / 2f, 5f * d, p)
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
@@ -682,11 +723,11 @@ private fun createLabelIcon(
 }
 
 /** 格式化数值显示（K 单位） */
-private fun formatNumber(value: Double, decimals: Int): String {
+private fun formatNumber(value: Double): String {
     return when {
-        value >= 10000 -> "%.${decimals}fK".format(value / 1000)
-        value >= 1 -> "%.${decimals}f".format(value)
-        else -> "%.${decimals}f".format(value)
+        value >= 10000 -> "%.1fK".format(value / 1000)
+        value >= 1 -> "%.1f".format(value)
+        else -> "%.1f".format(value)
     }
 }
 
@@ -761,7 +802,7 @@ private fun PopupCard(
                 // 覆盖面积
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "覆盖面积: ", color = Color(0xFF6A6F7A), fontSize = 11.sp)
-                    Text(text = formatNumber(ring.areaKm2, 1), color = Color(0xFFE1E4E8),
+                    Text(text = formatNumber(ring.areaKm2), color = Color(0xFFE1E4E8),
                         fontWeight = FontWeight.SemiBold, fontSize = 11.sp)
                     Text(text = " km² (共 ${ring.warheadCount} 弹头)", color = Color(0xFF6A6F7A), fontSize = 10.sp)
                 }

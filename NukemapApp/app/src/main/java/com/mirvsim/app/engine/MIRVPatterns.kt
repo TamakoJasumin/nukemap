@@ -150,6 +150,7 @@ object MIRVPatterns {
      * @return 弹头落点坐标列表
      */
     fun generate(pattern: String, count: Int, centerLat: Double, centerLng: Double, separationKm: Double): List<LatLng> {
+        if (count == 1) return listOf(LatLng(centerLat, centerLng))
         return when (pattern) {
             "circular" -> circular(count, centerLat, centerLng, separationKm)
             "linear" -> linear(count, centerLat, centerLng, separationKm)
