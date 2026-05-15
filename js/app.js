@@ -289,6 +289,18 @@
                     }
                 }
             ]
+        },
+        open_topo: {
+            name: '地形图',
+            layers: [
+                {
+                    url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
+                    options: {
+                        attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
+                        maxZoom: 17
+                    }
+                }
+            ]
         }
     };
 
@@ -299,6 +311,7 @@
     const MapEngine = {
         map: null,
         targetMarker: null,
+        myLocationMarker: null,
         warheadMarkers: [],
         warheadData: [],
         lastStats: null,
@@ -520,6 +533,47 @@
             }).addTo(this.map);
         },
 
+        // 设置我的位置标记（蓝色圆点）
+        setMyLocation(lat, lng) {
+            if (this.myLocationMarker) {
+                this.map.removeLayer(this.myLocationMarker);
+            }
+            this.myLocationMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'my-location-icon',
+                    html: `<div style="
+                        width:24px;height:24px;
+                        border:2.5px solid #1A73E8;
+                        border-radius:50%;
+                        background:rgba(26,115,232,0.3);
+                        box-shadow:0 0 12px rgba(26,115,232,0.5);
+                        animation: myLocationPulse 2s ease-in-out infinite;">
+                        <div style="
+                            width:8px;height:8px;
+                            background:#1A73E8;
+                            border-radius:50%;
+                            position:absolute;top:50%;left:50%;
+                            transform:translate(-50%,-50%);
+                            box-shadow:0 0 6px #1A73E8;">
+                        </div>
+                    </div>`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(this.map);
+        },
+
+        // 移动地图到我的位置
+        moveToMyLocation() {
+            if (State.myLat !== 0 && State.myLng !== 0) {
+                this.map.setView([State.myLat, State.myLng], Math.max(this.map.getZoom(), 12));
+                showToast('已移动到当前位置', 'success');
+            } else {
+                refreshMyLocation();
+                showToast('正在获取位置...', '');
+            }
+        },
+
         enterPickMode() {
             this.pickMode = true;
             document.getElementById('mapArea').classList.add('crosshair');
@@ -696,6 +750,11 @@
             function(position) {
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
+
+                State.myLat = lat;
+                State.myLng = lng;
+                MapEngine.setMyLocation(lat, lng);
+
                 var city = findNearestCity(lat, lng);
 
                 if (city) {
@@ -740,6 +799,119 @@
                 maximumAge: 300000
             }
         );
+    }
+
+    // 重新请求地理位置，仅更新我的位置标记，不改变目标
+    function refreshMyLocation() {
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                State.myLat = lat;
+                State.myLng = lng;
+                MapEngine.setMyLocation(lat, lng);
+                showToast('已更新当前位置', 'success');
+            },
+            function(error) {
+                showToast('获取位置失败: ' + error.message, 'error');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    }
+
+    /* ================================================================
+     * 位置书签管理
+     * ================================================================ */
+
+    const Bookmarks = {
+        storageKey: 'mirv-bookmarks',
+        nextId: 1,
+
+        getAll() {
+            var data = localStorage.getItem(this.storageKey);
+            var list = data ? JSON.parse(data) : [];
+            this.nextId = list.length > 0 ? Math.max.apply(null, list.map(function(b) { return b.id; })) + 1 : 1;
+            return list;
+        },
+
+        save(list) {
+            localStorage.setItem(this.storageKey, JSON.stringify(list));
+        },
+
+        add(label, lat, lng) {
+            var list = this.getAll();
+            list.push({ id: this.nextId++, label: label, lat: lat, lng: lng, createdAt: Date.now() });
+            this.save(list);
+            renderBookmarks();
+        },
+
+        remove(id) {
+            var list = this.getAll();
+            list = list.filter(function(b) { return b.id !== id; });
+            this.save(list);
+            renderBookmarks();
+        },
+
+        navigateTo(lat, lng) {
+            State.targetLat = lat;
+            State.targetLng = lng;
+            document.getElementById('inputLat').value = lat.toFixed(4);
+            document.getElementById('inputLng').value = lng.toFixed(4);
+            MapEngine.setTarget(lat, lng);
+            MapEngine.map.setView([lat, lng], 11);
+            document.getElementById('coordDisplay').textContent =
+                '目标: ' + lat.toFixed(4) + '°, ' + lng.toFixed(4) + '°';
+            showToast('已定位到书签位置', 'success');
+        }
+    };
+
+    function renderBookmarks() {
+        var container = document.getElementById('bookmarkList');
+        var list = Bookmarks.getAll();
+        if (list.length === 0) {
+            container.innerHTML = '<div class="bookmark-empty">暂无书签</div>';
+            return;
+        }
+        container.innerHTML = list.map(function(b) {
+            return '<div class="bookmark-item" data-lat="' + b.lat + '" data-lng="' + b.lng + '">' +
+                '<span class="bookmark-item-label">' + escapeHtml(b.label) + '</span>' +
+                '<span class="bookmark-item-coords">' + b.lat.toFixed(4) + ', ' + b.lng.toFixed(4) + '</span>' +
+                '<span class="bookmark-item-delete" data-id="' + b.id + '" title="删除书签">' +
+                    '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>' +
+                '</span>' +
+                '</div>';
+        }).join('');
+
+        // 点击书签项导航
+        container.querySelectorAll('.bookmark-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.bookmark-item-delete')) return;
+                var lat = parseFloat(this.dataset.lat);
+                var lng = parseFloat(this.dataset.lng);
+                Bookmarks.navigateTo(lat, lng);
+            });
+        });
+
+        // 点击删除按钮
+        container.querySelectorAll('.bookmark-item-delete').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var id = parseInt(this.dataset.id);
+                Bookmarks.remove(id);
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
     }
 
     const StatsCalculator = {
@@ -1180,6 +1352,8 @@
     const State = {
         targetLat: 39.9042,
         targetLng: 116.4074,
+        myLat: 0,
+        myLng: 0,
         warheadCount: 4,
         yieldKt: 150,
         separationKm: 1.5,
@@ -1216,6 +1390,8 @@
             this.bindExternalLinks();
             this.bindSettings();
             this.bindTileSource();
+            this.bindMyLocation();
+            this.bindBookmarks();
             this.renderPresets();
             this.updateAllDisplayValues();
         },
@@ -1629,27 +1805,75 @@
                 localStorage.setItem('mirv-theme', isDark ? 'dark' : 'light');
             });
 
-            // 自动发射预设
+            // 自动发射预设（持久化）
+            var savedAutoLaunch = localStorage.getItem('mirv-autoLaunch');
+            if (savedAutoLaunch !== null) {
+                State.autoLaunchPreset = savedAutoLaunch === 'true';
+            }
+            document.getElementById('toggleAutoLaunch').checked = State.autoLaunchPreset;
+
             document.getElementById('toggleAutoLaunch').addEventListener('change', function() {
                 State.autoLaunchPreset = this.checked;
+                localStorage.setItem('mirv-autoLaunch', this.checked);
             });
 
-            // 点击弹窗
+            // 点击弹窗（持久化）
+            var savedPopup = localStorage.getItem('mirv-popupEnabled');
+            if (savedPopup !== null) {
+                State.popupEnabled = savedPopup === 'true';
+            }
+            document.getElementById('togglePopup').checked = State.popupEnabled;
+
             document.getElementById('togglePopup').addEventListener('change', function() {
                 State.popupEnabled = this.checked;
+                localStorage.setItem('mirv-popupEnabled', this.checked);
             });
         },
 
-        // 图源切换
+        // 图源切换（持久化）
         bindTileSource() {
+            // 恢复已保存的图源
+            var savedSource = localStorage.getItem('mirv-tileSource');
+            if (savedSource && TileSources[savedSource]) {
+                State.tileSource = savedSource;
+            }
+
+            document.querySelectorAll('.tile-source-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.source === State.tileSource);
+            });
+
             document.querySelectorAll('.tile-source-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.tile-source-btn').forEach(function(b) {
                         b.classList.remove('active');
                     });
                     this.classList.add('active');
+                    State.tileSource = this.dataset.source;
+                    localStorage.setItem('mirv-tileSource', State.tileSource);
                     MapEngine.switchTileSource(this.dataset.source);
                 });
+            });
+        },
+
+        // 我的位置按钮
+        bindMyLocation() {
+            var btn = document.getElementById('btnMyLocation');
+            btn.addEventListener('click', function() {
+                MapEngine.moveToMyLocation();
+            });
+        },
+
+        // 位置书签
+        bindBookmarks() {
+            renderBookmarks();
+
+            document.getElementById('btnSaveBookmark').addEventListener('click', function() {
+                var label = prompt('请输入书签名称:', '当前位置');
+                if (!label) return;
+                var lat = State.targetLat;
+                var lng = State.targetLng;
+                Bookmarks.add(label, lat, lng);
+                showToast('已保存书签: ' + label, 'success');
             });
         },
 
@@ -1854,10 +2078,30 @@
     }
 
     /* ================================================================
+     * 持久化设置加载（在 UI 初始化前恢复所有已保存设置）
+     * ================================================================ */
+
+    function loadPersistedSettings() {
+        var savedSource = localStorage.getItem('mirv-tileSource');
+        if (savedSource && TileSources[savedSource]) {
+            State.tileSource = savedSource;
+        }
+        var savedAutoLaunch = localStorage.getItem('mirv-autoLaunch');
+        if (savedAutoLaunch !== null) {
+            State.autoLaunchPreset = savedAutoLaunch === 'true';
+        }
+        var savedPopup = localStorage.getItem('mirv-popupEnabled');
+        if (savedPopup !== null) {
+            State.popupEnabled = savedPopup === 'true';
+        }
+    }
+
+    /* ================================================================
      * 初始化
      * ================================================================ */
 
     function init() {
+        loadPersistedSettings();
         buildCityDropdown();
         MapEngine.init();
         UI.init();

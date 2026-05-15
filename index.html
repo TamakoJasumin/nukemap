@@ -200,6 +200,19 @@
                                     在地图上点选目标
                                 </button>
                             </div>
+                            <!-- 位置书签 -->
+                            <div class="form-group">
+                                <div class="bookmark-header">
+                                    <label class="form-label" style="margin-bottom:0;">位置书签</label>
+                                    <button class="btn-bookmark-save" id="btnSaveBookmark" title="保存当前位置为书签">
+                                        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg>
+                                        保存
+                                    </button>
+                                </div>
+                                <div class="bookmark-list" id="bookmarkList">
+                                    <div class="bookmark-empty">暂无书签</div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -226,6 +239,7 @@
                                     <button class="tile-source-btn active" data-source="standard">标准地图</button>
                                     <button class="tile-source-btn" data-source="satellite">高清卫星</button>
                                     <button class="tile-source-btn" data-source="carto_light">街区图</button>
+                                    <button class="tile-source-btn" data-source="open_topo">地形图</button>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -313,6 +327,12 @@
                         点击地图选择目标点
                     </div>
                 </div>
+                <!-- 我的位置按钮 (FAB) -->
+                <button class="btn-my-location" id="btnMyLocation" title="回到我的位置">
+                    <svg viewBox="0 0 24 24" width="22" height="22">
+                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" fill="currentColor"/>
+                    </svg>
+                </button>
                 <!-- 加载指示器 -->
                 <div class="loading-overlay" id="loadingOverlay" style="display:none;">
                     <div class="spinner">
