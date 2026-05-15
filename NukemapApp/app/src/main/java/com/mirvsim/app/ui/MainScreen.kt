@@ -31,9 +31,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -117,6 +117,9 @@ fun MainScreen(
                 is MainUiEvent.ShowError -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
+                is MainUiEvent.RefreshLocation -> {
+                    // 由 MainActivity 处理系统级定位刷新
+                }
             }
         }
     }
@@ -190,6 +193,7 @@ fun MainScreen(
                 targetLng = uiState.targetLng,
                 myLat = uiState.myLat,
                 myLng = uiState.myLng,
+                myLocationTrigger = uiState.myLocationTrigger,
                 warheadPoints = uiState.warheadPoints,
                 effects = uiState.simulationResult?.effectsList,
                 pickMode = uiState.isPickMode,
@@ -199,6 +203,27 @@ fun MainScreen(
                 onMapClick = handleMapClick,
                 modifier = Modifier.fillMaxSize()
             )
+
+            // 我的位置按钮 (FAB)
+            if (isCompact) {
+                FloatingActionButton(
+                    onClick = { viewModel.moveToMyLocation() },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = innerPadding.calculateBottomPadding() + 16.dp, end = 16.dp)
+                        .size(48.dp),
+                    containerColor = DarkSurface.copy(alpha = 0.9f),
+                    contentColor = NukeOrange,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(4.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.MyLocation,
+                        contentDescription = "回到我的位置",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
 
             // ===== 图层 2：顶部提示条和操作栏 =====
             Column(
@@ -249,12 +274,11 @@ fun MainScreen(
                     }
                 }
 
-                // 手机端顶部操作栏（发射按钮、城市选择器、重置、分享）
+                // 手机端顶部操作栏（发射按钮、城市选择器、重置）
                 if (isCompact) {
                     TopActionBar(
                         uiState = uiState,
-                        viewModel = viewModel,
-                        handleShare = handleShare
+                        viewModel = viewModel
                     )
                 }
             }
@@ -515,8 +539,7 @@ fun MainScreen(
 @Composable
 private fun TopActionBar(
     uiState: MainUiState,
-    viewModel: SimulationViewModel,
-    handleShare: () -> Unit
+    viewModel: SimulationViewModel
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         ElevatedCard(
@@ -530,7 +553,7 @@ private fun TopActionBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
@@ -538,7 +561,10 @@ private fun TopActionBar(
                     enabled = !uiState.isComputing,
                     colors = ButtonDefaults.buttonColors(containerColor = NukeOrange),
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     if (uiState.isComputing) {
                         CircularProgressIndicator(
@@ -550,20 +576,24 @@ private fun TopActionBar(
                     }
                     Text("发射", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
-                Spacer(Modifier.width(8.dp))
+                
                 TopBarCitySelector(
                     cityList = uiState.cityList,
                     currentLat = uiState.targetLat,
                     currentLng = uiState.targetLng,
                     onCitySelect = { viewModel.selectCity(it) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
                 )
-                Spacer(Modifier.width(4.dp))
+
                 IconButton(onClick = { viewModel.resetAll() }, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.Filled.Refresh, "重置", tint = DarkOnSurfaceVariant, modifier = Modifier.size(20.dp))
-                }
-                IconButton(onClick = handleShare, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.Filled.Share, "分享", tint = DarkOnSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Filled.Refresh,
+                        "重置",
+                        tint = DarkOnSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
         }
@@ -622,11 +652,11 @@ private fun TopBarCitySelector(
             shape = RoundedCornerShape(8.dp),
             color = DarkSurfaceVariant,
             border = BorderStroke(1.dp, if (dropdownExpanded) NukeOrange.copy(alpha = 0.5f) else DarkOutline),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Box(
                     modifier = Modifier.size(22.dp)

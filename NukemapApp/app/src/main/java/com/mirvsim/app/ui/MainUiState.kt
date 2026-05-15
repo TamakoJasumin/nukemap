@@ -34,6 +34,7 @@ data class MainUiState(
     val targetLng: Double = 0.0,       // 目标经度（初始未设置，由 GPS 或用户选择确定）
     val myLat: Double = 0.0,           // 设备当前位置纬度
     val myLng: Double = 0.0,           // 设备当前位置经度
+    val myLocationTrigger: Int = 0,     // 触发回到我的位置（计数器）
 
     // ========== 模拟结果 ==========
     val warheadPoints: List<WarheadPoint> = emptyList(),   // 弹头落点列表
@@ -63,7 +64,7 @@ data class MainUiState(
     // ========== 设置参数 ==========
     val isDarkTheme: Boolean = false,            // 深色主题
     val useDynamicColor: Boolean = true,         // 动态色彩（Android 12+）
-    val tileSource: String = "MAPNIK",           // 地图瓦片源
+    val tileSource: String = "AUTONAVI",          // 地图瓦片源
     val popupEnabled: Boolean = true,            // 地图点击弹窗
     val autoLaunchPreset: Boolean = true,        // 选择预设后自动运行
     val ringAnimation: Boolean = true            // 环展开动画
@@ -83,4 +84,6 @@ sealed interface MainUiEvent {
     data class ShowToast(val message: String) : MainUiEvent
     /** 显示错误提示 */
     data class ShowError(val message: String) : MainUiEvent
+    /** 请求刷新位置 */
+    data object RefreshLocation : MainUiEvent
 }

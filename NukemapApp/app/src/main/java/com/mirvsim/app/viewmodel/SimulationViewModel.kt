@@ -101,7 +101,7 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                     state.copy(
                         isDarkTheme = prefs[SettingsManager.IS_DARK_THEME] ?: false,
                         useDynamicColor = prefs[SettingsManager.USE_DYNAMIC_COLOR] ?: true,
-                        tileSource = prefs[SettingsManager.MAP_TILE_SOURCE] ?: "MAPNIK",
+                        tileSource = prefs[SettingsManager.MAP_TILE_SOURCE] ?: "AUTONAVI",
                         autoLaunchPreset = prefs[SettingsManager.AUTO_LAUNCH_PRESET] ?: true,
                         popupEnabled = prefs[SettingsManager.POPUP_ENABLED] ?: true,
                         ringAnimation = prefs[SettingsManager.RING_ANIMATION] ?: true
@@ -279,11 +279,37 @@ class SimulationViewModel(application: Application) : AndroidViewModel(applicati
                 targetLat = lat,
                 targetLng = lng,
                 myLat = lat,
-                myLng = lng
+                myLng = lng,
+                myLocationTrigger = it.myLocationTrigger + 1
             )
         }
         viewModelScope.launch {
-            _events.emit(MainUiEvent.ShowToast("已定位到当前城市"))
+            _events.emit(MainUiEvent.ShowToast("已定位到当前位置"))
+        }
+    }
+
+    /** 持续精化我的位置（不移动地图，仅更新 myLat/myLng） */
+    fun updateMyLocation(lat: Double, lng: Double) {
+        _uiState.update { it.copy(myLat = lat, myLng = lng) }
+    }
+
+    /** 触发回到我的位置 */
+    fun moveToMyLocation() {
+        val lat = uiState.value.myLat
+        val lng = uiState.value.myLng
+        if (lat != 0.0 && lng != 0.0) {
+            _uiState.update {
+                it.copy(
+                    targetLat = lat,
+                    targetLng = lng,
+                    myLocationTrigger = it.myLocationTrigger + 1
+                )
+            }
+        }
+        
+        // 无论当前是否有坐标，都请求一次最新位置
+        viewModelScope.launch {
+            _events.emit(MainUiEvent.RefreshLocation)
         }
     }
 

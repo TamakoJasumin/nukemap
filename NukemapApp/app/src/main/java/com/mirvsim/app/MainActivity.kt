@@ -25,16 +25,23 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.mirvsim.app.ui.MainScreen
+import com.mirvsim.app.ui.MainUiEvent
 import com.mirvsim.app.ui.theme.NukemapTheme
 import com.mirvsim.app.viewmodel.SimulationViewModel
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import java.io.File
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: SimulationViewModel
+    private var locationCallback: LocationCallback? = null
 
     /** 运行时权限申请启动器 — 用于申请定位权限 */
     private val requestPermissionLauncher = registerForActivityResult(
@@ -78,6 +85,23 @@ class MainActivity : ComponentActivity() {
         }
 
         checkLocationPermission()
+
+        // 监听来自 ViewModel 的定位刷新请求
+        lifecycleScope.launch {
+            viewModel.events.collect { event ->
+                if (event is MainUiEvent.RefreshLocation) {
+                    getCurrentLocation()
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        locationCallback?.let {
+            LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(it)
+        }
+        locationCallback = null
     }
 
     /** 检查并请求定位权限 */
@@ -98,21 +122,42 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * 获取设备当前位置
+     * 获取设备当前位置并持续监听更新
      *
-     * 使用 Google Play Services Fused Location Provider 获取
-     * 平衡精度和功耗的当前位置（约 100m 精度）。
-     * 获取成功后更新 ViewModel 中的目标位置。
+     * 1. 先尝试高精度单次定位，设置初始目标位置
+     * 2. 注册持续位置更新回调，不断精化 myLat/myLng（但不移动地图）
      */
     private fun getCurrentLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         try {
-            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+            // 单次高精度定位（设置初始目标位置）
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener { location ->
-                    location?.let {
-                        viewModel.updateToCurrentLocation(it.latitude, it.longitude)
+                    if (location != null) {
+                        viewModel.updateToCurrentLocation(location.latitude, location.longitude)
+                    } else {
+                        fusedLocationClient.lastLocation.addOnSuccessListener { lastLoc ->
+                            lastLoc?.let {
+                                viewModel.updateToCurrentLocation(it.latitude, it.longitude)
+                            }
+                        }
                     }
                 }
+
+            // 注册持续位置更新（精化 myLat/myLng，不移动地图）
+            locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
+            val callback = object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    result.lastLocation?.let { loc ->
+                        viewModel.updateMyLocation(loc.latitude, loc.longitude)
+                    }
+                }
+            }
+            locationCallback = callback
+            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(2000)
+                .build()
+            fusedLocationClient.requestLocationUpdates(locationRequest, callback, mainLooper)
         } catch (ignored: SecurityException) {
             // 权限被拒绝，静默处理
         }

@@ -149,7 +149,7 @@ private fun MapSettingsSection(
     onTileSourceChange: (String) -> Unit,
     onPopupEnabledChange: (Boolean) -> Unit
 ) {
-    val sources = listOf("MAPNIK" to "Mapnik (默认)", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
+    val sources = listOf("AUTONAVI" to "高德地图 (默认)", "MAPNIK" to "Mapnik", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
     Text("地图源", color = DarkOnSurfaceVariant, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
     Spacer(Modifier.height(6.dp))
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
