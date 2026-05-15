@@ -24,9 +24,9 @@
 
 ### 交互与可视化
 
-- **三平台地图** — Web 端 Leaflet 多源瓦片（高德/OSM/ESRI 卫星/CARTO 街区/OpenTopoMap 地形图，含高德→OSM 回退链） / Android 端 osmdroid
-- **我的位置标记** — 浏览器定位蓝色脉冲圆点，实时显示设备当前位置（Web/Desktop）
-- **回到我的位置（FAB）** — 地图右下角悬浮按钮，一键将地图居中回个人位置
+- **三平台地图** — Web 端 Leaflet 多源瓦片（高德/Google Maps/OSM Mapnik/ESRI 卫星/CARTO 街区/OpenTopoMap 地形图，含高德→OSM 回退链） / Android 端 osmdroid
+- **我的位置标记** — 多级定位策略（Electron 原生 Windows GPS/WiFi → 浏览器 `navigator.geolocation` → IP 定位回退），蓝色脉冲圆点实时显示设备当前位置
+- **回到我的位置（FAB）** — 地图右下角悬浮按钮，一键将地图居中回个人位置；刷新定位同样支持多级回退
 - **位置书签** — 保存常用坐标为书签，点击快速跳转，支持删除管理（`localStorage` 持久化）
 - **WGS-84 ↔ GCJ-02 坐标转换** — 完整纠偏算法，高德/天地图等国内图源可精确对齐
 - **弹头落点标记** — HSL 色相渐变 + 编号标签 + 掉落动画，清晰区分各弹头
@@ -115,8 +115,8 @@ npm run package
 ```
 f:\nukemap/
 ├── index.html                  # Web 端主页面（单页应用）
-├── main.js                     # Electron 主进程
-├── preload.js                  # Electron 预加载脚本（contextBridge 安全桥接）
+├── main.js                     # Electron 主进程（窗口管理 + Windows 原生定位 IPC）
+├── preload.js                  # Electron 预加载脚本（contextBridge + 原生定位 API 桥接）
 ├── package.json                # Node.js 项目配置
 ├── build-win.ps1               # Windows 安装包构建脚本
 ├── installer.iss               # Inno Setup 安装包定义文件
@@ -127,7 +127,7 @@ f:\nukemap/
 │   └── style.css               # 深色/浅色双主题样式系统（响应式布局 + 动画）
 │
 ├── js/
-│   ├── app.js                  # Web 端核心应用（引擎 + UI + 地图 + GCJ-02 纠偏）
+│   ├── app.js                  # Web 端核心应用（引擎 + UI + 地图 + GCJ-02 纠偏 + 多级定位）
 │   └── cities.js               # 全球城市数据库（400+ 城市，含省份归属）
 │
 ├── assets/
@@ -189,7 +189,7 @@ f:\nukemap/
 |------|------|------|
 | **Web** | HTML5 + CSS3 + JavaScript (ES5) | — |
 | | Leaflet | 1.9.4 |
-| | 高德 / OSM / ESRI / CARTO / OpenTopoMap 瓦片 | — |
+| | 高德 / Google Maps / OSM Mapnik / ESRI / CARTO / OpenTopoMap 瓦片 | — |
 | **桌面** | Electron | ^28.0 |
 | | electron-packager | ^17.1 |
 | | Inno Setup | 6.3+ |
@@ -205,6 +205,8 @@ f:\nukemap/
 
 ```
 标准地图:   高德 (GCJ-02 纠偏后) → 加载失败自动回退 → OpenStreetMap
+Google 地图: Google Maps (WGS-84 原生)
+OSM Mapnik:  OpenStreetMap Mapnik 渲染
 高清卫星:   ESRI ArcGIS World Imagery
 街区图:     CARTO Voyager (不含标注)
 地形图:     OpenTopoMap (OpenStreetMap 等高线)
@@ -220,9 +222,9 @@ f:\nukemap/
 
 以下 Android 原生端功能已同步至 Web/Desktop 端：
 
-- ✅ **我的位置（蓝色标记 + 回到我的位置按钮）** — Web/Desktop 使用 `navigator.geolocation` 实现
+- ✅ **我的位置（蓝色标记 + 回到我的位置按钮 + 多级定位回退）** — Electron 端优先使用 Windows 原生 GPS/WiFi 定位，浏览器端使用 `navigator.geolocation`，均支持 IP 定位回退
 - ✅ **位置书签** — Web/Desktop 使用 `localStorage` 持久化
-- ✅ **多地图瓦片源** — Web/Desktop 已增加 OpenTopoMap 地形图
+- ✅ **多地图瓦片源** — Web/Desktop 已增加 Google Maps、Mapnik — OSM、OpenTopoMap 地形图
 - ✅ **设置持久化** — 主题、图源、自动发射、地图弹窗均持久化至 `localStorage`
 
 ### Android 端特有功能（尚未同步）
@@ -232,6 +234,24 @@ f:\nukemap/
 - **网络状态监听** — 实时监听网络连接变化
 - **协程异步加载** — 城市数据与模拟计算均在后台协程执行，UI 无阻塞
 - **Room 数据库** — 用于仿真历史记录、用户预设持久化
+
+---
+
+## 多级定位系统（Web/Desktop）
+
+```
+定位请求 → ① Electron 原生 Windows 定位 (GPS/WiFi, WinRT API)
+           ↓ 失败或不支持
+           → ② 浏览器 navigator.geolocation
+           ↓ 失败或无权限
+           → ③ IP 定位回退 (ipapi.co / ipinfo.io)
+```
+
+- **Electron 桌面端**通过 `ipcMain` 调用 PowerShell + `Windows.Devices.Geolocation` WinRT API，获取 GPS/WiFi 级精度位置
+- **浏览器端**使用标准 `navigator.geolocation` API
+- **IP 回退**在上述方式均失败时，通过 IP 地理信息服务获取大致位置
+- `preload.js` 通过 `contextBridge` 安全暴露 `getNativeLocation()` 方法，渲染进程无权直接访问系统 API
+- 初始定位与刷新定位（FAB 按钮）均遵循同一多级回退链
 
 ---
 
