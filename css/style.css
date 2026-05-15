@@ -1518,15 +1518,13 @@ input:focus-visible, select:focus-visible, button:focus-visible {
 
 /* === 图源选择按钮组 === */
 .tile-source-group {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
 }
 
 .tile-source-btn {
-    flex: 1;
-    min-width: 0;
-    padding: 6px 8px;
+    padding: 6px 4px;
     font-size: 11px;
     font-weight: 500;
     font-family: var(--font-sans);
