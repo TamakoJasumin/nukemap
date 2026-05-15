@@ -1,13 +1,21 @@
+/**
+ * 设置面板
+ *
+ * 提供应用各项配置的修改界面，包含：
+ * - 外观设置：深色/浅色主题、动态色彩
+ * - 地图设置：图源切换、点击弹窗开关
+ * - 模拟设置：预设自动发射、环展开动画
+ * - 系统日志：查看和导出 logcat 日志
+ * - 关于信息：版本号、数据来源、使用说明
+ */
 package com.mirvsim.app.ui.components
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -46,12 +54,11 @@ fun SettingsPanel(
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .widthIn(max = 320.dp)
             .verticalScroll(scrollState)
     ) {
         SettingsHeader("外观")
         ThemeSection(
-            darkTheme = state.isDarkTheme ?: isSystemInDarkTheme(),
+            darkTheme = state.isDarkTheme,
             useDynamicColor = state.useDynamicColor,
             onDarkThemeChange = onDarkThemeChange,
             onDynamicColorChange = onDynamicColorChange
@@ -89,6 +96,7 @@ fun SettingsPanel(
     }
 }
 
+/** 设置分区标题 */
 @Composable
 private fun SettingsHeader(title: String) {
     Text(
@@ -100,6 +108,11 @@ private fun SettingsHeader(title: String) {
     )
 }
 
+/**
+ * 外观设置区域
+ *
+ * 包含：深色/浅色主题切换、动态色彩（Android 12+）开关
+ */
 @Composable
 private fun ThemeSection(
     darkTheme: Boolean,
@@ -107,25 +120,15 @@ private fun ThemeSection(
     onDarkThemeChange: (Boolean) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit
 ) {
-    val options = listOf("跟随系统" to null, "深色" to true, "浅色" to false)
+    val options = listOf("深色" to true, "浅色" to false)
     Text("主题模式", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
     Spacer(Modifier.height(6.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         options.forEach { (label, value) ->
             val selected = darkTheme == value
-            Surface(
-                onClick = { if (value != null) onDarkThemeChange(value) },
-                shape = RoundedCornerShape(6.dp),
-                color = if (selected) Accent else BgTertiary,
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
+            Surface(onClick = { onDarkThemeChange(value) }, shape = RoundedCornerShape(6.dp),
+                color = if (selected) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
                     Text(label, fontSize = 12.sp, color = if (selected) Color.White else TextSecondary,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
                 }
@@ -133,14 +136,15 @@ private fun ThemeSection(
         }
     }
     Spacer(Modifier.height(8.dp))
-    SettingToggle(
-        title = "动态色彩 (Android 12+)",
-        subtitle = "使用系统壁纸配色",
-        checked = useDynamicColor,
-        onCheckedChange = onDynamicColorChange
-    )
+    SettingToggle(title = "动态色彩 (Android 12+)", subtitle = "使用系统壁纸配色",
+        checked = useDynamicColor, onCheckedChange = onDynamicColorChange)
 }
 
+/**
+ * 地图设置区域
+ *
+ * 包含：图源选择（Mapnik / 卫星 / CartoDB 高清）、点击弹窗开关
+ */
 @Composable
 private fun MapSettingsSection(
     tileSource: String,
@@ -148,25 +152,15 @@ private fun MapSettingsSection(
     onTileSourceChange: (String) -> Unit,
     onPopupEnabledChange: (Boolean) -> Unit
 ) {
-    val sources = listOf("MAPNIK" to "Mapnik (默认)", "USGS_SAT" to "USGS 卫星", "OPEN_TOPO_MAP" to "OpenTopoMap")
+    val sources = listOf("MAPNIK" to "Mapnik (默认)", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
     Text("地图源", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
     Spacer(Modifier.height(6.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         sources.forEach { (value, label) ->
             val selected = tileSource == value
-            Surface(
-                onClick = { onTileSourceChange(value) },
-                shape = RoundedCornerShape(6.dp),
-                color = if (selected) Accent else BgTertiary,
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
+            Surface(onClick = { onTileSourceChange(value) }, shape = RoundedCornerShape(6.dp),
+                color = if (selected) Accent else BgTertiary, modifier = Modifier.weight(1f)) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
                     Text(label, fontSize = 11.sp, color = if (selected) Color.White else TextSecondary,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
                 }
@@ -174,14 +168,15 @@ private fun MapSettingsSection(
         }
     }
     Spacer(Modifier.height(8.dp))
-    SettingToggle(
-        title = "地图点击弹窗",
-        subtitle = "点击地图时显示毁伤详情",
-        checked = popupEnabled,
-        onCheckedChange = onPopupEnabledChange
-    )
+    SettingToggle(title = "地图点击弹窗", subtitle = "点击地图时显示毁伤详情",
+        checked = popupEnabled, onCheckedChange = onPopupEnabledChange)
 }
 
+/**
+ * 模拟行为设置
+ *
+ * 包含：预设自动发射、环展开动画开关
+ */
 @Composable
 private fun SimulationSettingsSection(
     autoLaunchPreset: Boolean,
@@ -189,20 +184,13 @@ private fun SimulationSettingsSection(
     onAutoLaunchChange: (Boolean) -> Unit,
     onRingAnimationChange: (Boolean) -> Unit
 ) {
-    SettingToggle(
-        title = "预设自动发射",
-        subtitle = "选择预设后自动运行模拟",
-        checked = autoLaunchPreset,
-        onCheckedChange = onAutoLaunchChange
-    )
-    SettingToggle(
-        title = "环展开动画",
-        subtitle = "模拟完成后的环形扩散动画",
-        checked = ringAnimation,
-        onCheckedChange = onRingAnimationChange
-    )
+    SettingToggle(title = "预设自动发射", subtitle = "选择预设后自动运行模拟",
+        checked = autoLaunchPreset, onCheckedChange = onAutoLaunchChange)
+    SettingToggle(title = "环展开动画", subtitle = "模拟完成后的环形扩散动画",
+        checked = ringAnimation, onCheckedChange = onRingAnimationChange)
 }
 
+/** 通用开关设置行（标题 + 副标题 + Switch） */
 @Composable
 private fun SettingToggle(
     title: String,
@@ -211,9 +199,7 @@ private fun SettingToggle(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -221,14 +207,16 @@ private fun SettingToggle(
             Text(title, color = TextPrimary, fontSize = 13.sp)
             Text(subtitle, color = TextMuted, fontSize = 10.sp)
         }
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(checkedThumbColor = Accent, checkedTrackColor = Accent.copy(alpha = 0.4f))
-        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(checkedThumbColor = Accent, checkedTrackColor = Accent.copy(alpha = 0.4f)))
     }
 }
 
+/**
+ * 系统日志区域
+ *
+ * 使用 logcat 命令过滤当前应用的日志，支持查看、复制和刷新。
+ */
 @Composable
 private fun SystemLogSection() {
     var expanded by remember { mutableStateOf(false) }
@@ -236,24 +224,12 @@ private fun SystemLogSection() {
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "系统日志",
-            color = Accent,
-            fontWeight = FontWeight.Bold,
-            fontSize = 13.sp,
-            modifier = Modifier.weight(1f)
-        )
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(text = "系统日志", color = Accent, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+            modifier = Modifier.weight(1f))
         if (!expanded) {
-            TextButton(onClick = {
-                expanded = true
-                isLoading = true
-            }) {
+            TextButton(onClick = { expanded = true; isLoading = true }) {
                 Text("查看日志", fontSize = 12.sp, color = Accent)
             }
         }
@@ -261,54 +237,34 @@ private fun SystemLogSection() {
 
     if (expanded) {
         if (isLoading && logs.isEmpty()) {
-            LaunchedEffect(Unit) {
-                logs = loadLogs()
-                isLoading = false
-            }
+            LaunchedEffect(Unit) { logs = loadLogs(); isLoading = false }
             Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Accent, strokeWidth = 2.dp)
             }
         }
 
         if (logs.isNotEmpty()) {
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = BgPrimary
-            ) {
+            Surface(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+                shape = RoundedCornerShape(8.dp), color = BgPrimary) {
                 Column {
                     Box(modifier = Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
-                        Text(
-                            text = logs,
-                            color = TextSecondary,
-                            fontSize = 10.sp,
-                            lineHeight = 14.sp,
-                            modifier = Modifier.padding(10.dp)
-                        )
+                        Text(text = logs, color = TextSecondary, fontSize = 10.sp, lineHeight = 14.sp,
+                            modifier = Modifier.padding(10.dp))
                     }
                     HorizontalDivider(color = BorderColor)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(onClick = { expanded = false }) {
-                            Text("关闭", fontSize = 12.sp, color = TextSecondary)
-                        }
+                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = { expanded = false }) { Text("关闭", fontSize = 12.sp, color = TextSecondary) }
                         TextButton(onClick = {
-                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            clipboard.setPrimaryClip(ClipData.newPlainText("MIRV Sim Logs", logs))
+                            (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
+                                .setPrimaryClip(ClipData.newPlainText("MIRV Sim Logs", logs))
                         }) {
-                            Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp), tint = Accent)
-                            Spacer(Modifier.width(4.dp))
-                            Text("复制", fontSize = 12.sp, color = Accent)
+                            Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(14.dp), tint = Accent)
+                            Spacer(Modifier.width(4.dp)); Text("复制", fontSize = 12.sp, color = Accent)
                         }
-                        TextButton(onClick = {
-                            isLoading = true
-                            logs = ""
-                        }) {
-                            Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(14.dp), tint = Accent)
-                            Spacer(Modifier.width(4.dp))
-                            Text("刷新", fontSize = 12.sp, color = Accent)
+                        TextButton(onClick = { isLoading = true; logs = "" }) {
+                            Icon(Icons.Filled.Refresh, null, modifier = Modifier.size(14.dp), tint = Accent)
+                            Spacer(Modifier.width(4.dp)); Text("刷新", fontSize = 12.sp, color = Accent)
                         }
                     }
                 }
@@ -318,6 +274,12 @@ private fun SystemLogSection() {
     }
 }
 
+/**
+ * 后台加载 logcat 日志
+ *
+ * 过滤当前应用包名（com.mirvsim.app）和 FATAL 级别的日志。
+ * 最多返回 200 行。
+ */
 private suspend fun loadLogs(): String = withContext(Dispatchers.IO) {
     try {
         val process = Runtime.getRuntime().exec("logcat -d")
@@ -337,6 +299,7 @@ private suspend fun loadLogs(): String = withContext(Dispatchers.IO) {
     }
 }
 
+/** 关于信息区域 */
 @Composable
 private fun AboutSection() {
     Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
@@ -347,19 +310,14 @@ private fun AboutSection() {
         Spacer(Modifier.height(6.dp))
         Text(
             text = "基于 NUKEMAP (https://nuclearsecrecy.com/nukemap/) 设计理念开发的交互式核武器多弹头（MIRV）攻击模拟系统。",
-            color = TextMuted,
-            fontSize = 11.sp,
-            lineHeight = 16.sp
-        )
+            color = TextMuted, fontSize = 11.sp, lineHeight = 16.sp)
     }
 }
 
 @Composable
 private fun AboutRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, color = TextSecondary, fontSize = 12.sp)
         Text(value, color = TextPrimary, fontWeight = FontWeight.Medium, fontSize = 12.sp)
     }

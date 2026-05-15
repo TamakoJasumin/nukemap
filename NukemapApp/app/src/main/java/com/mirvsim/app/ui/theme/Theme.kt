@@ -1,3 +1,19 @@
+/**
+ * 应用主题系统
+ *
+ * 基于 Material 3（Material You）设计系统，支持：
+ * - 深色/浅色主题切换
+ * - Android 12+ 动态色彩（Dynamic Color）
+ * - 自定义配色方案（当动态色彩不可用或禁用时）
+ *
+ * 主题优先级：
+ * 1. 动态色彩 + 深色（Android 12+ 且开启）
+ * 2. 自定义深色配色
+ * 3. 动态色彩 + 浅色
+ * 4. 自定义浅色配色
+ *
+ * 状态栏图标颜色自动跟随主题模式切换。
+ */
 package com.mirvsim.app.ui.theme
 
 import android.app.Activity
@@ -17,7 +33,10 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * 深色主题配色方案
+ * 深色主题自定义配色方案
+ *
+ * 符合 Material 3 色彩规范的自定义深色配色，
+ * 使用品牌色 NukeOrange 作为 Primary 色调。
  */
 private val DarkColorScheme = darkColorScheme(
     primary = NukeOrange,
@@ -57,7 +76,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 /**
- * 浅色主题配色方案
+ * 浅色主题自定义配色方案
+ *
+ * 使用品牌色 NukeOrange，透明度调整适用于浅色背景。
  */
 private val LightColorScheme = lightColorScheme(
     primary = NukeOrange,
@@ -93,10 +114,11 @@ private val LightColorScheme = lightColorScheme(
 )
 
 /**
- * Nukemap 应用主题
- * 
- * @param darkTheme 是否使用深色主题，默认跟随系统设置
- * @param dynamicColor 是否使用动态色彩（Android 12+），默认开启
+ * Nukemap 应用主题入口
+ *
+ * @param darkTheme 是否使用深色主题（默认跟随系统设置）
+ * @param dynamicColor 是否使用 Android 12+ 动态色彩（默认开启）
+ * @param content 子 Composable 内容
  */
 @Composable
 fun NukemapTheme(
@@ -105,7 +127,7 @@ fun NukemapTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        // Android 12+ 支持动态色彩
+        // Android 12+ 系统支持动态色彩且用户开启时优先使用
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -114,11 +136,11 @@ fun NukemapTheme(
         else -> LightColorScheme
     }
     
+    // 设置状态栏图标颜色
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // 移除手动设置背景色，让 enableEdgeToEdge 接管透明度
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

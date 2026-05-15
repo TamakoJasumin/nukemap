@@ -203,11 +203,59 @@
                         </div>
                     </section>
 
+                    <!-- 设置 -->
+                    <section class="panel" id="panelSettings">
+                        <div class="panel-header" id="settingsHeader">
+                            <span class="panel-title">设置</span>
+                            <svg class="panel-arrow" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="panel-body" id="bodySettings">
+                            <div class="form-group">
+                                <label class="form-label">主题模式</label>
+                                <div class="toggle-row">
+                                    <span class="toggle-label">深色主题</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="toggleTheme" checked>
+                                        <span class="switch-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">地图图源</label>
+                                <div class="tile-source-group" id="tileSourceGroup">
+                                    <button class="tile-source-btn active" data-source="standard">标准地图</button>
+                                    <button class="tile-source-btn" data-source="satellite">高清卫星</button>
+                                    <button class="tile-source-btn" data-source="carto_light">街区图</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">自动发射</label>
+                                <div class="toggle-row">
+                                    <span class="toggle-label">选择预设后自动模拟</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="toggleAutoLaunch">
+                                        <span class="switch-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">地图弹窗</label>
+                                <div class="toggle-row">
+                                    <span class="toggle-label">点击地图显示毁伤详情</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="togglePopup" checked>
+                                        <span class="switch-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- 发射按钮 -->
                     <div class="launch-section">
                         <button class="btn-launch" id="btnLaunch">
                             <span class="btn-launch-ring"></span>
-                            <span class="btn-launch-text">发 射 模 拟</span>
+                            <span class="btn-launch-text">发 射</span>
                         </button>
                         <button class="btn-clear" id="btnClear">清除结果</button>
                     </div>
