@@ -81,6 +81,23 @@ private val AUTONAVI = object : OnlineTileSourceBase(
     }
 }
 
+/** 谷歌地图瓦片源（WGS-84） */
+private val GOOGLE_MAPS = object : OnlineTileSourceBase(
+    "Google_Maps", 2, 19, 256, "",
+    arrayOf(
+        "https://mt1.google.com/vt",
+        "https://mt2.google.com/vt",
+        "https://mt3.google.com/vt",
+    )
+) {
+    override fun getTileURLString(pMapTileIndex: Long): String {
+        return baseUrl + "?lyrs=m&x=" +
+                MapTileIndex.getX(pMapTileIndex) + "&y=" +
+                MapTileIndex.getY(pMapTileIndex) + "&z=" +
+                MapTileIndex.getZoom(pMapTileIndex)
+    }
+}
+
 /** CartoDB 浅色高清瓦片源（512px Retina 级别） */
 private val CARTO_LIGHT_RETINA = XYTileSource(
     "CartoDB_Light_Retina",
@@ -236,6 +253,10 @@ fun MapView(
                 mapView.setTilesScaleFactor(
                     (density / 2.0f).coerceIn(1.0f, 1.4f)
                 )
+            }
+            "GOOGLE_MAPS" -> {
+                mapView.setTileSource(GOOGLE_MAPS)
+                mapView.setTilesScaleFactor(adaptiveScale)
             }
             "CARTO_LIGHT" -> {
                 mapView.setTileSource(CARTO_LIGHT_RETINA)
