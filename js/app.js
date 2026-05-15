@@ -88,11 +88,73 @@
     };
 
     /* ================================================================
+     * WGS-84 与 GCJ-02 坐标转换 (用于国内地图源纠偏)
+     * 高德/天地图等国内图源使用 GCJ-02 坐标系，需将瓦片加载位置偏移以对齐 WGS-84 数据
+     * ================================================================ */
+
+    const CoordTransform = (function() {
+        var pi = 3.1415926535897932384626;
+        var a = 6378245.0;
+        var ee = 0.00669342162296594323;
+
+        function outOfChina(lng, lat) {
+            return lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271;
+        }
+
+        // GCJ-02 加密偏移算法：基于经纬度计算非线性偏移量
+        function transformLat(x, y) {
+            var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+            ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
+            ret += (20.0 * Math.sin(y * pi) + 40.0 * Math.sin(y / 3.0 * pi)) * 2.0 / 3.0;
+            ret += (160.0 * Math.sin(y / 12.0 * pi) + 320.0 * Math.sin(y * pi / 30.0)) * 2.0 / 3.0;
+            return ret;
+        }
+
+        function transformLng(x, y) {
+            var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+            ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
+            ret += (20.0 * Math.sin(x * pi) + 40.0 * Math.sin(x / 3.0 * pi)) * 2.0 / 3.0;
+            ret += (150.0 * Math.sin(x / 12.0 * pi) + 300.0 * Math.sin(x / 30.0 * pi)) * 2.0 / 3.0;
+            return ret;
+        }
+
+        return {
+            wgs84togcj02: function(lng, lat) {
+                if (outOfChina(lng, lat)) return [lng, lat];
+                var dlat = transformLat(lng - 105.0, lat - 35.0);
+                var dlng = transformLng(lng - 105.0, lat - 35.0);
+                var radlat = lat / 180.0 * pi;
+                var magic = Math.sin(radlat);
+                magic = 1 - ee * magic * magic;
+                var sqrtmagic = Math.sqrt(magic);
+                dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * pi);
+                dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * pi);
+                return [lng + dlng, lat + dlat];
+            }
+        };
+    })();
+
+    // 创建支持 GCJ-02 纠偏的地图瓦片层
+    // 通过偏移瓦片加载位置，使 GCJ-02 图源与 WGS-84 数据对齐
+    function createGcj02TileLayer(url, options) {
+        var layer = L.tileLayer(url, options);
+        var origFn = layer._getTiledPixelBounds;
+        if (origFn) {
+            layer._getTiledPixelBounds = function(center, zoom, tileZoom) {
+                var gcj02 = CoordTransform.wgs84togcj02(center.lng, center.lat);
+                return origFn.call(this, L.latLng(gcj02[1], gcj02[0]), zoom, tileZoom);
+            };
+        }
+        return layer;
+    }
+
+    /* ================================================================
      * MIRV 弹头散布模式计算
      * ================================================================ */
 
     const MIRVPatterns = {
-        // 圆形散布
+        // 圆形散布 — 弹头均匀分布在以目标为中心的圆周上
+        // 使用 Haversine 近似: 1°纬度 ≈ 111.32km, 经度需乘以 cos(lat) 修正
         circular(count, centerLat, centerLng, separationKm) {
             const points = [];
             const radius = separationKm;
@@ -108,11 +170,11 @@
             return points;
         },
 
-        // 线性散布
+        // 线性散布 — 沿 30° 方位角均匀排布，separationKm 为相邻弹头间距
         linear(count, centerLat, centerLng, separationKm) {
             const points = [];
             const totalLen = separationKm * (count - 1);
-            const angle = 30 * Math.PI / 180; // 30度角线性分布
+            const angle = 30 * Math.PI / 180;
             for (let i = 0; i < count; i++) {
                 const offset = -totalLen / 2 + (totalLen * i) / Math.max(count - 1, 1);
                 const dLat = (offset * Math.sin(angle)) / 111.32;
@@ -125,7 +187,7 @@
             return points;
         },
 
-        // 椭圆散布
+        // 椭圆散布 — 长轴 1.5×separationKm，短轴 0.7×separationKm，弹头均匀分布在椭圆上
         elliptical(count, centerLat, centerLng, separationKm) {
             const points = [];
             const a = separationKm * 1.5;
@@ -142,7 +204,7 @@
             return points;
         },
 
-        // 网格散布
+        // 网格散布 — 弹头按行列均匀排列，适合覆盖大面目标
         grid(count, centerLat, centerLng, separationKm) {
             const points = [];
             const cols = Math.ceil(Math.sqrt(count));
@@ -165,6 +227,7 @@
         },
 
         generate(pattern, count, centerLat, centerLng, separationKm) {
+            if (count === 1) return [{lat: centerLat, lng: centerLng}];
             switch (pattern) {
                 case 'circular':   return this.circular(count, centerLat, centerLng, separationKm);
                 case 'linear':     return this.linear(count, centerLat, centerLng, separationKm);
@@ -172,6 +235,60 @@
                 case 'grid':       return this.grid(count, centerLat, centerLng, separationKm);
                 default:           return this.circular(count, centerLat, centerLng, separationKm);
             }
+        }
+    };
+
+    /* ================================================================
+     * 地图图源定义
+     * ================================================================ */
+
+    const TileSources = {
+        standard: {
+            name: '标准地图',
+            layers: [
+                {
+                    url: 'https://{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+                    options: {
+                        attribution: '&copy; 高德地图 AutoNavi',
+                        maxZoom: 18,
+                        subdomains: ['webrd01', 'webrd02', 'webrd03', 'webrd04']
+                    },
+                    gcj02: true
+                },
+                {
+                    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    options: { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>', maxZoom: 19 }
+                },
+                {
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    options: { attribution: '&copy; OSM', maxZoom: 19, subdomains: 'abc' }
+                }
+            ]
+        },
+        satellite: {
+            name: '高清卫星',
+            layers: [
+                {
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    options: {
+                        attribution: '&copy; Esri &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+                        maxZoom: 19
+                    }
+                }
+            ]
+        },
+        carto_light: {
+            name: '街区图',
+            layers: [
+                {
+                    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    options: {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+                        maxZoom: 19,
+                        subdomains: 'abcd'
+                    }
+                }
+            ]
         }
     };
 
@@ -198,28 +315,8 @@
                 preferCanvas: true
             });
 
-            // 亮色地图瓦片 (多源备份)
-            var tileLayers = [
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-                    maxZoom: 19
-                }),
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OSM',
-                    maxZoom: 19,
-                    subdomains: 'abc'
-                })
-            ];
-            // 添加第一个图层，如果加载失败则切换
-            var currentTile = 0;
-            tileLayers[0].addTo(this.map);
-            tileLayers[0].on('tileerror', function() {
-                if (currentTile < tileLayers.length - 1) {
-                    currentTile++;
-                    this.map.removeLayer(tileLayers[currentTile - 1]);
-                    tileLayers[currentTile].addTo(this.map);
-                }
-            }.bind(this));
+            // 使用当前选中的图源
+            this._switchTileSource(State.tileSource);
 
             // 地图点击 — 统一处理毁伤环命中测试和拾取模式
             this.map.on('click', (e) => {
@@ -277,6 +374,8 @@
                     hasThermal = true;
                 }
             }
+
+            if (!State.popupEnabled) return;
 
             if (bestBlast || hasThermal) {
                 const sections = [];
@@ -342,6 +441,53 @@
                     .setLatLng(e.latlng)
                     .setContent('<div style="font-family:var(--font-sans);min-width:180px;">' + sections.join('') + '</div>', { maxWidth: 260 })
                     .openOn(this.map);
+            }
+        },
+
+        // 切换地图图源
+        switchTileSource(sourceName) {
+            State.tileSource = sourceName;
+            this._switchTileSource(sourceName);
+        },
+
+        _switchTileSource(sourceName) {
+            if (this._currentTileLayers) {
+                this._currentTileLayers.forEach(function(l) {
+                    this.map.removeLayer(l);
+                }.bind(this));
+                this._currentTileLayers = null;
+            }
+
+            var source = TileSources[sourceName];
+            if (!source) source = TileSources['standard'];
+
+            var builtLayers = [];
+            source.layers.forEach(function(layerDef) {
+                var layer;
+                if (layerDef.gcj02) {
+                    layer = createGcj02TileLayer(layerDef.url, layerDef.options);
+                } else {
+                    layer = L.tileLayer(layerDef.url, layerDef.options);
+                }
+                builtLayers.push(layer);
+            });
+
+            if (builtLayers.length > 0) {
+                builtLayers[0].addTo(this.map);
+                this._currentTileLayers = builtLayers;
+
+                // 多图层回退链（标准地图：高德→OSM）
+                if (builtLayers.length > 1) {
+                    var currentIdx = 0;
+                    var onError = function() {
+                        currentIdx++;
+                        if (currentIdx < builtLayers.length) {
+                            this.map.removeLayer(builtLayers[currentIdx - 1]);
+                            builtLayers[currentIdx].addTo(this.map);
+                        }
+                    }.bind(this);
+                    builtLayers[0].on('tileerror', onError);
+                }
             }
         },
 
@@ -523,7 +669,8 @@
     }
 
     const StatsCalculator = {
-        // 人口密度模型参数 (人/km²) — 当无城市数据时使用通用模型
+        // 人口密度模型参数 (人/km²) — 当无城市数据时使用通用指数衰减模型
+        // peakDensity: 中心峰值密度, decayScale: 衰减尺度(km), backgroundDensity: 背景保底密度
         densityProfiles: {
             urban: {
                 peakDensity: 15000,
@@ -542,7 +689,7 @@
             }
         },
 
-        // 各毁伤等级的致死率和受伤率
+        // 各毁伤等级的致死率和受伤率 (基于医学文献估算)
         casualtyRates: {
             fireball: { fatalityRate: 1.0, injuryRate: 0.0 },
             psi20:    { fatalityRate: 0.90, injuryRate: 0.10 },
@@ -553,25 +700,23 @@
             thermal:  { fatalityRate: 0.0,  injuryRate: 0.50 }
         },
 
-        // 毁伤等级优先级 (用于判断哪个区域覆盖)
+        // 毁伤等级优先级 (从高到低，用于判断最高等级覆盖)
         ringPriority: ['fireball', 'psi20', 'psi10', 'psi5', 'psi3', 'thermal', 'psi1'],
 
-        // 计算指定位置的人口密度 (径向衰减模型)
-        // 当有城市数据时，使用真实总人口校准密度曲线
+        // 计算指定位置的人口密度 (径向指数衰减模型)
+        // cityData 存在时：校准密度使得 ∬density·dA ≈ metroPop
         getDensityAtPoint(distFromCenterKm, targetType, cityData) {
             if (cityData && targetType === 'urban') {
-                // 使用真实城市数据: 密度曲线积分后等于城市总人口
                 const scale = cityData.metroRadius / 3.5;
                 const peak = cityData.metroPop / (2 * Math.PI * scale * scale);
                 return Math.max(100, peak * Math.exp(-distFromCenterKm / scale));
             }
-            // 通用模型
             const profile = this.densityProfiles[targetType] || this.densityProfiles.urban;
             const density = profile.peakDensity * Math.exp(-distFromCenterKm / profile.decayScale);
             return Math.max(profile.backgroundDensity, density);
         },
 
-        // 判断一个点是否在某个弹头的某级毁伤环内
+        // 判断采样点是否落在任意弹头的指定毁伤环内
         isPointInRing(ptLat, ptLng, warheadPoints, effects, ringType) {
             const radius = effects[ringType];
             if (!radius || radius <= 0) return false;
@@ -582,7 +727,7 @@
             return false;
         },
 
-        // 获取某点的最高毁伤等级 (如果有的话)
+        // 按优先级链获取某点的最高毁伤等级 (伤亡计算用)
         getHighestDamageLevel(ptLat, ptLng, warheadPoints, effects) {
             for (let i = 0; i < this.ringPriority.length; i++) {
                 if (this.isPointInRing(ptLat, ptLng, warheadPoints, effects, this.ringPriority[i])) {
@@ -592,7 +737,8 @@
             return null;
         },
 
-        // 网格采样法: 计算覆盖面积和伤亡
+        // 核心统计方法：网格采样法计算覆盖面积和伤亡
+        // 在包含所有弹头毁伤范围的包围盒内均匀采样 ~1000 点
         compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, targetLng) {
             const effects = NukeEffects.calculate(yieldKt, hobMode);
             const profile = this.densityProfiles[targetType] || this.densityProfiles.urban;
@@ -607,7 +753,7 @@
                 if (p.lng > maxLng) maxLng = p.lng;
             });
 
-            // 扩展边界以覆盖最大毁伤范围
+            // 扩展边界以覆盖最大毁伤范围 (psi1 = 玻璃碎裂半径最远)
             const maxEffectRadius = effects.psi1 || 20;
             const latExtent = maxEffectRadius / 111.32;
             const lngExtent = maxEffectRadius / (111.32 * Math.cos((minLat + maxLat) / 2 * Math.PI / 180));
@@ -618,7 +764,7 @@
                 maxLng: maxLng + lngExtent
             };
 
-            // 计算网格步长: 采样密度 ~1000 个点 (保证性能)
+            // 自适应网格密度：根据包围盒面积动态调整采样点数 (500~3000)
             const bboxArea = (bounds.maxLat - bounds.minLat) * (bounds.maxLng - bounds.minLng) *
                 (111.32 * 111.32 * Math.cos((minLat + maxLat) / 2 * Math.PI / 180));
             const targetSamples = Math.min(3000, Math.max(500, Math.round(bboxArea / 0.5)));
@@ -628,22 +774,19 @@
             const dLat = (bounds.maxLat - bounds.minLat) / gridRows;
             const dLng = (bounds.maxLng - bounds.minLng) / gridCols;
 
-            // 目标中心 (用于计算人口密度衰减)
             const centerLat = (minLat + maxLat) / 2;
             const centerLng = (minLng + maxLng) / 2;
 
-            // 网格采样统计
-            const areaPoints = {};      // 各级毁伤覆盖的采样点数
+            const areaPoints = {};
             this.ringPriority.forEach(t => { areaPoints[t] = 0; });
             let totalCoveredPoints = 0;
             let totalSamplePoints = 0;
 
-            // 伤亡累计 (每个采样点代表的人口)
+            // 每个网格单元的面积 (km²)，用于将密度换算为人口
             const cellAreaKm2 = (dLat * 111.32) * (dLng * 111.32 * Math.cos(centerLat * Math.PI / 180));
             let totalDeaths = 0;
             let totalInjuries = 0;
 
-            // 记录每个等级的覆盖面积 (用于条形图)
             const damageAreas = {};
             this.ringPriority.forEach(t => { damageAreas[t] = 0; });
 
@@ -653,26 +796,18 @@
                     const ptLng = bounds.minLng + (j + 0.5) * dLng;
                     totalSamplePoints++;
 
-                    // 获取该点的最高毁伤等级 (用于伤亡计算)
                     const level = this.getHighestDamageLevel(ptLat, ptLng, warheadPoints, effects);
                     if (level) {
                         totalCoveredPoints++;
-
-                        // 该点人口密度 (基于到目标中心的距离)
                         const distFromCenter = haversineDist(ptLat, ptLng, centerLat, centerLng);
                         const density = this.getDensityAtPoint(distFromCenter, targetType, cityData);
-
-                        // 该网格单元的人口
                         const population = density * cellAreaKm2;
-
-                        // 根据最高毁伤等级计算死亡和受伤
                         const rates = this.casualtyRates[level];
                         totalDeaths += population * rates.fatalityRate;
                         totalInjuries += population * rates.injuryRate;
                     }
 
-                    // 各毁伤等级的面积单独统计（独立于优先级链）
-                    // 每个环各自判断是否覆盖此点，解决 thermal 被 psi3 "吃掉" 的问题
+                    // 独立统计：每个点如果被某个等级的环覆盖就 +1 (用于展示条形图)
                     this.ringPriority.forEach(ringType => {
                         if (this.isPointInRing(ptLat, ptLng, warheadPoints, effects, ringType)) {
                             areaPoints[ringType]++;
@@ -681,13 +816,12 @@
                 }
             }
 
-            // 计算各级毁伤面积 (km²)
             const totalAreaKm2 = totalCoveredPoints * cellAreaKm2;
             this.ringPriority.forEach(t => {
                 damageAreas[t] = areaPoints[t] * cellAreaKm2;
             });
 
-            // 计算重叠率: 1 - (覆盖面积 / 各级面积之和)
+            // 重叠率：衡量多弹头毁伤环之间的重叠程度，0 = 无重叠，0.95 = 几乎完全重叠
             let sumArea = 0;
             this.ringPriority.forEach(t => {
                 const r = effects[t];
@@ -695,7 +829,6 @@
             });
             const overlapRatio = sumArea > 0 ? Math.max(0, Math.min(0.95, 1 - totalAreaKm2 / sumArea)) : 0;
 
-            // 单弹头面积参考
             const singleAreas = {};
             this.ringPriority.forEach(type => {
                 const r = effects[type];
@@ -741,98 +874,98 @@
             name: 'Minuteman III',
             desc: '3 × W78 335kt MIRV',
             count: 3, yield: 335, separation: 1.2, pattern: 'linear', hob: 'surface',
-            lat: 55.7558, lng: 37.6173, target: 'urban'
+            lat: 55.7558, lng: 37.6173, target: 'urban', flexible: true
         },
         {
             id: 'lgm35',
             name: 'LGM-35 Sentinel',
             desc: '1 × W87 300kt 新一代',
             count: 1, yield: 300, separation: 0, pattern: 'circular', hob: 'optimal',
-            lat: 40.7128, lng: -74.0060, target: 'urban'
+            lat: 40.7128, lng: -74.0060, target: 'urban', flexible: true
         },
         {
             id: 'ss18',
             name: 'SS-18 Satan',
             desc: '10 × 750kt MIRV 重型',
             count: 10, yield: 750, separation: 2.2, pattern: 'elliptical', hob: 'surface',
-            lat: 51.5074, lng: -0.1278, target: 'urban'
+            lat: 51.5074, lng: -0.1278, target: 'urban', flexible: true
         },
         {
             id: 'ss24',
             name: 'SS-24 Scalpel',
             desc: '8 × 550kt MIRV 铁路',
             count: 8, yield: 550, separation: 2.0, pattern: 'linear', hob: 'surface',
-            lat: 48.8566, lng: 2.3522, target: 'urban'
+            lat: 48.8566, lng: 2.3522, target: 'urban', flexible: true
         },
         {
             id: 'topol',
             name: 'Topol-M SS-27',
             desc: '4 × 150kt MIRV',
             count: 4, yield: 150, separation: 1.5, pattern: 'circular', hob: 'optimal',
-            lat: 39.9042, lng: 116.4074, target: 'urban'
+            lat: 39.9042, lng: 116.4074, target: 'urban', flexible: true
         },
         {
             id: 'yars',
             name: 'RS-24 Yars',
             desc: '6 × 200kt MIRV 机动',
             count: 6, yield: 200, separation: 1.8, pattern: 'circular', hob: 'optimal',
-            lat: 55.7558, lng: 37.6173, target: 'urban'
+            lat: 55.7558, lng: 37.6173, target: 'urban', flexible: true
         },
         {
             id: 'trident',
             name: 'Trident II D5',
             desc: '8 × W88 475kt MIRV',
             count: 8, yield: 475, separation: 2.5, pattern: 'elliptical', hob: 'optimal',
-            lat: 40.7128, lng: -74.0060, target: 'urban'
+            lat: 40.7128, lng: -74.0060, target: 'urban', flexible: true
         },
         {
             id: 'tridentlow',
             name: 'Trident II (减配)',
             desc: '4 × W76 100kt 潜射',
             count: 4, yield: 100, separation: 1.5, pattern: 'circular', hob: 'optimal',
-            lat: 28.6139, lng: 77.2090, target: 'urban'
+            lat: 28.6139, lng: 77.2090, target: 'urban', flexible: true
         },
         {
             id: 'm51',
             name: 'M51 SLBM',
             desc: '6 × 150kt TN-75 MIRV',
             count: 6, yield: 150, separation: 1.6, pattern: 'elliptical', hob: 'optimal',
-            lat: 30.0444, lng: 31.2357, target: 'urban'
+            lat: 30.0444, lng: 31.2357, target: 'urban', flexible: true
         },
         {
             id: 'df41',
             name: 'DF-41 CSS-20',
             desc: '10 × 150kt MIRV',
             count: 10, yield: 150, separation: 2.0, pattern: 'circular', hob: 'optimal',
-            lat: 35.6762, lng: 139.6503, target: 'urban'
+            lat: 35.6762, lng: 139.6503, target: 'urban', flexible: true
         },
         {
             id: 'df31ag',
             name: 'DF-31AG',
             desc: '3 × 150kt 机动部署',
             count: 3, yield: 150, separation: 1.2, pattern: 'linear', hob: 'optimal',
-            lat: 37.5665, lng: 126.9780, target: 'urban'
+            lat: 37.5665, lng: 126.9780, target: 'urban', flexible: true
         },
         {
             id: 'jl2',
             name: 'JL-2 SLBM',
             desc: '4 × 250kt 潜射',
             count: 4, yield: 250, separation: 1.5, pattern: 'circular', hob: 'optimal',
-            lat: -33.8688, lng: 151.2093, target: 'urban'
+            lat: -33.8688, lng: 151.2093, target: 'urban', flexible: true
         },
         {
             id: 'rs28',
             name: 'RS-28 Sarmat',
             desc: '15 × 750kt MIRV 重型',
             count: 15, yield: 750, separation: 3.0, pattern: 'elliptical', hob: 'surface',
-            lat: 51.5074, lng: -0.1278, target: 'urban'
+            lat: 51.5074, lng: -0.1278, target: 'urban', flexible: true
         },
         {
             id: 'jl3',
             name: 'JL-3 SLBM',
             desc: '6 × 150kt MIRV',
             count: 6, yield: 150, separation: 1.8, pattern: 'grid', hob: 'optimal',
-            lat: 38.9072, lng: -77.0369, target: 'urban'
+            lat: 38.9072, lng: -77.0369, target: 'urban', flexible: true
         },
         // === 中程弹道导弹 (IRBM/MRBM) ===
         {
@@ -840,35 +973,35 @@
             name: 'DF-17 乘波体',
             desc: '1 × 600kt 高超音速',
             count: 1, yield: 600, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 35.6762, lng: 139.6503, target: 'urban'
+            lat: 35.6762, lng: 139.6503, target: 'urban', flexible: true
         },
         {
             id: 'df26',
             name: 'DF-26 关岛快递',
             desc: '1 × 500kt 常规/核',
             count: 1, yield: 500, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 13.4443, lng: 144.7937, target: 'suburban'
+            lat: 13.4443, lng: 144.7937, target: 'suburban', flexible: true
         },
         {
             id: 'agni5',
             name: 'Agni-V',
             desc: '3 × 300kt MIRV',
             count: 3, yield: 300, separation: 1.2, pattern: 'circular', hob: 'optimal',
-            lat: 31.5497, lng: 74.3436, target: 'urban'
+            lat: 31.5497, lng: 74.3436, target: 'urban', flexible: true
         },
         {
             id: 'hwasong17',
             name: 'Hwasong-17',
             desc: '3 × 1Mt 火星17',
             count: 3, yield: 1000, separation: 1.5, pattern: 'elliptical', hob: 'surface',
-            lat: 35.6762, lng: 139.6503, target: 'urban'
+            lat: 35.6762, lng: 139.6503, target: 'urban', flexible: true
         },
         {
             id: 'hwasong14',
             name: 'Hwasong-14',
             desc: '1 × 600kt 单弹头',
             count: 1, yield: 600, separation: 0, pattern: 'circular', hob: 'optimal',
-            lat: 37.5665, lng: 126.9780, target: 'urban'
+            lat: 37.5665, lng: 126.9780, target: 'urban', flexible: true
         },
         // === 战略轰炸机 (Strategic Bombers) ===
         {
@@ -876,49 +1009,49 @@
             name: 'B-2 Spirit',
             desc: '2 × B83 1.2Mt 隐形',
             count: 2, yield: 1200, separation: 1.0, pattern: 'linear', hob: 'optimal',
-            lat: 40.7128, lng: -74.0060, target: 'urban'
+            lat: 40.7128, lng: -74.0060, target: 'urban', flexible: true
         },
         {
             id: 'b52',
             name: 'B-52H Stratofortress',
             desc: '4 × B61 340kt 重型',
             count: 4, yield: 340, separation: 2.0, pattern: 'circular', hob: 'optimal',
-            lat: 48.8566, lng: 2.3522, target: 'urban'
+            lat: 48.8566, lng: 2.3522, target: 'urban', flexible: true
         },
         {
             id: 'b1b',
             name: 'B-1B Lancer',
             desc: '6 × B61 340kt 超音速',
             count: 6, yield: 340, separation: 1.8, pattern: 'elliptical', hob: 'optimal',
-            lat: 55.7558, lng: 37.6173, target: 'urban'
+            lat: 55.7558, lng: 37.6173, target: 'urban', flexible: true
         },
         {
             id: 'tu160',
             name: 'Tu-160 白天鹅',
             desc: '12 × Kh-55SM 200kt',
             count: 12, yield: 200, separation: 1.5, pattern: 'elliptical', hob: 'optimal',
-            lat: 35.6762, lng: 139.6503, target: 'urban'
+            lat: 35.6762, lng: 139.6503, target: 'urban', flexible: true
         },
         {
             id: 'tu95',
             name: 'Tu-95 熊式',
             desc: '8 × Kh-55 200kt 涡桨',
             count: 8, yield: 200, separation: 2.0, pattern: 'circular', hob: 'optimal',
-            lat: 38.9072, lng: -77.0369, target: 'urban'
+            lat: 38.9072, lng: -77.0369, target: 'urban', flexible: true
         },
         {
             id: 'xh55',
             name: 'H-6K 轰-6K',
             desc: '6 × 150kt 巡航导弹',
             count: 6, yield: 150, separation: 2.0, pattern: 'grid', hob: 'optimal',
-            lat: 37.5665, lng: 126.9780, target: 'urban'
+            lat: 37.5665, lng: 126.9780, target: 'urban', flexible: true
         },
         {
             id: 'xh20',
             name: 'H-20 轰-20',
             desc: '4 × 150kt 隐形轰炸',
             count: 4, yield: 150, separation: 1.5, pattern: 'linear', hob: 'optimal',
-            lat: 38.9072, lng: -77.0369, target: 'urban'
+            lat: 38.9072, lng: -77.0369, target: 'urban', flexible: true
         },
         // === 战术/短程核武器 (Tactical/SRBM) ===
         {
@@ -926,14 +1059,14 @@
             name: 'Iskander-M',
             desc: '1 × 50kt 战役战术',
             count: 1, yield: 50, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 50.4501, lng: 30.5234, target: 'urban'
+            lat: 50.4501, lng: 30.5234, target: 'urban', flexible: true
         },
         {
             id: 'iskander2',
             name: 'Iskander 营级',
             desc: '4 × 50kt 饱和打击',
             count: 4, yield: 50, separation: 1.0, pattern: 'circular', hob: 'surface',
-            lat: 50.4501, lng: 30.5234, target: 'urban'
+            lat: 50.4501, lng: 30.5234, target: 'urban', flexible: true
         },
         // === 超大当量单弹头 (Heavy Singles) ===
         {
@@ -941,28 +1074,28 @@
             name: 'AN602 沙皇炸弹',
             desc: '1 × 50Mt 最大核弹',
             count: 1, yield: 50000, separation: 0, pattern: 'circular', hob: 'optimal',
-            lat: 55.7558, lng: 37.6173, target: 'urban'
+            lat: 55.7558, lng: 37.6173, target: 'urban', flexible: true
         },
         {
             id: 'b41',
             name: 'Mk-41 城堡行动',
             desc: '1 × 25Mt 单弹头',
             count: 1, yield: 25000, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 11.4167, lng: 162.1000, target: 'rural'
+            lat: 11.4167, lng: 162.1000, target: 'rural', flexible: true
         },
         {
             id: 'mk17',
             name: 'Mk-17 小岛',
             desc: '1 × 15Mt 自由落体',
             count: 1, yield: 15000, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 19.6000, lng: -155.5000, target: 'rural'
+            lat: 19.6000, lng: -155.5000, target: 'rural', flexible: true
         },
         {
             id: 'df5',
             name: 'DF-5 CSS-4',
             desc: '1 × 5Mt 单弹头',
             count: 1, yield: 5000, separation: 0, pattern: 'circular', hob: 'surface',
-            lat: 38.9072, lng: -77.0369, target: 'urban'
+            lat: 38.9072, lng: -77.0369, target: 'urban', flexible: true
         }
     ];
 
@@ -979,7 +1112,10 @@
         pattern: 'circular',
         hobMode: 'optimal',
         targetType: 'urban',
-        activePreset: null
+        activePreset: null,
+        tileSource: 'standard',
+        autoLaunchPreset: false,
+        popupEnabled: true
     };
 
     /* ================================================================
@@ -1004,6 +1140,8 @@
             this.bindDrawerHandle();
             this.bindCloseStats();
             this.bindExternalLinks();
+            this.bindSettings();
+            this.bindTileSource();
             this.renderPresets();
             this.updateAllDisplayValues();
         },
@@ -1140,6 +1278,7 @@
                 MapEngine.map.setView([lat, lng], 11);
                 document.getElementById('coordDisplay').textContent =
                     `目标: ${lat.toFixed(4)}°, ${lng.toFixed(4)}°`;
+
             });
         },
 
@@ -1395,6 +1534,51 @@
             }
         },
 
+        // 设置面板
+        bindSettings() {
+            // 面板折叠
+            document.getElementById('settingsHeader').addEventListener('click', function() {
+                var panel = document.getElementById('panelSettings');
+                panel.classList.toggle('collapsed');
+            });
+
+            // 主题切换（持久化）
+            var savedTheme = localStorage.getItem('mirv-theme');
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var initialDark = savedTheme !== null ? savedTheme === 'dark' : prefersDark;
+            document.documentElement.setAttribute('data-theme', initialDark ? 'dark' : 'light');
+            document.getElementById('toggleTheme').checked = initialDark;
+
+            document.getElementById('toggleTheme').addEventListener('change', function() {
+                var isDark = this.checked;
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('mirv-theme', isDark ? 'dark' : 'light');
+            });
+
+            // 自动发射预设
+            document.getElementById('toggleAutoLaunch').addEventListener('change', function() {
+                State.autoLaunchPreset = this.checked;
+            });
+
+            // 点击弹窗
+            document.getElementById('togglePopup').addEventListener('change', function() {
+                State.popupEnabled = this.checked;
+            });
+        },
+
+        // 图源切换
+        bindTileSource() {
+            document.querySelectorAll('.tile-source-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tile-source-btn').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    MapEngine.switchTileSource(this.dataset.source);
+                });
+            });
+        },
+
         // 移动端抽屉
         bindDrawerHandle() {
             document.getElementById('drawerHandle').addEventListener('click', () => {
@@ -1413,9 +1597,10 @@
         renderPresets() {
             const grid = document.getElementById('presetGrid');
             grid.innerHTML = Presets.map(p => `
-                <button class="preset-btn" data-preset="${p.id}">
+                <button class="preset-btn${p.flexible ? ' preset-flexible' : ''}" data-preset="${p.id}">
                     <span class="preset-btn-name">${p.name}</span>
                     <span class="preset-btn-desc">${p.desc}</span>
+                    ${p.flexible ? '<span class="preset-badge">城市自选</span>' : ''}
                 </button>
             `).join('');
 
@@ -1428,9 +1613,8 @@
             });
         },
 
+        // 应用预设：flexible=true 的预设仅加载武器参数，目标位置由用户自行选择
         applyPreset(preset) {
-            State.targetLat = preset.lat;
-            State.targetLng = preset.lng;
             State.warheadCount = preset.count;
             State.yieldKt = preset.yield;
             State.separationKm = preset.separation;
@@ -1443,8 +1627,6 @@
             document.getElementById('sliderYield').value = Math.min(50000, preset.yield);
             document.getElementById('sliderSeparation').value = Math.min(10, preset.separation);
             document.getElementById('inputYield').value = preset.yield;
-            document.getElementById('inputLat').value = preset.lat;
-            document.getElementById('inputLng').value = preset.lng;
             document.getElementById('selectHOB').value = preset.hob;
             document.getElementById('selectTargetType').value = preset.target || 'urban';
             document.getElementById('groupCustomHOB').style.display = preset.hob === 'custom' ? 'block' : 'none';
@@ -1453,18 +1635,37 @@
             const patternBtn = document.querySelector(`[data-pattern="${preset.pattern}"]`);
             if (patternBtn) patternBtn.classList.add('active');
 
-            MapEngine.setTarget(preset.lat, preset.lng);
-            MapEngine.map.setView([preset.lat, preset.lng], 11);
+            if (preset.flexible) {
+                document.getElementById('coordDisplay').textContent =
+                    `预设: ${preset.name} | 请选择目标城市或在地图上点选`;
+                this.highlightActivePreset(preset.id);
+                this.updateAllDisplayValues();
+                this.highlightYieldButton(preset.yield);
+                if (State.autoLaunchPreset) {
+                    showToast(`已加载 ${preset.name}，自动发射`, '');
+                    this.executeLaunch();
+                } else {
+                    showToast(`已加载 ${preset.name} 武器参数，请选择目标城市`, '');
+                }
+            } else {
+                // 传统模式: 直接使用预设的城市
+                State.targetLat = preset.lat;
+                State.targetLng = preset.lng;
+                document.getElementById('inputLat').value = preset.lat;
+                document.getElementById('inputLng').value = preset.lng;
 
-            document.getElementById('coordDisplay').textContent =
-                `预设: ${preset.name} | ${preset.lat}, ${preset.lng}`;
+                MapEngine.setTarget(preset.lat, preset.lng);
+                MapEngine.map.setView([preset.lat, preset.lng], 11);
 
-            this.updateAllDisplayValues();
-            this.highlightYieldButton(preset.yield);
-            this.highlightActivePreset(preset.id);
+                document.getElementById('coordDisplay').textContent =
+                    `预设: ${preset.name} | ${preset.lat}, ${preset.lng}`;
 
-            // 自动发射
-            this.executeLaunch();
+                this.updateAllDisplayValues();
+                this.highlightYieldButton(preset.yield);
+                this.highlightActivePreset(preset.id);
+
+                this.executeLaunch();
+            }
         },
 
         highlightActivePreset(presetId) {

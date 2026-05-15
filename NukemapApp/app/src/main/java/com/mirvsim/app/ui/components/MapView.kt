@@ -1,3 +1,20 @@
+/**
+ * 地图视图组件（基于 osmdroid）
+ *
+ * 核心地图组件，负责：
+ * 1. 显示 OpenStreetMap 瓦片地图（支持多种图源动态切换）
+ * 2. 渲染目标位置标记（十字准星）
+ * 3. 绘制弹头落点标记（彩色圆点）
+ * 4. 绘制各级毁伤环（Polygon，支持虚线/实线样式）
+ * 5. 点击弹窗显示毁伤详情
+ * 6. 环展开动画效果
+ *
+ * 图源支持：
+ * - MAPNIK: OpenStreetMap 默认样式
+ * - CARTO_LIGHT: CartoDB 浅色高清（512px 瓦片）
+ * - USGS_SAT: ESRI 卫星混合图
+ * - OPEN_TOPO_MAP: OpenTopoMap 地形图
+ */
 package com.mirvsim.app.ui.components
 
 import android.graphics.Bitmap
@@ -8,7 +25,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +58,21 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
+import org.osmdroid.util.MapTileIndex
+
+/** CartoDB 浅色高清瓦片源（512px Retina 级别） */
+private val CARTO_LIGHT_RETINA = XYTileSource(
+    "CartoDB_Light_Retina",
+    0, 19, 512, "@2x.png",
+    arrayOf(
+        "https://a.basemaps.cartocdn.com/light_all/",
+        "https://b.basemaps.cartocdn.com/light_all/",
+        "https://c.basemaps.cartocdn.com/light_all/",
+        "https://d.basemaps.cartocdn.com/light_all/",
+    )
+)
 
 @Composable
 fun MapView(
@@ -58,7 +89,7 @@ fun MapView(
 ) {
     val context = LocalContext.current
 
-    // Skip osmdroid initialization in Preview to avoid NullPointerException
+    // 预览模式下跳过 osmdroid 初始化
     if (LocalInspectionMode.current) {
         Box(
             modifier = modifier.background(Color(0xFFE0E0E0)),
@@ -69,12 +100,12 @@ fun MapView(
         return
     }
 
-    var showRingAnimation by remember { mutableStateOf(false) }
+    var showRingAnimation by remember { mutableStateOf(value = false) }
     val ringAnimProgress = remember { Animatable(0f) }
 
     var popupInfo by remember { mutableStateOf<PopupInfo?>(null) }
 
-    // Use rememberUpdatedState to keep closures fresh without recreating MapView
+    // 使用 rememberUpdatedState 保持闭包最新，避免每次重组重建 MapView
     val currentPickMode by rememberUpdatedState(pickMode)
     val currentOnMapClick by rememberUpdatedState(onMapClick)
     val currentWarheadPoints by rememberUpdatedState(warheadPoints)
@@ -83,25 +114,27 @@ fun MapView(
     val currentTargetLng by rememberUpdatedState(targetLng)
     val currentPopupEnabled by rememberUpdatedState(popupEnabled)
 
+    // 创建 osmdroid MapView 实例（仅创建一次）
     val mapView = remember {
+        val density = context.resources.displayMetrics.density
         OSMMapView(context).apply {
             id = android.R.id.content
             setTileSource(TileSourceFactory.MAPNIK)
-            setMultiTouchControls(true)
-            setBuiltInZoomControls(false)
+            setMultiTouchControls(true)                       // 启用手势缩放
+            zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
             minZoomLevel = 2.0
             maxZoomLevel = 18.0
-            controller.setZoom(5.0)
-            controller.setCenter(GeoPoint(35.0, 105.0))
+            controller.setZoom(5.0)                           // 默认缩放级别
+            controller.setCenter(GeoPoint(35.0, 105.0))       // 默认中心（中国附近）
 
-            // 根据屏幕密度缩放瓦片，解决高 DPI 下文字和道路过小的问题
+            // 降低瓦片缩放上限以减少拉伸模糊，高 DPI 下字体更清晰
             setTilesScaleFactor(
-                context.resources.displayMetrics.density.coerceIn(1.0f, 2.5f)
+                density.coerceIn(1.0f, 1.5f)
             )
         }
     }
 
-    // MapEventsOverlay handles taps vs pinch-zoom correctly
+    // 添加地图点击事件监听器
     LaunchedEffect(Unit) {
         val eventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
@@ -119,22 +152,23 @@ fun MapView(
         mapView.overlays.add(0, eventsOverlay)
     }
 
-    // [PERF] Only rebuild overlays when data actually changes
+    // 数据变化时重建覆盖层（标记、毁伤环等）
     LaunchedEffect(warheadPoints, effects) {
         rebuildOverlays(mapView, currentTargetLat, currentTargetLng,
             currentWarheadPoints, currentEffects)
     }
 
+    // 目标位置变化时地图自动移动
     LaunchedEffect(targetLat, targetLng) {
         mapView.controller.animateTo(GeoPoint(targetLat, targetLng))
-        // 如果当前缩放级别太小（说明是初始状态），自动放大到城市级别
         if (mapView.zoomLevelDouble < 8.0) {
-            mapView.controller.setZoom(11.0)
+            mapView.controller.setZoom(11.0)  // 初次定位自动放大到城市级别
         }
     }
 
+    // 环展开动画效果
     LaunchedEffect(effects) {
-        if (effects != null && effects.isNotEmpty()) {
+        if (!effects.isNullOrEmpty()) {
             showRingAnimation = ringAnimEnabled
             ringAnimProgress.snapTo(0f)
             ringAnimProgress.animateTo(
@@ -146,20 +180,49 @@ fun MapView(
         }
     }
 
+    // 图源切换
     LaunchedEffect(tileSource) {
-        val source = when (tileSource) {
-            "USGS_SAT" -> org.osmdroid.tileprovider.tilesource.TileSourceFactory.USGS_SAT
-            else -> org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK
+        val density = context.resources.displayMetrics.density
+        val adaptiveScale = (density * 0.6f).coerceIn(1.2f, 2.0f)
+        
+        when (tileSource) {
+            "CARTO_LIGHT" -> {
+                mapView.setTileSource(CARTO_LIGHT_RETINA)
+                mapView.setTilesScaleFactor((density / 1.8f).coerceIn(1.0f, 1.6f))
+            }
+            "USGS_SAT" -> {
+                val esriHybrid = object : OnlineTileSourceBase(
+                    "ESRI_Satellite_Hybrid", 0, 19, 256, "",
+                    arrayOf("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/")
+                ) {
+                    override fun getTileURLString(pMapTileIndex: Long): String {
+                        return baseUrl + MapTileIndex.getZoom(pMapTileIndex) + "/" +
+                                MapTileIndex.getY(pMapTileIndex) + "/" +
+                                MapTileIndex.getX(pMapTileIndex)
+                    }
+                }
+                mapView.setTileSource(esriHybrid)
+                mapView.setTilesScaleFactor(adaptiveScale)
+            }
+            "OPEN_TOPO_MAP" -> {
+                mapView.setTileSource(TileSourceFactory.OpenTopo)
+                mapView.setTilesScaleFactor(adaptiveScale)
+            }
+            else -> {
+                mapView.setTileSource(TileSourceFactory.MAPNIK)
+                mapView.setTilesScaleFactor(adaptiveScale)
+            }
         }
-        mapView.setTileSource(source)
     }
 
     Box(modifier = modifier) {
+        // osmdroid 地图 View
         AndroidView(
             factory = { mapView },
             modifier = Modifier.fillMaxSize()
         )
 
+        // 拾取模式提示
         AnimatedVisibility(
             visible = pickMode,
             enter = fadeIn(tween(200)),
@@ -169,7 +232,7 @@ fun MapView(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Accent.copy(alpha = 0.9f))
+                    .background(NukeOrange.copy(alpha = 0.9f))
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
@@ -181,6 +244,7 @@ fun MapView(
             }
         }
 
+        // 环展开动画覆盖层
         if (showRingAnimation && effects != null) {
             RingExpansionOverlay(
                 effects = effects,
@@ -189,6 +253,7 @@ fun MapView(
             )
         }
 
+        // 点击弹窗信息卡片
         popupInfo?.let { info ->
             PopupCard(
                 info = info,
@@ -202,25 +267,42 @@ fun MapView(
     }
 }
 
+// ====================================================================
+// 弹窗数据模型
+// ====================================================================
+
+/** 弹窗中显示的单个毁伤环信息 */
 private data class PopupRingInfo(
-    val label: String,
-    val color: Long,
-    val type: String,
-    val radiusKm: Double,
-    val distKm: Double,
-    val areaKm2: Double,
-    val description: String,
-    val warheadCount: Int
+    val label: String,         // 显示名称
+    val color: Long,           // 颜色
+    val type: String,          // 类型（冲击波/热辐射）
+    val radiusKm: Double,      // 半径
+    val distKm: Double,        // 距爆心距离
+    val areaKm2: Double,       // 覆盖面积
+    val description: String,   // 毁伤描述
+    val warheadCount: Int      // 弹头总数
 )
 
+/** 弹窗完整信息 */
 private data class PopupInfo(
     val rings: List<PopupRingInfo>,
-    val warheadIndex: Int,
-    val aimDistKm: Double
+    val warheadIndex: Int,  // 最近弹头索引
+    val aimDistKm: Double   // 点击点距瞄点距离
 )
 
+/** 已显示的弹窗标记列表（用于清理） */
 private val popupMarkers = mutableListOf<Marker>()
 
+/**
+ * 处理地图点击，显示最近弹头的毁伤详情弹窗
+ *
+ * 流程：
+ * 1. 找到离点击点最近的弹头
+ * 2. 确定该弹头在点击点处造成的最高毁伤等级
+ * 3. 同时显示热辐射信息（如果非最严重等级）
+ * 4. 在点击点添加临时标记
+ * 5. 通过回调触发 PopupCard 显示
+ */
 private fun showDamagePopup(
     mapView: OSMMapView,
     clickPoint: GeoPoint,
@@ -228,8 +310,9 @@ private fun showDamagePopup(
     effectsList: List<NukeEffectsResult>?,
     onPopup: (PopupInfo) -> Unit
 ) {
-    if (warheadPoints.isEmpty() || effectsList == null || effectsList.isEmpty()) return
+    if (warheadPoints.isEmpty() || effectsList.isNullOrEmpty()) return
 
+    // 清除之前的弹窗标记
     for (m in popupMarkers) {
         m.closeInfoWindow()
         mapView.overlays.remove(m)
@@ -239,6 +322,7 @@ private fun showDamagePopup(
     val clickLat = clickPoint.latitude
     val clickLng = clickPoint.longitude
 
+    // 找到离点击点最近的弹头
     var bestDist = Double.MAX_VALUE
     var bestWh: WarheadPoint? = null
     for (wh in warheadPoints) {
@@ -252,6 +336,7 @@ private fun showDamagePopup(
         ?: effectsList.first()
     val eff = wh.effects
 
+    // 确定点击点处在哪个毁伤环内
     var closestDist = Double.MAX_VALUE
     for (ring in effects.rings) {
         if (ring.outerRadiusKm > 0 && bestDist <= ring.outerRadiusKm && ring.outerRadiusKm < closestDist) {
@@ -261,6 +346,7 @@ private fun showDamagePopup(
 
     val hasHit = closestDist < Double.MAX_VALUE
 
+    // 通过半径匹配确定毁伤等级标签
     val ringLabel = when (closestDist) {
         eff.fireball -> "火球半径"
         eff.psi20 -> "20 psi 重度毁伤"
@@ -293,11 +379,12 @@ private fun showDamagePopup(
 
     val rings = mutableListOf<PopupRingInfo>()
 
+    // 主毁伤环信息
     if (hasHit && ringLabel != null) {
         val area = Math.PI * closestDist * closestDist
         rings.add(PopupRingInfo(
             label = ringLabel,
-            color = ringColor.toLong(),
+            color = ringColor,
             type = ringType ?: "",
             radiusKm = closestDist,
             distKm = bestDist,
@@ -307,6 +394,7 @@ private fun showDamagePopup(
         ))
     }
 
+    // 如果主毁伤不是热辐射，单独显示热辐射信息
     val severeLevels = listOf(eff.fireball, eff.psi20, eff.psi10, eff.psi5)
     val showThermal = closestDist != eff.thermal && !severeLevels.contains(closestDist) && eff.thermal > 0 && bestDist <= eff.thermal
 
@@ -315,7 +403,7 @@ private fun showDamagePopup(
         val thermalArea = Math.PI * eff.thermal * eff.thermal
         rings.add(PopupRingInfo(
             label = "热辐射 三度烧伤",
-            color = thermalColor.toLong(),
+            color = thermalColor,
             type = "热辐射",
             radiusKm = eff.thermal,
             distKm = bestDist,
@@ -325,6 +413,7 @@ private fun showDamagePopup(
         ))
     }
 
+    // 在点击位置添加临时标记点
     Marker(mapView).apply {
         position = clickPoint
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
@@ -338,6 +427,15 @@ private fun showDamagePopup(
     onPopup(PopupInfo(rings = rings, warheadIndex = wh.index, aimDistKm = bestDist))
 }
 
+/**
+ * 重建地图覆盖层
+ *
+ * 清除旧的覆盖层后重新添加：
+ * 1. 各弹头的毁伤环（Polygon，带虚线样式）
+ * 2. 目标位置标记（十字准星）
+ * 3. 弹头落点标记（彩色圆点，HLS 色相区分）
+ * 4. 第一个弹头的毁伤环标签
+ */
 private fun rebuildOverlays(
     mapView: OSMMapView,
     targetLat: Double,
@@ -345,9 +443,11 @@ private fun rebuildOverlays(
     warheadPoints: List<WarheadPoint>,
     effects: List<NukeEffectsResult>?
 ) {
+    // 清除旧的弹窗标记
     for (m in popupMarkers) { mapView.overlays.remove(m) }
     popupMarkers.clear()
 
+    // 清除除事件监听器外的所有覆盖层
     val toRemove = mapView.overlays.filter { it !is MapEventsOverlay }
     for (o in toRemove) mapView.overlays.remove(o)
 
@@ -357,38 +457,41 @@ private fun rebuildOverlays(
                 e.centerLat == wp.lat && e.centerLng == wp.lng
             } ?: effects.firstOrNull() ?: continue
 
+            // 绘制各级毁伤环
             effect.rings.forEachIndexed { ri, ring ->
                 if (ring.outerRadiusKm <= 0) return@forEachIndexed
                 val radiusM = ring.outerRadiusKm * 1000.0
                 val points = Polygon.pointsAsCircle(
                     GeoPoint(effect.centerLat, effect.centerLng), radiusM
                 )
+                // 不同毁伤等级使用不同虚线样式
                 val dashPattern = when (ri) {
-                    4 -> floatArrayOf(4f, 4f)    // psi3
-                    5 -> floatArrayOf(2f, 4f)    // psi1
-                    3 -> floatArrayOf(8f, 6f)    // psi5
-                    6 -> floatArrayOf(10f, 4f, 2f, 4f) // thermal
-                    else -> null // fireball=0, psi20=1, psi10=2
+                    4 -> floatArrayOf(4f, 4f)    // psi3: 短虚线
+                    5 -> floatArrayOf(2f, 4f)    // psi1: 点线
+                    3 -> floatArrayOf(8f, 6f)    // psi5: 长虚线
+                    6 -> floatArrayOf(10f, 4f, 2f, 4f) // thermal: 点划线
+                    else -> null // fireball/psi20/psi10: 实线
                 }
                 val polygon = Polygon().apply {
                     setPoints(points)
                     fillPaint.style = Paint.Style.FILL
                     fillPaint.isAntiAlias = true
-                    fillPaint.color = ((ring.color and 0x00FFFFFF) or (0x15 shl 24)).toInt()
+                    fillPaint.color = ((ring.color and 0x00FFFFFF) or (0x15 shl 24)).toInt()  // ~8% 透明度填充
                     outlinePaint.style = Paint.Style.STROKE
                     outlinePaint.isAntiAlias = true
                     outlinePaint.strokeWidth = 2.5f
                     outlinePaint.color = ring.color.toInt()
-                    if (dashPattern != null) {
-                        outlinePaint.pathEffect = DashPathEffect(dashPattern, 0f)
+                    dashPattern?.let {
+                        outlinePaint.pathEffect = DashPathEffect(it, 0f)
                     }
                 }
                 mapView.overlays.add(polygon)
             }
 
+            // 第一个弹头的毁伤环标签（小圆点标记半径位置）
             if (wp.index == 0) {
-                effect.rings.forEachIndexed { ri, ring ->
-                    if (ring.outerRadiusKm <= 0) return@forEachIndexed
+                effect.rings.forEach { ring ->
+                    if (ring.outerRadiusKm <= 0) return@forEach
                     val labelPos = GeoPoint(
                         effect.centerLat + ring.outerRadiusKm / 111.32 * 1.02,
                         effect.centerLng
@@ -405,6 +508,7 @@ private fun rebuildOverlays(
         }
     }
 
+    // 目标位置标记
     val targetMarker = Marker(mapView).apply {
         position = GeoPoint(targetLat, targetLng)
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
@@ -413,10 +517,11 @@ private fun rebuildOverlays(
     }
     mapView.overlays.add(targetMarker)
 
+    // 弹头落点标记（每个弹头使用 HLS 色相区分颜色）
     if (warheadPoints.isNotEmpty() && effects != null) {
         for (wp in warheadPoints) {
             val hue = (wp.index.toFloat() / maxOf(warheadPoints.size, 1)) * 300f
-            val color = androidx.compose.ui.graphics.Color.hsl(hue, 0.9f, 0.6f)
+            val color = Color.hsl(hue, 0.9f, 0.6f)
 
             val marker = Marker(mapView).apply {
                 position = GeoPoint(wp.lat, wp.lng)
@@ -429,6 +534,7 @@ private fun rebuildOverlays(
         }
     }
 
+    // 将事件监听器移到最上层，确保点击响应
     val eventsOverlay = mapView.overlays.find { it is MapEventsOverlay }
     if (eventsOverlay != null) {
         mapView.overlays.remove(eventsOverlay)
@@ -438,16 +544,23 @@ private fun rebuildOverlays(
     mapView.invalidate()
 }
 
+/** 简化的 Haversine 距离计算 */
 private fun haversineSimple(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
-    val R = 6371.0
+    val r = 6371.0
     val dLat = Math.toRadians(lat2 - lat1)
     val dLng = Math.toRadians(lng2 - lng1)
     val a = sin(dLat / 2).pow(2) +
             cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
             sin(dLng / 2).pow(2)
-    return R * 2 * atan2(sqrt(a), sqrt(1 - a))
+    return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
 
+/**
+ * 环展开动画覆盖层
+ *
+ * 模拟核爆瞬间的白色光环扩散效果，从中心向外扩散并逐渐消失。
+ * 使用 Compose Canvas 绘制多层彩色光环。
+ */
 @Composable
 private fun RingExpansionOverlay(
     effects: List<NukeEffectsResult>,
@@ -460,24 +573,20 @@ private fun RingExpansionOverlay(
         val centerY = size.height / 2f
         val maxRadius = minOf(size.width, size.height) * 0.45f * progress
         for (i in effects.indices) {
-            val r = when (i % 4) {
-                0 -> 204; 1 -> 255; 2 -> 255; else -> 255
-            }
-            val g = when (i % 4) {
-                0 -> 0;   1 -> 102; 2 -> 153; else -> 204
-            }
-            val b = when (i % 4) {
-                0 -> 0;   1 -> 0;   2 -> 0;   else -> 0
-            }
+            val r = when (i % 4) { 0 -> 204; 1 -> 255; 2 -> 255; else -> 255 }
+            val g = when (i % 4) { 0 -> 0;   1 -> 102; 2 -> 153; else -> 204 }
+            val b = when (i % 4) { 0 -> 0;   1 -> 0;   2 -> 0;   else -> 0 }
             val alpha = ((1f - progress).coerceAtLeast(0f) * 255).toInt()
             val ringRadius = maxRadius * (0.6f + i * 0.15f).coerceAtMost(1f)
 
+            // 填充圆
             drawCircle(
                 color = Color(android.graphics.Color.argb(
                     (alpha.toFloat() * 0.2f).toInt(), r, g, b)),
                 radius = ringRadius,
                 center = Offset(centerX, centerY)
             )
+            // 描边圆
             drawCircle(
                 color = Color(android.graphics.Color.argb(
                     (alpha.toFloat() * 0.5f).toInt(), r, g, b)),
@@ -489,6 +598,11 @@ private fun RingExpansionOverlay(
     }
 }
 
+// ====================================================================
+// 标记图标生成器（Canvas 绘制）
+// ====================================================================
+
+/** 创建目标位置标记（红色十字准星，带发光效果） */
 private fun createTargetMarker(context: android.content.Context): android.graphics.drawable.Drawable {
     val d = context.resources.displayMetrics.density
     val size = (48 * d).toInt()
@@ -510,6 +624,7 @@ private fun createTargetMarker(context: android.content.Context): android.graphi
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
 }
 
+/** 创建弹头落点标记（彩色圆点，带白色描边和发光） */
 private fun createWarheadMarker(
     context: android.content.Context,
     color: androidx.compose.ui.graphics.Color
@@ -534,6 +649,7 @@ private fun createWarheadMarker(
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
 }
 
+/** 创建简单点击标记点 */
 private fun createSimpleMarker(
     context: android.content.Context,
     colorInt: Int
@@ -549,6 +665,7 @@ private fun createSimpleMarker(
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
 }
 
+/** 创建毁伤环标签标记（小圆点） */
 private fun createLabelIcon(
     context: android.content.Context,
     colorInt: Int
@@ -564,6 +681,7 @@ private fun createLabelIcon(
     return android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
 }
 
+/** 格式化数值显示（K 单位） */
 private fun formatNumber(value: Double, decimals: Int): String {
     return when {
         value >= 10000 -> "%.${decimals}fK".format(value / 1000)
@@ -572,6 +690,19 @@ private fun formatNumber(value: Double, decimals: Int): String {
     }
 }
 
+// ====================================================================
+// 弹窗信息卡片组件
+// ====================================================================
+
+/**
+ * 毁伤详情弹窗卡片
+ *
+ * 显示点击位置处各毁伤环的详细信息：
+ * - 毁伤等级名称和类型
+ * - 半径和距爆心距离
+ * - 覆盖面积
+ * - 毁伤描述
+ */
 @Composable
 private fun PopupCard(
     info: PopupInfo,
@@ -587,11 +718,12 @@ private fun PopupCard(
         Column(modifier = Modifier.padding(14.dp)) {
             info.rings.forEachIndexed { idx, ring ->
                 if (idx > 0) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = Color(0xFF3A3F4B)
                     )
                 }
+                // 等级标题行
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -617,6 +749,7 @@ private fun PopupCard(
                     )
                 }
                 Spacer(Modifier.height(6.dp))
+                // 半径和距离
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -625,67 +758,37 @@ private fun PopupCard(
                     StatText("距爆心", "%.2f km".format(ring.distKm))
                 }
                 Spacer(Modifier.height(2.dp))
+                // 覆盖面积
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "覆盖面积: ",
-                        color = Color(0xFF6A6F7A),
-                        fontSize = 11.sp
-                    )
-                    Text(
-                        text = formatNumber(ring.areaKm2, 1),
-                        color = Color(0xFFE1E4E8),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 11.sp
-                    )
-                    Text(
-                        text = " km² (共 ${ring.warheadCount} 弹头)",
-                        color = Color(0xFF6A6F7A),
-                        fontSize = 10.sp
-                    )
+                    Text(text = "覆盖面积: ", color = Color(0xFF6A6F7A), fontSize = 11.sp)
+                    Text(text = formatNumber(ring.areaKm2, 1), color = Color(0xFFE1E4E8),
+                        fontWeight = FontWeight.SemiBold, fontSize = 11.sp)
+                    Text(text = " km² (共 ${ring.warheadCount} 弹头)", color = Color(0xFF6A6F7A), fontSize = 10.sp)
                 }
+                // 毁伤描述
                 if (ring.description.isNotEmpty()) {
-                    Text(
-                        text = ring.description,
-                        color = Color(0xFF6A6F7A),
-                        fontSize = 11.sp,
-                        modifier = Modifier.padding(top = 3.dp)
-                    )
+                    Text(text = ring.description, color = Color(0xFF6A6F7A), fontSize = 11.sp,
+                        modifier = Modifier.padding(top = 3.dp))
                 }
             }
-            Divider(
-                modifier = Modifier.padding(vertical = 6.dp),
-                color = Color(0xFF3A3F4B)
-            )
+            // 底部信息
+            HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp), color = Color(0xFF3A3F4B))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "最近弹头 #${info.warheadIndex + 1}",
-                    color = Color(0xFF6A6F7A),
-                    fontSize = 10.sp
-                )
-                Text(
-                    text = "距瞄点 ${"%.2f".format(info.aimDistKm)} km",
-                    color = Color(0xFF6A6F7A),
-                    fontSize = 10.sp
-                )
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Text(
-                        text = "✕",
-                        color = Color(0xFF6A6F7A),
-                        fontSize = 12.sp
-                    )
+                Text(text = "最近弹头 #${info.warheadIndex + 1}", color = Color(0xFF6A6F7A), fontSize = 10.sp)
+                Text(text = "距瞄点 ${"%.2f".format(info.aimDistKm)} km", color = Color(0xFF6A6F7A), fontSize = 10.sp)
+                IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
+                    Text(text = "✕", color = Color(0xFF6A6F7A), fontSize = 12.sp)
                 }
             }
         }
     }
 }
 
+/** 统计数据行（标签+数值） */
 @Composable
 private fun StatText(label: String, value: String) {
     Row {
@@ -698,20 +801,12 @@ private fun StatText(label: String, value: String) {
 @Composable
 fun MapViewPreview() {
     val dummyEffects = DamageEffects(
-        fireball = 0.5,
-        psi20 = 1.0,
-        psi10 = 2.0,
-        psi5 = 4.0,
-        psi3 = 6.0,
-        psi1 = 10.0,
-        thermal = 15.0,
-        radiation = 3.0
+        fireball = 0.5, psi20 = 1.0, psi10 = 2.0, psi5 = 4.0,
+        psi3 = 6.0, psi1 = 10.0, thermal = 15.0, radiation = 3.0
     )
-
     val dummyWarheadPoints = listOf(
         WarheadPoint(0, 39.9042, 116.4074, dummyEffects, 100.0, 600.0)
     )
-
     val dummyNukeEffectsResults = listOf(
         NukeEffectsResult(
             rings = listOf(
@@ -723,21 +818,16 @@ fun MapViewPreview() {
                 RingResult(10.0, 0xFFFFFF00),
                 RingResult(15.0, 0xFFADFF2F)
             ),
-            centerLat = 39.9042,
-            centerLng = 116.4074,
-            totalArea = 100.0,
-            targetType = "urban"
+            centerLat = 39.9042, centerLng = 116.4074,
+            totalArea = 100.0, targetType = "urban"
         )
     )
-
     NukemapTheme {
         MapView(
-            targetLat = 39.9042,
-            targetLng = 116.4074,
+            targetLat = 39.9042, targetLng = 116.4074,
             warheadPoints = dummyWarheadPoints,
             effects = dummyNukeEffectsResults,
-            pickMode = false,
-            onMapClick = { _, _ -> },
+            pickMode = false, onMapClick = { _, _ -> },
             modifier = Modifier.fillMaxSize()
         )
     }

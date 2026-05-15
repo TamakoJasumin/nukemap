@@ -1,3 +1,12 @@
+/**
+ * 加载指示器组件
+ *
+ * 提供两种加载指示器：
+ * - LoadingIndicator：全屏居中加载状态（带可选文字说明）
+ * - InlineLoadingIndicator：内联加载状态（用于按钮等小区域）
+ *
+ * 使用无限重复旋转动画表示加载中的状态。
+ */
 package com.mirvsim.app.ui.components.common
 
 import androidx.compose.animation.core.*
@@ -13,14 +22,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 
 /**
- * 加载指示器组件
- * 支持带文字说明的加载状态
+ * 加载指示器（带旋转动画和可选文字说明）
+ *
+ * 适用于全屏加载状态、数据加载中等场景。
+ *
+ * @param modifier 修饰符
+ * @param message 加载说明文字（可选）
  */
 @Composable
 fun LoadingIndicator(
     modifier: Modifier = Modifier,
     message: String? = null
 ) {
+    // 无限重复旋转动画（1000ms 一周，线性匀速）
     val infiniteTransition = rememberInfiniteTransition(label = "loading")
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -57,8 +71,12 @@ fun LoadingIndicator(
 }
 
 /**
- * 内联加载指示器
- * 用于按钮内的加载状态
+ * 内联加载指示器（小尺寸）
+ *
+ * 适用于按钮内部、列表项等小区域。
+ *
+ * @param modifier 修饰符
+ * @param color 指示器颜色（默认白色）
  */
 @Composable
 fun InlineLoadingIndicator(

@@ -24,20 +24,33 @@
 
 ### 交互与可视化
 
-- **Leaflet 地图**（Web）/ **osmdroid 地图**（Android） — 多源瓦片备份，加载失败自动切换
-- **弹头落点标记** — HSL 色相渐变 + 编号标签，清晰区分各弹头
-- **毁伤环绘制** — 7 层不同颜色线型，分层可视化毁伤范围
-- **地图点击探测** — Haversine 距离精确定位毁伤层级，弹出详情面板
+- **三平台地图** — Web 端 Leaflet 多源瓦片（高德/OSM/ESRI 卫星/CARTO 街区，含高德→OSM 回退链） / Android 端 osmdroid
+- **WGS-84 ↔ GCJ-02 坐标转换** — 完整纠偏算法，高德/天地图等国内图源可精确对齐
+- **弹头落点标记** — HSL 色相渐变 + 编号标签 + 掉落动画，清晰区分各弹头
+- **毁伤环绘制** — 7 层不同颜色线型，带渐显动画，分层可视化毁伤范围
+- **地图点击探测** — Haversine 距离精确定位毁伤层级（冲击波 + 热辐射分级），弹出详情面板
+- **毁伤图例** — 侧边栏底部固定图例，7 种毁伤层级的颜色与线型对照
 - **URL 参数分享** — 一键生成包含完整模拟配置的分享链接
 
-### 预设场景（30+）
+### UI 增强
+
+- **浅色 / 深色双主题** — 支持 `prefers-color-scheme` 媒体查询 + `localStorage` 持久化偏好
+- **统计面板** — 右侧滑入详情面板，含总毁伤面积、死亡/受伤/伤亡人数、各等级覆盖面积条形图、弹头落点列表
+- **Toast 通知系统** — 三级通知（普通/成功/错误），淡入淡出动画，用于操作反馈
+- **自动发射** — 开启后选择预设（含自定预设）自动执行模拟
+- **地图弹窗开关** — 可关闭地图点击弹窗，避免干扰操作
+- **灵活预设模式** — 全部预设仅加载武器参数，不改变已选目标城市（按钮带"城市自选"徽章）
+- **响应式布局** — 三断点自适应（>1200px 三栏 / 600~900px 顶部栏+抽屉 / <600px 紧凑模式）
+- **地图点选目标** — 十字准星模式，点击地图任意位置精准设定坐标
+
+### 预设场景（32）
 
 | 类别 | 数量 | 代表型号 |
 |------|------|---------|
-| ICBM/SLBM | 13 | Minuteman III, Trident II, DF-41, RS-28 Sarmat |
+| ICBM/SLBM | 14 | Minuteman III, Trident II, LGM-35 Sentinel, DF-41, RS-28 Sarmat |
 | IRBM/MRBM | 5 | DF-17 乘波体, Agni-V, Hwasong-17 |
 | 战略轰炸机 | 7 | B-2 Spirit, Tu-160, H-20 |
-| 战术核武器 | 1 | Iskander-M |
+| 战术核武器 | 2 | Iskander-M (单发), Iskander 营级饱和打击 (4 发) |
 | 超大当量弹头 | 4 | 沙皇炸弹(50Mt), Mk-41(25Mt) |
 
 ### 全球城市数据库
@@ -108,11 +121,11 @@ f:\nukemap/
 ├── .gitignore                  # Git 忽略规则
 │
 ├── css/
-│   └── style.css               # 深色主题样式系统（响应式布局）
+│   └── style.css               # 深色/浅色双主题样式系统（响应式布局 + 动画）
 │
 ├── js/
-│   ├── app.js                  # Web 端核心应用（引擎 + UI + 地图）
-│   └── cities.js               # 全球城市数据库（400+ 城市）
+│   ├── app.js                  # Web 端核心应用（引擎 + UI + 地图 + GCJ-02 纠偏）
+│   └── cities.js               # 全球城市数据库（400+ 城市，含省份归属）
 │
 ├── assets/
 │   ├── icon.svg                # 桌面端应用图标（SVG 源文件）
@@ -131,32 +144,32 @@ f:\nukemap/
 │       └── src/main/
 │           ├── AndroidManifest.xml
 │           ├── assets/cities.json     # 城市数据（JSON 格式）
-│           ├── res/                   # 资源文件
+│           ├── res/                   # 资源文件（含自适应图标）
 │           └── java/com/mirvsim/app/
 │               ├── MainActivity.kt            # 主 Activity（singleTask 启动模式）
 │               ├── model/Models.kt            # 数据模型定义
 │               ├── engine/
-│               │   ├── NukeEffects.kt         # 核爆效应引擎
+│               │   ├── NukeEffects.kt         # 核爆效应引擎（三平台公式一致）
 │               │   ├── MIRVPatterns.kt        # 散布模式生成
-│               │   └── StatsCalculator.kt     # 伤亡统计计算
+│               │   └── StatsCalculator.kt     # 伤亡统计计算（协程异步）
 │               ├── data/
-│               │   ├── Presets.kt             # 预设武器场景
+│               │   ├── Presets.kt             # 预设武器场景（32 种）
 │               │   └── repository/            # 数据仓库实现
 │               ├── domain/
 │               │   ├── repository/            # 仓库接口定义
 │               │   └── usecase/               # 业务用例层
 │               ├── viewmodel/
-│               │   └── SimulationViewModel.kt # 状态管理（ViewModel）
+│               │   └── SimulationViewModel.kt # 状态管理（ViewModel + 协程）
 │               └── ui/
-│                   ├── MainScreen.kt          # 主界面
+│                   ├── MainScreen.kt          # 主界面（底部导航 + 侧边栏）
 │                   ├── MainUiState.kt         # UI 状态定义
-│                   ├── theme/                 # 主题（Color/Type/Theme）
+│                   ├── theme/                 # 主题（Color/Type/Theme + 动态颜色）
 │                   └── components/            # 界面组件
 │                       ├── ControlPanel.kt    # 控制参数面板
 │                       ├── MapView.kt         # osmdroid 地图视图
 │                       ├── StatsPanel.kt      # 统计结果面板
-│                       ├── NavigationBars.kt  # 底部导航栏
-│                       ├── SettingsPanel.kt   # 设置面板（主题/地图/模拟）
+│                       ├── NavigationBars.kt  # 底部导航栏（4 项）
+│                       ├── SettingsPanel.kt   # 设置面板（主题/地图/模拟/动画）
 │                       ├── common/            # 通用组件
 │                       │   ├── AccessibleSlider.kt
 │                       │   ├── ExpandableSection.kt
@@ -173,7 +186,7 @@ f:\nukemap/
 |------|------|------|
 | **Web** | HTML5 + CSS3 + JavaScript (ES5) | — |
 | | Leaflet | 1.9.4 |
-| | OpenStreetMap 瓦片 | — |
+| | 高德 / OSM / ESRI / CARTO 瓦片 | — |
 | **桌面** | Electron | ^28.0 |
 | | electron-packager | ^17.1 |
 | | Inno Setup | 6.3+ |
@@ -185,18 +198,35 @@ f:\nukemap/
 
 ---
 
+## 地图瓦片架构（Web）
+
+```
+标准地图:   高德 (GCJ-02 纠偏后) → 加载失败自动回退 → OpenStreetMap
+高清卫星:   ESRI ArcGIS World Imagery
+街区图:     CARTO Voyager (不含标注)
+```
+
+- 全部图源绑定至自定义 `L.GridLayer` 对象，支持运行中实时切换
+- 高德瓦片通过 GCJ-02 坐标转换使 WGS-84 地理数据精确对齐
+- 标准地图内置 `tileerror` 回退链，确保任何网络环境下至少一种图源可用
+
+---
+
 ## Android 端功能特色
 
 Android 原生端基于 Kotlin + Jetpack Compose 构建，除共享核心引擎外，提供以下平台特有功能：
 
-- **Material3 动态颜色** — Android 12+ 自动适配壁纸取色主题
+- **Material3 动态颜色** — Android 12+ 自动适配壁纸取色主题（可开关）
+- **底部导航栏** — 四栏导航（模拟/预设/统计/设置），支持平板侧边栏
 - **深色/浅色模式切换** — 跟随系统或手动切换
-- **多地图瓦片源** — OpenStreetMap / 卫星图 / 地形图，运行中自由切换
-- **设置面板** — 完整设置界面，涵盖外观、地图、模拟三部分
+- **多地图瓦片源** — 运行中自由切换图源
+- **设置面板** — 涵盖外观、地图、模拟、动画四部分
+- **毁伤环动画开关** — 独立控制环渲染动画
 - **弹头落点列表** — 结构化显示各弹头精确坐标
 - **分享功能** — 一键复制模拟配置文本
 - **安全权限处理** — 精确定位权限请求（ACCESS_FINE_LOCATION）
-- **协程异步加载** — 城市数据与计算均在后台协程执行，UI 无阻塞
+- **网络状态监听** — 实时监听网络连接变化
+- **协程异步加载** — 城市数据与模拟计算均在后台协程执行，UI 无阻塞
 
 ---
 
@@ -237,6 +267,18 @@ StatsCalculator.compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, 
 //   { totalArea, deaths, injuries, totalCasualties, damageAreas, ... }
 ```
 
+### GCJ-02 坐标转换（Web 专用）
+
+```javascript
+// WGS-84 → GCJ-02 坐标转换
+wgs84ToGcj02(lat, lng)
+// 返回: {lat, lng} — GCJ-02 坐标系坐标
+
+// 创建 GCJ-02 纠偏瓦片图层
+createGcj02TileLayer(templateUrl, options)
+// 自动偏移瓦片像素边界，使瓦片与 WGS-84 地理坐标对齐
+```
+
 ---
 
 ## 数据流架构
@@ -245,15 +287,26 @@ StatsCalculator.compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, 
 用户操作 → State 更新 → 执行模拟
   ├─ MIRVPatterns.generate() → 弹头落点坐标
   ├─ NukeEffects.calculate()  → 各毁伤等级半径
-  ├─ 地图可视化（落点 + 毁伤环）
+  ├─ 地图可视化（落点 + 毁伤环 + 动画）
   └─ StatsCalculator.compute() → 统计结果
       ├─ totalArea          总毁伤面积
       ├─ damageAreas        各等级覆盖面积
       ├─ deaths             预估死亡
       ├─ injuries           预估受伤
       └─ totalCasualties    总伤亡
-        → 更新 UI 统计面板
+        → 统计面板（数字 + 条形图 + 落点列表）
 ```
+
+---
+
+## 灵活预设模式
+
+区别于传统预设直接覆盖目标坐标的做法，本项目全部 32 个预设均标记为 `flexible` 模式：
+
+- **仅加载武器参数** — 弹头数、当量、爆高、散布模式、分离距离等
+- **保留当前目标** — 不改变用户已选择的城市/坐标
+- **与自动发射联动** — 开启自动发射后，选择 `flexible` 预设直接触发射击
+- **UI 徽章标识** — 所有预设按钮显示"城市自选"标签
 
 ---
 
@@ -285,6 +338,7 @@ StatsCalculator.compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, 
 | **Kotlin** | 遵循 Kotlin 官方编码规范，使用 Jetpack Compose 最佳实践 |
 | **命名** | 变量/函数使用 `camelCase`，常量使用 `UPPER_CASE`，类名使用 `PascalCase` |
 | **注释** | 关键算法需标注公式来源 |
+| **跨平台一致性** | 核爆效应计算参数（公式常量、爆高判断阈值）在三平台间严格保持统一 |
 
 ### 分支命名
 
@@ -305,7 +359,7 @@ StatsCalculator.compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, 
 
 - 核爆效应计算模型基于 Samuel Glasstone & Philip J. Dolan 的《The Effects of Nuclear Weapons》(1977)
 - 项目受 [Alex Wellerstein 的 NUKEMAP](https://nuclearsecrecy.com/nukemap/) 启发
-- 地图数据 © [OpenStreetMap](https://www.openstreetmap.org/copyright) 贡献者
+- 地图数据 © [OpenStreetMap](https://www.openstreetmap.org/copyright) 贡献者，高德地图瓦片 © AutoNavi，ESRI 卫星影像 © Esri
 - 城市人口数据参考各国统计年鉴及 UN World Population Prospects 2023
 
 ### 免责声明
@@ -320,5 +374,5 @@ StatsCalculator.compute(warheadPoints, yieldKt, hobMode, targetType, targetLat, 
 |------|---------|
 | >1200px | 三栏布局（侧边栏 + 地图 + 统计面板） |
 | 900~1200px | 侧边栏和统计面板宽度缩小 |
-| 600~900px | 侧边栏移到顶部，统计面板为侧滑抽屉 |
-| <600px | 紧凑布局，导航按钮隐藏文字 |
+| 600~900px | 侧边栏移到顶部（max-height: 45vh），统计面板为侧滑抽屉 |
+| <600px | 紧凑布局，导航按钮隐藏文字，面板全宽自适应 |

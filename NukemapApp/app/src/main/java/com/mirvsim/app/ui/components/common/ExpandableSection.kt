@@ -1,3 +1,12 @@
+/**
+ * 可展开/收起的内容区域组件
+ *
+ * 提供带标题的可折叠内容区域，支持：
+ * - 标题点击切换展开/收起状态
+ * - 展开/收起动画（垂直展开/收缩）
+ * - 箭头旋转动画指示状态
+ * - 遵循 Material 3 设计规范
+ */
 package com.mirvsim.app.ui.components.common
 
 import androidx.compose.animation.AnimatedVisibility
@@ -22,7 +31,12 @@ import androidx.compose.ui.unit.dp
 
 /**
  * 可展开/收起的内容区域
- * 支持标题点击切换展开状态
+ *
+ * @param title 分区标题
+ * @param expanded 是否展开
+ * @param onToggle 展开/收起切换回调
+ * @param modifier 修饰符
+ * @param content 内容区域（ColumnScope 内）
  */
 @Composable
 fun ExpandableSection(
@@ -33,6 +47,7 @@ fun ExpandableSection(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
+        // 可点击的标题栏
         Surface(
             onClick = onToggle,
             color = MaterialTheme.colorScheme.surfaceVariant,
@@ -58,6 +73,7 @@ fun ExpandableSection(
             }
         }
         
+        // 内容区域（带动画）
         AnimatedVisibility(
             visible = expanded,
             enter = expandVertically(),
@@ -72,7 +88,12 @@ fun ExpandableSection(
 }
 
 /**
- * 旋转动画的箭头图标
+ * 带旋转动画的箭头图标
+ *
+ * 根据展开状态控制箭头旋转角度（0° → 180°）。
+ *
+ * @param expanded 是否展开
+ * @param modifier 修饰符
  */
 @Composable
 private fun AnimatedArrow(

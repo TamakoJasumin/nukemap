@@ -1,5 +1,8 @@
+// 批量处理脚本：将 Android 版 cities.json 中的中国城市分组从 "🇨🇳 中国" 细化为 "🇨🇳 省份名"
+// 用法: node add_provinces.js
 const fs = require('fs');
 
+// 城市名 → 省份映射表
 const mapping = {
   '北京': '北京',
   '天津': '天津',
@@ -117,7 +120,7 @@ if (notFound.length > 0) {
   console.log(`Unmapped: ${notFound.join(', ')}`);
 }
 
-// Print summary
+// 打印各省城市数量汇总
 const summary = {};
 for (const city of cities) {
   if (city.group.startsWith('🇨🇳')) {

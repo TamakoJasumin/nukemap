@@ -1,3 +1,12 @@
+/**
+ * 可访问的滑块组件
+ *
+ * 在 Material 3 Slider 基础上增强无障碍支持：
+ * - 提供完整的语义描述（contentDescription）
+ * - 支持屏幕阅读器（TalkBack）正确朗读滑块信息
+ * - 显示当前值和范围描述
+ * - 符合 WCAG 无障碍最佳实践
+ */
 package com.mirvsim.app.ui.components.common
 
 import androidx.compose.foundation.layout.*
@@ -16,7 +25,15 @@ import androidx.compose.ui.unit.sp
 
 /**
  * 可访问的滑块组件
- * 提供完整的语义描述，支持屏幕阅读器
+ *
+ * @param label 滑块标签文字
+ * @param value 当前值
+ * @param valueText 当前值显示文本
+ * @param range 取值范围 [start, endInclusive]
+ * @param onValueChange 值变化回调
+ * @param modifier 修饰符
+ * @param steps 步进数（0 表示连续滑动）
+ * @param valueRangeDescription 无障碍描述中取值范围说明（可选）
  */
 @Composable
 fun AccessibleSlider(
@@ -35,6 +52,7 @@ fun AccessibleSlider(
                 contentDescription = "$label: 当前值 $valueText"
             }
     ) {
+        // 标签和当前值行
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -53,6 +71,7 @@ fun AccessibleSlider(
             )
         }
         
+        // Material 3 Slider
         Slider(
             value = value,
             onValueChange = onValueChange,
@@ -61,8 +80,7 @@ fun AccessibleSlider(
             modifier = Modifier
                 .fillMaxWidth()
                 .semantics {
-                    // 提供完整的滑块描述给屏幕阅读器
-                    contentDescription = valueRangeDescription 
+                    contentDescription = valueRangeDescription
                         ?: "$label，从 ${range.start.toInt()} 到 ${range.endInclusive.toInt()}"
                 },
             colors = SliderDefaults.colors(
