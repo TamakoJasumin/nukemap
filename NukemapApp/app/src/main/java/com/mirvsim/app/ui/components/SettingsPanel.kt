@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import com.mirvsim.app.ui.MainUiState
 import com.mirvsim.app.ui.theme.*
 import kotlinx.coroutines.Dispatchers
@@ -142,6 +143,7 @@ private fun ThemeSection(
  *
  * 包含：图源选择（Mapnik / 卫星 / CartoDB 高清）、点击弹窗开关
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MapSettingsSection(
     tileSource: String,
@@ -149,17 +151,38 @@ private fun MapSettingsSection(
     onTileSourceChange: (String) -> Unit,
     onPopupEnabledChange: (Boolean) -> Unit
 ) {
-    val sources = listOf("AUTONAVI" to "高德地图 (默认)", "MAPNIK" to "Mapnik", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
+    val sources = listOf("AUTONAVI" to "高德地图", "GOOGLE_MAPS" to "Google 地图", "MAPNIK" to "Mapnik", "USGS_SAT" to "高清卫星", "CARTO_LIGHT" to "街区高清")
     Text("地图源", color = DarkOnSurfaceVariant, fontSize = 12.sp, modifier = Modifier.padding(start = 14.dp))
-    Spacer(Modifier.height(6.dp))
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    Spacer(Modifier.height(8.dp))
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
         sources.forEach { (value, label) ->
             val selected = tileSource == value
-            Surface(onClick = { onTileSourceChange(value) }, shape = RoundedCornerShape(6.dp),
-                color = if (selected) NukeOrange else DarkSurfaceVariant, modifier = Modifier.weight(1f)) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
+            Surface(
+                onClick = { onTileSourceChange(value) },
+                shape = RoundedCornerShape(6.dp),
+                color = if (selected) NukeOrange else DarkSurfaceVariant
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                ) {
                     Text(label, fontSize = 11.sp, color = if (selected) Color.White else DarkOnSurfaceVariant,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
+                    if (value == "AUTONAVI") {
+                        Spacer(Modifier.width(4.dp))
+                        Surface(
+                            shape = RoundedCornerShape(3.dp),
+                            color = if (selected) Color.White.copy(alpha = 0.25f) else NukeOrange.copy(alpha = 0.2f)
+                        ) {
+                            Text("默认", fontSize = 9.sp,
+                                color = if (selected) Color.White.copy(alpha = 0.8f) else NukeOrange,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                        }
+                    }
                 }
             }
         }

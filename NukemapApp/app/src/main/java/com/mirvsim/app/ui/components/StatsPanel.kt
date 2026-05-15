@@ -67,18 +67,19 @@ fun StatsPanel(
         shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = DarkSurface)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // 顶部标题栏（含关闭按钮）
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp)) {
+            // 顶部标题栏
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("攻击结果统计", color = DarkOnBackground, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("攻击结果统计", color = DarkOnBackground, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     if (result.cityName != null) {
+                        Spacer(Modifier.height(2.dp))
                         Text("\uD83D\uDCCD ${result.cityName} · ${targetTypeLabel(result.targetType.name)}",
-                            color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 11.sp)
+                            color = DarkOnSurfaceVariant.copy(alpha = 0.6f), fontSize = 11.sp)
                     }
                 }
                 IconButton(onClick = onClose, modifier = Modifier.size(28.dp)) {
@@ -86,25 +87,29 @@ fun StatsPanel(
                 }
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
             // 四项核心指标卡片
             StatsCards(result)
 
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider(color = DarkOutline.copy(alpha = 0.3f), thickness = 0.5.dp)
             Spacer(Modifier.height(16.dp))
 
             // 各毁伤等级覆盖面积条形图
             Text("各毁伤等级覆盖面积", color = DarkOnSurfaceVariant, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             DamageBars(damageAreas = result.damageAreas)
 
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider(color = DarkOutline.copy(alpha = 0.3f), thickness = 0.5.dp)
             Spacer(Modifier.height(16.dp))
 
             // 弹头落点详情列表
             Text("弹头落点详情", color = DarkOnSurfaceVariant, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             WarheadList(warheadPoints = warheadPoints)
         }
     }
@@ -142,19 +147,20 @@ private fun StatCard(
         modifier = Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(DarkSurfaceVariant)
-            .padding(14.dp),
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(42.dp)
+            modifier = Modifier.size(40.dp)
                 .background(color.copy(alpha = 0.15f), RoundedCornerShape(6.dp)),
             contentAlignment = Alignment.Center
         ) { icon() }
         Spacer(Modifier.width(12.dp))
         Column {
             Text(value, color = valueColor ?: DarkOnBackground, fontWeight = FontWeight.Bold,
-                fontSize = 20.sp, fontFamily = FontFamily.Monospace, lineHeight = 24.sp)
-            Text(label, color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontSize = 11.sp)
+                fontSize = 20.sp, fontFamily = FontFamily.Monospace, lineHeight = 22.sp)
+            Spacer(Modifier.height(2.dp))
+            Text(label, color = DarkOnSurfaceVariant.copy(alpha = 0.6f), fontSize = 11.sp)
         }
     }
 }
@@ -177,26 +183,24 @@ private fun DamageBars(damageAreas: Map<RingType, Double>) {
         animProgress.animateTo(1f, tween(800, easing = FastOutSlowInEasing))
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         ringOrder.forEach { type ->
             val area = damageAreas[type] ?: 0.0
             val pct = (area / maxArea * animProgress.value).toFloat().coerceIn(0f, 1f)
             val color = ringColors[type] ?: NukeOrange
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(type.displayName, fontSize = 11.sp, color = DarkOnSurfaceVariant,
-                    fontFamily = FontFamily.Monospace,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.End,
-                    modifier = Modifier.width(68.dp))
-                Spacer(Modifier.width(6.dp))
-                Box(modifier = Modifier.weight(1f).height(12.dp)
-                    .clip(RoundedCornerShape(6.dp)).background(DarkSurfaceVariant)) {
+                Text(type.shortName, fontSize = 11.sp, color = DarkOnSurfaceVariant,
+                    maxLines = 2, modifier = Modifier.width(54.dp))
+                Spacer(Modifier.width(8.dp))
+                Box(modifier = Modifier.weight(1f).height(14.dp)
+                    .clip(RoundedCornerShape(7.dp)).background(DarkSurfaceVariant)) {
                     Box(modifier = Modifier.fillMaxHeight().fillMaxWidth(fraction = pct)
-                        .clip(RoundedCornerShape(6.dp)).background(color))
+                        .clip(RoundedCornerShape(7.dp)).background(color))
                 }
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(formatArea(area), fontSize = 11.sp, color = DarkOnBackground,
-                    fontFamily = FontFamily.Monospace, modifier = Modifier.width(52.dp))
+                    fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Medium)
             }
         }
     }
@@ -205,24 +209,31 @@ private fun DamageBars(damageAreas: Map<RingType, Double>) {
 /** 弹头落点详细信息列表 */
 @Composable
 private fun WarheadList(warheadPoints: List<WarheadPoint>) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         warheadPoints.sortedBy { it.index }.forEachIndexed { i, wp ->
             val hue = (i.toFloat() / warheadPoints.size.coerceAtLeast(1)) * 300f
-            val dotColor = Color.hsl(hue, 0.9f, 0.6f)  // 弹头标记色（与地图一致）
+            val dotColor = Color.hsl(hue, 0.9f, 0.6f)
 
             Row(
                 modifier = Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(DarkSurfaceVariant)
-                    .padding(8.dp),
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(modifier = Modifier.size(10.dp).background(dotColor, RoundedCornerShape(50)))
-                Spacer(Modifier.width(8.dp))
-                Text("#${wp.index + 1}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
-                    color = DarkOnBackground, modifier = Modifier.width(30.dp))
-                Text("%.4f, %.4f".format(wp.lat, wp.lng), fontSize = 11.sp,
-                    color = DarkOnSurfaceVariant.copy(alpha = 0.7f), fontFamily = FontFamily.Monospace)
+                Spacer(Modifier.width(10.dp))
+                Text("#${wp.index + 1}", fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
+                    color = DarkOnBackground, modifier = Modifier.width(32.dp))
+                Column {
+                    Text("%.4f".format(wp.lat), fontSize = 10.sp,
+                        color = DarkOnSurfaceVariant.copy(alpha = 0.6f), fontFamily = FontFamily.Monospace)
+                    Text("%.4f".format(wp.lng), fontSize = 10.sp,
+                        color = DarkOnSurfaceVariant.copy(alpha = 0.6f), fontFamily = FontFamily.Monospace)
+                }
+                Spacer(Modifier.weight(1f))
+                Text("%.0f kt".format(wp.yieldKt), fontSize = 11.sp,
+                    color = NukeOrange, fontWeight = FontWeight.SemiBold)
             }
         }
     }
