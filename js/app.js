@@ -1691,7 +1691,7 @@
                 const style = NukeEffects.getRingStyle(type);
                 return `
                     <div class="stat-bar-row">
-                        <span class="stat-bar-label">${NukeEffects.getRingLabel(type)}</span>
+                        <span class="stat-bar-label">${NukeEffects.getRingShortLabel(type)}</span>
                         <div class="stat-bar-track">
                             <div class="stat-bar-fill" style="width:${pct}%;background:${style.color};box-shadow:0 0 6px ${style.color};"></div>
                         </div>
@@ -1710,6 +1710,7 @@
                         <span class="warhead-dot" style="background:${color};color:${color};"></span>
                         <span class="warhead-id">#${i + 1}</span>
                         <span class="warhead-coords">${pt.lat.toFixed(4)}, ${pt.lng.toFixed(4)}</span>
+                        <span class="warhead-yield">${State.yieldKt.toFixed(0)} kt</span>
                     </div>
                 `;
             }).join('');
