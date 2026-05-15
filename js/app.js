@@ -301,6 +301,19 @@
                     }
                 }
             ]
+        },
+        google_map: {
+            name: '谷歌地图',
+            layers: [
+                {
+                    url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                    options: {
+                        attribution: '&copy; Google',
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    }
+                }
+            ]
         }
     };
 
@@ -755,17 +768,15 @@
                 State.myLng = lng;
                 MapEngine.setMyLocation(lat, lng);
 
-                var city = findNearestCity(lat, lng);
-
-                if (city) {
-                    lat = city.lat;
-                    lng = city.lng;
-                }
-
                 State.targetLat = lat;
                 State.targetLng = lng;
 
+                var city = findNearestCity(lat, lng);
                 var val = lat.toFixed(4) + ',' + lng.toFixed(4);
+                if (city) {
+                    // 仅用于选中最接近的城市下拉项，不改动坐标
+                    val = city.lat.toFixed(4) + ',' + city.lng.toFixed(4);
+                }
 
                 var select = document.getElementById('selectCity');
                 if (select) {
